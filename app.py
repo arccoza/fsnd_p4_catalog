@@ -1,5 +1,4 @@
-import site
-site.addsitedir('lib')
+import locallib
 from flask import Flask
 from api import api_bp, db
 
