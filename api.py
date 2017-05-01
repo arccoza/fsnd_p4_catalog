@@ -43,7 +43,7 @@ class UserRes(Resource):
 
     def get(self, id=None):
         with db_session:
-            users = select(u for u in UserModel)[:]
+            users = select(u for u in User)[:]
 
         print(to_dict(users[0]))
         return to_json(users)
@@ -53,7 +53,7 @@ class UserRes(Resource):
         user = None
 
         with db_session:
-            user = UserModel(**kwargs)
+            user = User(**kwargs)
 
         return to_json(user), 201
 
