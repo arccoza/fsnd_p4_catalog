@@ -1,6 +1,7 @@
 import locallib
 from flask import Flask
-from api import api_bp, db
+from api import api_bp
+from models import db
 import psycopg2 as psql
 
 
