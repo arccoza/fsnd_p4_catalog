@@ -4,6 +4,7 @@ from pony.orm import show, select, db_session, Database, PrimaryKey, Required,\
     Optional, Set
 from pony.orm.serialization import to_json, to_dict
 import json
+from datetime import *
 
 
 api_bp = Blueprint('api', __name__)
@@ -11,18 +12,22 @@ api = Api(api_bp)
 db = Database()
 
 
-class UserModel(db.Entity):
+class User(db.Entity):
     username = Required(str)
 
 
-class CatagoryModel(db.Entity):
+class Category(db.Entity):
+    created = Required(datetime, sql_default='CURRENT_TIMESTAMP')
     title = Required(str)
-    # description = Optional(str)
+    description = Optional(str)
+    items = Set('Item', reverse='categories')
 
 
-class ItemModel(db.Entity):
+class Item(db.Entity):
+    created = Required(datetime, sql_default='CURRENT_TIMESTAMP')
     title = Required(str)
-    # description = Optional(str)
+    description = Optional(str)
+    categories = Set('Category', reverse='items')
 
 
 # with db.permissions_for(UserModel, CatagoryModel, ItemModel):
