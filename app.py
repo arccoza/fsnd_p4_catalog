@@ -13,6 +13,7 @@ con = psql.connect(dbname='postgres')
 con.autocommit = True
 cur = con.cursor()
 try:
+    # cur.execute('DROP DATABASE catalog;')
     cur.execute('CREATE DATABASE catalog;')
 except:
     pass
