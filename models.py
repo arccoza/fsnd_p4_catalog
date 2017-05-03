@@ -58,7 +58,9 @@ class Base(db.Entity):
     updated = Optional(datetime)
 
     def before_insert(self):
-        self.created = datetime.now()
+        now = datetime.now()
+        self.created = now
+        self.updated = now
 
     def before_update(self):
         self.updated = datetime.now()
