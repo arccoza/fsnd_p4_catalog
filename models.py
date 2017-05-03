@@ -8,6 +8,24 @@ from datetime import *
 db = Database()
 
 
+class Base(db.Entity):
+    created = Optional(datetime, sql_default='CURRENT_TIMESTAMP')
+    updated = Optional(datetime, sql_default='CURRENT_TIMESTAMP')
+
+    def before_insert(self):
+        pass
+
+    def before_update(self):
+        pass
+
+    def to_dict(self):
+        return {key: attr.__get__(self) for key, attr in self._adict_.items()}
+        # return {attr.name: val for attr, val in self._vals_.items()}
+
+    def to_json(self):
+        return json.dumps(self.to_dict(), indent=4, sort_keys=True, default=str)
+
+
 class User(db.Entity):
     username = Required(str)
 
