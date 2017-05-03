@@ -15,7 +15,9 @@ class Mixin(object):
             key = attr.name
             val = d.get(key, None)
             if val is not None:
-                if attr.is_relation:
+                if val is '':
+                    setattr(self, key, '')
+                elif attr.is_relation:
                     if relation_handler:
                         setattr(self, key, relation_handler(attr.py_type, val))
                 else:
