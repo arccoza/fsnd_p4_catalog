@@ -78,15 +78,6 @@ class ItemRes(Resource):
         return json_response(items)
 
     def post(self):
-        # kwargs = self.input.parse_args()
-        # item = {}
-        # if kwargs.get('categories', -1) is None:
-        #     del kwargs['categories']
-        # item = Item(**kwargs)
-        # commit()
-        # print(kwargs)
-        # Category(title='Test1', description='')
-        # commit()
         rvals = request.get_json() or request.values.to_dict()  # request data
 
         def relation_handler(t, v):
@@ -104,23 +95,10 @@ class ItemRes(Resource):
 
     def put(self, id):
         try:
-            items = [Item[id]]
+            item = Item[id]
         except ObjectNotFound as ex:
             abort(404)
-        # if not id:
-        #     abort(404)
-        # kwargs = self.input.parse_args()
-        # item = Item[id]
-        # if kwargs.get('categories', -1) > 0:
-        #     try:
-        #         kwargs['categories'] = Category[kwargs['categories']]
-        #     except:
-        #         pass
-        # else:
-        #     del kwargs['categories']
-        # item.set(**kwargs)
-        # return json_response([item])
-        # print(Category[1])
+
         rvals = request.get_json() or request.values.to_dict()  # request data
 
         def relation_handler(t, v):
@@ -132,7 +110,8 @@ class ItemRes(Resource):
                     pass
             return ret
 
-        item = Item.from_dict(rvals, relation_handler)
+        item.update(rvals, relation_handler)
+        commit()
         return json_response([item])
 
     def delete(self, id):
