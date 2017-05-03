@@ -56,64 +56,6 @@ class UserRes(Resource):
         return user.to_dict(), 201
 
 
-class ItemRes(Resource):
-    decorators = [db_session]
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-
-    def get(self, id=None):
-        if id is not None:
-            try:
-                items = [Item[id]]
-            except ObjectNotFound as ex:
-                abort(404)
-        else:
-            items = select(i for i in Item)[:]
-        return json_response(items)
-
-    def post(self):
-        rvals = request.get_json() or request.values.to_dict()  # request data
-
-        def relation_handler(t, v):
-            ret = []
-            for i in re.split('\s*,\s*', v):
-                try:
-                    ret.append(t[int(i)])
-                except ObjectNotFound:
-                    pass
-            return ret
-
-        item = Item.from_dict(rvals, relation_handler)
-        commit()
-        return json_response([item])
-
-    def put(self, id):
-        try:
-            item = Item[id]
-        except ObjectNotFound as ex:
-            abort(404)
-
-        rvals = request.get_json() or request.values.to_dict()  # request data
-
-        def relation_handler(t, v):
-            ret = []
-            for i in re.split('\s*,\s*', v):
-                try:
-                    ret.append(t[i])
-                except:
-                    pass
-            return ret
-
-        item.update(rvals, relation_handler)
-        commit()
-        return json_response([item])
-
-    def delete(self, id):
-        Item[id].delete()
-        return '', 204
-
-
 class GenericRes(Resource):
     decorators = [db_session]
 
@@ -168,21 +110,11 @@ class GenericRes(Resource):
         return '', 204
 
 
-# class CategoryRes(Resource):
-#     decorators = [db_session]
+class ItemRes(GenericRes):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.model_class = Item
 
-#     def __init__(self, *args, **kwargs):
-#         super().__init__(*args, **kwargs)
-
-#     def get(self, id=None):
-#         if id:
-#             try:
-#                 cats = [Category[id]]
-#             except ObjectNotFound as ex:
-#                 abort(404)
-#         else:
-#             cats = select(i for i in Category)[:]
-#         return Response(bytes(to_json([i.to_dict() for i in cats]), 'utf8'), mimetype='application/json')
 
 class CategoryRes(GenericRes):
     def __init__(self, *args, **kwargs):
