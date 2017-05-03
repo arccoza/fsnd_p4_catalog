@@ -10,20 +10,25 @@ db = Database()
 
 
 class Mixin(object):
+    def update(self, d, relation_handler=None):
+        for attr in self.__class__._attrs_:
+            key = attr.name
+            val = d.get(key, None)
+            if val is not None:
+                if attr.is_relation:
+                    if relation_handler:
+                        setattr(self, key, relation_handler(attr.py_type, val))
+                else:
+                    setattr(self, key, attr.py_type(val))
+        return self
+
     @classmethod
     def from_dict(cls, d, relation_handler=None):
-        # print(dir(cls._attrs_[4]))
         kwargs = {}
         for attr in cls._attrs_:
             key = attr.name
             val = d.get(key, None)
             if val is not None:
-                # if hasattr(attr, 'entity'):
-                #     print(attr.is_relation)
-                # if isinstance(attr, Set) and relation_handler:
-                    # kwargs[key] = re.split('\s*,\s*', val)
-                    # print(attr.entity)
-                # print(attr.py_type)
                 if attr.is_relation:
                     if relation_handler:
                         kwargs[key] = relation_handler(attr.py_type, val)
