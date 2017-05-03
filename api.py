@@ -13,7 +13,7 @@ api = Api(api_bp)
 def _to_json_default(obj):
     if isinstance(obj, SetInstance):
         pass
-        # return [i.to_dict() for i in obj]
+        # return [i.to_dict() for i in obj]  # TODO: fix recursion error.
     try:
         return obj.to_dict()
     except AttributeError:
@@ -114,21 +114,80 @@ class ItemRes(Resource):
         return '', 204
 
 
-class CategoryRes(Resource):
+class GenericRes(Resource):
     decorators = [db_session]
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+    def _relation_handler(self, t, v):
+        ret = []
+        for i in re.split('\s*,\s*', v):
+            try:
+                ret.append(t[int(i)])
+            except ObjectNotFound:
+                pass
+        return ret
 
     def get(self, id=None):
-        if id:
+        cls = self.model_class
+
+        if id is not None:
             try:
-                cats = [Category[id]]
+                objs = [cls[id]]
             except ObjectNotFound as ex:
                 abort(404)
         else:
-            cats = select(i for i in Category)[:]
-        return Response(bytes(to_json([i.to_dict() for i in cats]), 'utf8'), mimetype='application/json')
+            objs = select(i for i in cls)[:]
+
+        return json_response(objs)
+
+    def post(self):
+        cls = self.model_class
+        rvals = request.get_json() or request.values.to_dict()  # request data
+
+        obj = cls.from_dict(rvals, self._relation_handler)
+        commit()
+
+        return json_response([obj])
+
+    def put(self, id):
+        cls = self.model_class
+
+        try:
+            obj = cls[id]
+        except ObjectNotFound as ex:
+            abort(404)
+
+        rvals = request.get_json() or request.values.to_dict()  # request data
+
+        obj.update(rvals, self._relation_handler)
+        commit()
+        return json_response([obj])
+
+    def delete(self, id):
+        cls = self.model_class
+        cls[id].delete()
+        return '', 204
+
+
+# class CategoryRes(Resource):
+#     decorators = [db_session]
+
+#     def __init__(self, *args, **kwargs):
+#         super().__init__(*args, **kwargs)
+
+#     def get(self, id=None):
+#         if id:
+#             try:
+#                 cats = [Category[id]]
+#             except ObjectNotFound as ex:
+#                 abort(404)
+#         else:
+#             cats = select(i for i in Category)[:]
+#         return Response(bytes(to_json([i.to_dict() for i in cats]), 'utf8'), mimetype='application/json')
+
+class CategoryRes(GenericRes):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.model_class = Category
 
 
 api.add_resource(UserRes, '/users/', '/users/<int:id>')
