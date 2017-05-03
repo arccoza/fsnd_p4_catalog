@@ -1,5 +1,5 @@
-from pony.orm import show, select, db_session, Database, PrimaryKey, Required,\
-    Optional, Set
+from pony.orm import *
+from pony.orm.core import SetInstance, ObjectNotFound
 from pony.orm.serialization import to_json, to_dict
 import json
 from datetime import *
@@ -31,3 +31,6 @@ class Item(db.Entity):
     title = Required(str)
     description = Optional(str)
     categories = Set('Category', reverse='items')
+
+    def to_dict(self):
+        return {key: attr.__get__(self) for key, attr in self._adict_.items()}
