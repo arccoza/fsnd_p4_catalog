@@ -61,11 +61,6 @@ class ItemRes(Resource):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        input = reqparse.RequestParser()
-        input.add_argument('title', type=str, help='Item title.')
-        input.add_argument('description', type=str, help='Item description.')
-        input.add_argument('categories', type=int, help='Item categories.')
-        self.input = input
 
     def get(self, id=None):
         if id is not None:
@@ -124,11 +119,6 @@ class CategoryRes(Resource):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        input = reqparse.RequestParser()
-        input.add_argument('title', type=str, help='Category title.')
-        input.add_argument('description', type=str, help='Category description.')
-        input.add_argument('items', type=int, help='Items in category.')
-        self.input = input
 
     def get(self, id=None):
         if id:
