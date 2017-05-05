@@ -94,7 +94,7 @@ class Password(Optional):
 class User(Mixin, db.Entity):
     name = Optional(str)
     email = Required(str, unique=True, index=True)
-    username = Optional(str, unique=True, index=True)
+    username = Optional(str, unique=True, index=True, nullable=True)
     password = Password()
 
     def to_dict(self):
