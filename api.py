@@ -1,7 +1,7 @@
 from flask import Blueprint, Response, request, url_for, session
 from flask_restful import Resource, Api, reqparse, abort
-from models import User, Item, Category, select, db_session, commit, Set,\
-    SetInstance, ObjectNotFound
+from models import User, Item, Category, select, db_session, commit, rollback,\
+    Set, SetInstance, ObjectNotFound, Password
 import json
 import re
 
@@ -33,9 +33,19 @@ def json_response(obj):
 
 
 class AuthRes(Resource):
+    decorators = [db_session]
+
     def get(self):
         # session['name'] = 'bob'
         return {'name': 'bob'}, 200
+
+    def post(self):
+        rvals = request.get_json() or request.values.to_dict()  # request data
+        user = User.from_dict(rvals)
+        # user = User(email='bob@mail.com', password='1234')
+        rollback()
+        return json_response(
+            {k: v for k, v in user.to_dict().items() if k != 'password'})
 
 
 class UserRes(Resource):
