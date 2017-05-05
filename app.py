@@ -1,11 +1,12 @@
 import locallib
-from flask import Flask, render_template, url_for
+from flask import Flask, render_template, url_for, session
 from api import api_bp
 from models import db
 import psycopg2 as psql
 
-
+secret_key = 'taU>5&(Z*+r2d5ULR|i2z$bt@+ 9|i,;u!N_2);v@i/@y;gUf/&0WXC?}g6<aK$H'
 app = Flask(__name__, static_folder='pub')
+app.secret_key = secret_key
 app.register_blueprint(api_bp, url_prefix='/api')
 
 # Ref: http://stackoverflow.com/questions/34484066/create-a-postgres-database-using-python

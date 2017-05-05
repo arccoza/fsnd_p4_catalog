@@ -1,4 +1,4 @@
-from flask import Blueprint, Response, request
+from flask import Blueprint, Response, request, url_for, session
 from flask_restful import Resource, Api, reqparse, abort
 from models import User, Item, Category, select, db_session, commit, Set,\
     SetInstance, ObjectNotFound
@@ -30,6 +30,12 @@ def to_json(obj):
 
 def json_response(obj):
     return Response(bytes(to_json(obj), 'utf8'), mimetype='application/json')
+
+
+class AuthRes(Resource):
+    def get(self):
+        # session['name'] = 'bob'
+        return {'name': 'bob'}, 200
 
 
 class UserRes(Resource):
@@ -122,6 +128,7 @@ class CategoryRes(GenericRes):
         self.model_class = Category
 
 
+api.add_resource(AuthRes, '/auth/')
 api.add_resource(UserRes, '/users/', '/users/<int:id>')
 api.add_resource(ItemRes, '/items/', '/items/<int:id>')
 api.add_resource(CategoryRes, '/categories/', '/categories/<int:id>')
