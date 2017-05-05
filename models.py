@@ -4,7 +4,7 @@ from pony.orm.serialization import to_json, to_dict
 import json
 from datetime import *
 import re
-from passlib.hash import pbkdf2_sha256 as pwhashing
+from passlib.hash import pbkdf2_sha256 as pw_hasher
 
 
 db = Database()
@@ -86,11 +86,11 @@ class Password(Optional):
 
     @classmethod
     def hash(cls, password):
-        return pwhashing.hash(password)
+        return pw_hasher.hash(password)
 
     @classmethod
     def verify(cls, password, hash):
-        return pwhashing.verify(password, hash)
+        return pw_hasher.verify(password, hash)
 
 
 class User(Mixin, db.Entity):
