@@ -32,27 +32,26 @@ def json_response(obj):
     return Response(bytes(to_json(obj), 'utf8'), mimetype='application/json')
 
 
-class UserRes(Resource):
-    decorators = [db_session]
+# class UserRes(Resource):
+#     decorators = [db_session]
 
-    def get(self, id=None):
-        if id is not None:
-            try:
-                user = User[id]
-            except ObjectNotFound as ex:
-                abort(404)
-        else:
-            user = select(i for i in User)[:]
-        return json_response(
-            [{k: v for k, v in user.to_dict().items() if k != 'password'}])
+#     def get(self, id=None):
+#         if id is not None:
+#             try:
+#                 user = User[id]
+#             except ObjectNotFound as ex:
+#                 abort(404)
+#         else:
+#             user = select(i for i in User)[:]
+#         return json_response(user)
 
-    def post(self):
-        rvals = request.get_json() or request.values.to_dict()  # request data
-        user = User.from_dict(rvals)
-        # user = User(email='bob@mail.com', password='1234')
-        rollback()
-        return json_response(
-            [{k: v for k, v in user.to_dict().items() if k != 'password'}])
+#     def post(self):
+#         rvals = request.get_json() or request.values.to_dict()  # request data
+#         user = User.from_dict(rvals)
+#         # user = User(email='bob@mail.com', password='1234')
+#         rollback()
+#         return json_response(
+#             [{k: v for k, v in user.to_dict().items() if k != 'password'}])
 
 
 class GenericRes(Resource):
@@ -107,6 +106,12 @@ class GenericRes(Resource):
         cls = self.model_class
         cls[id].delete()
         return '', 204
+
+
+class UserRes(GenericRes):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.model_class = User
 
 
 class ItemRes(GenericRes):
