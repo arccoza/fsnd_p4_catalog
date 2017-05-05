@@ -1,11 +1,11 @@
 import locallib
-from flask import Flask
+from flask import Flask, render_template, url_for
 from api import api_bp
 from models import db
 import psycopg2 as psql
 
 
-app = Flask(__name__)
+app = Flask(__name__, static_folder='pub')
 app.register_blueprint(api_bp, url_prefix='/api')
 
 # Ref: http://stackoverflow.com/questions/34484066/create-a-postgres-database-using-python
@@ -25,7 +25,7 @@ db.generate_mapping(create_tables=True)
 
 @app.route("/")
 def root():
-    return "Hello World!"
+    return render_template('index.html')
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0')
