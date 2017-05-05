@@ -78,8 +78,8 @@ class Password(Optional):
 
     def validate(self, val, obj=None, entity=None, from_db=False):
         val = super().validate(val, obj, entity, from_db)
-        if val is not '':
-            val = pwhashing.hash(val)
+        if not(val == '' or pw_hasher.identify(val)):
+            val = pw_hasher.hash(val)
         return val
 
     @classmethod
