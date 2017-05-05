@@ -4,6 +4,7 @@ from pony.orm.serialization import to_json, to_dict
 import json
 from datetime import *
 import re
+from passlib.hash import pbkdf2_sha256 as pwhashing
 
 
 db = Database()
@@ -68,8 +69,33 @@ class Base(db.Entity):
         self.updated = datetime.now()
 
 
-class User(db.Entity):
-    username = Required(str)
+class Password(Optional):
+    def __init__(self, *args, **kwargs):
+        super().__init__(str, *args, **kwargs)
+
+    # def __set__(attr, obj, new_val, undo_funcs=None):
+    #     super().__set__(attr, obj, new_val, undo_funcs)
+
+    def validate(self, val, obj=None, entity=None, from_db=False):
+        val = super().validate(val, obj, entity, from_db)
+        if val is not '':
+            val = pwhashing.hash(val)
+        return val
+
+    @classmethod
+    def hash(cls, password):
+        return pwhashing.hash(password)
+
+    @classmethod
+    def verify(cls, password, hash):
+        return pwhashing.verify(password, hash)
+
+
+class User(Mixin, db.Entity):
+    name = Optional(str)
+    email = Required(str, unique=True, index=True)
+    username = Optional(str, unique=True, index=True)
+    password = Password()
 
     def to_dict(self):
         return {key: attr.__get__(self) for key, attr in self._adict_.items()}
