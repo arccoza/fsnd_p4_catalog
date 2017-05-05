@@ -37,6 +37,8 @@ class Mixin(object):
                         kwargs[key] = relation_handler(attr.py_type, val)
                 else:
                     kwargs[key] = attr.py_type(val)
+            elif not (isinstance(attr, Required)):
+                kwargs[key] = None if attr.nullable else ''
         return cls(**kwargs)
 
     def to_dict(self):
