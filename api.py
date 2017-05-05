@@ -32,12 +32,19 @@ def json_response(obj):
     return Response(bytes(to_json(obj), 'utf8'), mimetype='application/json')
 
 
-class AuthRes(Resource):
+class UserRes(Resource):
     decorators = [db_session]
 
-    def get(self):
-        # session['name'] = 'bob'
-        return {'name': 'bob'}, 200
+    def get(self, id=None):
+        if id is not None:
+            try:
+                user = User[id]
+            except ObjectNotFound as ex:
+                abort(404)
+        else:
+            user = select(i for i in User)[:]
+        return json_response(
+            [{k: v for k, v in user.to_dict().items() if k != 'password'}])
 
     def post(self):
         rvals = request.get_json() or request.values.to_dict()  # request data
@@ -45,31 +52,7 @@ class AuthRes(Resource):
         # user = User(email='bob@mail.com', password='1234')
         rollback()
         return json_response(
-            {k: v for k, v in user.to_dict().items() if k != 'password'})
-
-
-class UserRes(Resource):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        input = reqparse.RequestParser()
-        input.add_argument('username', type=str, help='User\'s handle.')
-        self.input = input
-
-    def get(self, id=None):
-        with db_session:
-            users = select(u for u in User)[:]
-
-        print(users[0].to_dict())
-        return [u.to_dict() for u in users]
-
-    def post(self):
-        kwargs = self.input.parse_args()
-        user = None
-
-        with db_session:
-            user = User(**kwargs)
-
-        return user.to_dict(), 201
+            [{k: v for k, v in user.to_dict().items() if k != 'password'}])
 
 
 class GenericRes(Resource):
@@ -138,7 +121,6 @@ class CategoryRes(GenericRes):
         self.model_class = Category
 
 
-api.add_resource(AuthRes, '/auth/')
 api.add_resource(UserRes, '/users/', '/users/<int:id>')
 api.add_resource(ItemRes, '/items/', '/items/<int:id>')
 api.add_resource(CategoryRes, '/categories/', '/categories/<int:id>')
