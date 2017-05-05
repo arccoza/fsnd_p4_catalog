@@ -11,7 +11,12 @@
 
     window.addEventListener('load', function(ev) {
       fetch('/api/auth/', {
-        credentials: 'include'
+        method: 'post',
+        credentials: 'include',
+        headers: {  
+          'Content-type': 'application/json; charset=UTF-8'
+        },  
+        body: JSON.stringify({email: 'bob@mail.com', password: '1234'})
       }).then(res => res.json())
       .then(res => {
         print(res)
