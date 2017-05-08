@@ -4,6 +4,8 @@ from models import User, Item, Category, select, db_session, commit, rollback,\
     Set, SetInstance, ObjectNotFound, Password
 import json
 import re
+from functools import wraps
+import base64
 
 
 api_bp = Blueprint('api', __name__)
@@ -32,6 +34,31 @@ def json_response(obj):
     return Response(bytes(to_json(obj), 'utf8'), mimetype='application/json')
 
 
+def basic_auth(upgrade=True):
+    def deco(fn):
+        @wraps(fn)
+        def wrap(*args, **kwargs):
+            try:
+                auth = request.headers['Authorization']
+                kind, value = auth.split(' ')
+                value = base64.standard_b64decode(bytes(value, 'utf8'))
+                id, pw = str(value, 'utf8').split(':')
+            except:
+                return fn(*args, **kwargs)
+            # print(id, pw)
+            with db_session:
+                user = select(u for u in User if u.email == id or u.username == id)
+                if len(user) == 1:
+                    user = next(iter(user))
+                    if Password.verify(pw, user.password):
+                        session['userid'] = user.id
+                        return fn(*args, **kwargs)
+            session.clear()
+            return fn(*args, **kwargs)
+        return wrap
+    return deco
+
+
 # class UserRes(Resource):
 #     decorators = [db_session]
 
@@ -55,7 +82,7 @@ def json_response(obj):
 
 
 class GenericRes(Resource):
-    decorators = [db_session]
+    decorators = [db_session, basic_auth()]
 
     def _relation_handler(self, t, v):
         ret = []
