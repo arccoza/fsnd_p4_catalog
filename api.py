@@ -6,6 +6,9 @@ import json
 import re
 from functools import wraps
 import base64
+import random
+import string
+from datetime import datetime
 
 
 api_bp = Blueprint('api', __name__)
@@ -56,12 +59,15 @@ def basic_auth(upgrade=True):
 
             # If there was an Auth header, autheticate with that info,
             # and create a session.
-            if kind == 'Basic' and not cookie:
+            if kind == 'Basic':
                 with db_session:
                     user = select(u for u in User
                                   if u.email == id or u.username == id)[:]
                 if len(user) == 1 and Password.verify(pw, user[0].password):
+                    pop = string.ascii_uppercase + string.digits
                     session['userid'] = user[0].id
+                    session['state'] = ''.join(random.choice(pop) for _ in range(32))
+                    session['timestamp'] = datetime.now().timestamp()
                 else:
                     session.clear()
             elif kind is not None:  # An unknown kind or kind 'None'
