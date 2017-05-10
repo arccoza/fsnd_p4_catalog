@@ -1,4 +1,4 @@
-from flask import Blueprint, Response, request, url_for, session
+from flask import Blueprint, Response, request, url_for, session, current_app
 from flask_restful import Resource, Api, reqparse, abort
 from models import User, Item, Category, select, db_session, commit, rollback,\
     Set, SetInstance, ObjectNotFound, Password
@@ -38,22 +38,33 @@ def basic_auth(upgrade=True):
     def deco(fn):
         @wraps(fn)
         def wrap(*args, **kwargs):
+            # Grab the session cookie if it exists.
+            cookie = request.cookies.get(current_app.session_cookie_name, None)
+
+            # Try get the Auth header data.
             try:
                 auth = request.headers['Authorization']
-                kind, value = auth.split(' ')
-                value = base64.standard_b64decode(bytes(value, 'utf8'))
-                id, pw = str(value, 'utf8').split(':')
-            except:
+                kind, _, value = auth.partition(' ')
+                if kind == 'Basic':
+                    value = base64.standard_b64decode(bytes(value, 'utf8'))
+                    id, _, pw = str(value, 'utf8').partition(':')
+                # elif kind == 'Token':
+            except (KeyError, base64.binascii.Error) as ex:
                 return fn(*args, **kwargs)
-            # print(id, pw)
-            with db_session:
-                user = select(u for u in User if u.email == id or u.username == id)
-                if len(user) == 1:
-                    user = next(iter(user))
-                    if Password.verify(pw, user.password):
-                        session['userid'] = user.id
-                        return fn(*args, **kwargs)
-            session.clear()
+
+            # If there was an Auth header, autheticate with that info,
+            # and create a session.
+            if kind == 'Basic' and not cookie:
+                with db_session:
+                    user = select(u for u in User
+                                  if u.email == id or u.username == id)[:]
+                if len(user) == 1 and Password.verify(pw, user[0].password):
+                    session['userid'] = user[0].id
+                else:
+                    session.clear()
+            elif kind:
+                session.clear()
+
             return fn(*args, **kwargs)
         return wrap
     return deco
