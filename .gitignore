@@ -95,3 +95,6 @@ ENV/
 
 # mkdocs documentation
 /site
+
+# OAuth
+client_secrets.json
