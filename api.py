@@ -162,6 +162,7 @@ class CategoryRes(GenericRes):
         self.model_class = Category
 
 
+api.add_resource(AuthRes, '/auth/')
 api.add_resource(UserRes, '/users/', '/users/<int:id>')
 api.add_resource(ItemRes, '/items/', '/items/<int:id>')
 api.add_resource(CategoryRes, '/categories/', '/categories/<int:id>')
