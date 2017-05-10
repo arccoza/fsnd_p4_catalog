@@ -38,6 +38,7 @@ def basic_auth(upgrade=True):
     def deco(fn):
         @wraps(fn)
         def wrap(*args, **kwargs):
+            kind = None
             # Grab the session cookie if it exists.
             cookie = request.cookies.get(current_app.session_cookie_name, None)
 
@@ -50,6 +51,7 @@ def basic_auth(upgrade=True):
                     id, _, pw = str(value, 'utf8').partition(':')
                 # elif kind == 'Token':
             except (KeyError, base64.binascii.Error) as ex:
+                # print(type(ex))
                 return fn(*args, **kwargs)
 
             # If there was an Auth header, autheticate with that info,
@@ -62,7 +64,7 @@ def basic_auth(upgrade=True):
                     session['userid'] = user[0].id
                 else:
                     session.clear()
-            elif kind:
+            elif kind is not None:  # An unknown kind or kind 'None'
                 session.clear()
 
             return fn(*args, **kwargs)
