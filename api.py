@@ -81,6 +81,15 @@ def basic_auth(upgrade=True):
 #             [{k: v for k, v in user.to_dict().items() if k != 'password'}])
 
 
+class AuthRes(Resource):
+    decorators = [basic_auth()]
+
+    def get(self):
+        # sess = current_app.open_session(request)
+        # print(request.cookies.get(current_app.session_cookie_name, None))
+        return json_response(dict(session.items()))
+
+
 class GenericRes(Resource):
     decorators = [db_session, basic_auth()]
 
