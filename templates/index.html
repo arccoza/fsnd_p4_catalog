@@ -50,7 +50,6 @@
         })
       })
       .then(function() {
-        print(gapi)
         return gapi.auth2.init({
           'clientId': '32902065428-sbal87ccp0eedjoo2opcq0tr22ha3884.apps.googleusercontent.com',
           'scope': 'profile email'
@@ -61,11 +60,9 @@
         return ga.grantOfflineAccess()
       })
       .then(function(resp) {
-        print(resp)
         var authCode = resp.code
       })
       .catch(function(err) {
-        print(err)
         alert('Could not authenticate with Google.')
       })
     }
@@ -104,9 +101,6 @@
       // .then(res => {
       //   print(res)
       // })
-
-      print(document.cookie)
-
     })
   </script>
 </head>
