@@ -6,24 +6,110 @@
   <title>Page Title</title>
   <!-- <link rel="stylesheet" href="styles.css"> -->
   <!-- <script src="script.js"></script> -->
+  <!-- <script src="https://apis.google.com/js/platform.js" async defer></script> -->
+  <script src="https://cdn.polyfill.io/v2/polyfill.min.js"></script>
   <script type="text/javascript">
     var print = console.log.bind(console)
 
-    window.addEventListener('load', function(ev) {
-      fetch('/api/auth/', {
-        method: 'post',
-        credentials: 'include',
-        headers: {  
-          'Content-type': 'application/json; charset=UTF-8'
-        },  
-        body: JSON.stringify({email: 'bob@mail.com', password: '1234'})
-      }).then(res => res.json())
-      .then(res => {
-        print(res)
+    // REF: https://developer.mozilla.org/en/docs/Web/API/WindowBase64/Base64_encoding_and_decoding
+    function b64EncodeUnicode(str) {
+      return btoa(encodeURIComponent(str).replace(/%([0-9A-F]{2})/g,
+        function toSolidBytes(match, p1) {
+          return String.fromCharCode('0x' + p1);
+        }))
+    }
+
+    function loadScript(url) {
+      var id = b64EncodeUnicode(url)
+      var script = document.getElementById(id)
+      if(script)
+        return Promise.resolve(script)
+      script = document.createElement('script')
+      script.setAttribute('defer', '')
+      script.setAttribute('async', '')
+      var head = document.getElementsByTagName('head')[0]
+      var p = new Promise(function(res, rej) {
+        script.id = id
+        script.onload = function(ev) {
+          res(script)
+        }
+        script.onerror = function(ev) {
+          rej(script)
+        }
+        script.src = url
+        head.append(script)
       })
+      return p
+    }
+
+    function googleSignin() {
+      loadScript('//apis.google.com/js/platform.js')
+      .then(function(s) {
+        return new Promise(function(res, rej) {
+          gapi.load('auth2', function() {res()})
+        })
+      })
+      .then(function() {
+        print(gapi)
+        return gapi.auth2.init({
+          'clientId': '32902065428-sbal87ccp0eedjoo2opcq0tr22ha3884.apps.googleusercontent.com',
+          'scope': 'profile email'
+        }).then()
+      })
+      .then(function() {
+        var ga = gapi.auth2.getAuthInstance()
+        return ga.grantOfflineAccess()
+      })
+      .then(function(resp) {
+        print(resp)
+        var authCode = resp.code
+      })
+      .catch(function(err) {
+        print(err)
+        alert('Could not authenticate with Google.')
+      })
+    }
+
+    window.addEventListener('load', function(ev) {
+      // fetch('/api/users/', {
+      //   method: 'post',
+      //   credentials: 'include',
+      //   headers: {
+      //     'Content-type': 'application/json; charset=UTF-8'
+      //   },
+      //   body: JSON.stringify({email: 'bob@mail.com', password: '1234'})
+      // }).then(res => res.json())
+      // .then(res => {
+      //   print(res)
+      // })
+
+      // fetch('api/items/', {
+      //   method: 'get',
+      //   credentials: 'include',
+      //   headers: {
+      //     'Content-type': 'application/json; charset=UTF-8',
+      //     'Authorization': 'Basic ' + b64EncodeUnicode('bob@mail.com:1234')
+      //   }
+      // })
+
+      // fetch('api/auth/', {
+      //   method: 'get',
+      //   credentials: 'include',
+      //   headers: {
+      //     'Content-type': 'application/json; charset=UTF-8',
+      //     'Authorization': 'Basic ' + b64EncodeUnicode('bob@mail.com:1234')
+      //   }
+      // })
+      // .then(res => res.json())
+      // .then(res => {
+      //   print(res)
+      // })
+
+      print(document.cookie)
+
     })
   </script>
 </head>
 <body>
-  
+  <button onclick="googleSignin()">Google Signin</button>
 </body>
