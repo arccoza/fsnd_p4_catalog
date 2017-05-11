@@ -67,6 +67,12 @@
       })
     }
 
+    function googleSignout() {
+      if(gapi && gapi.auth2) {
+        gapi.auth2.getAuthInstance().disconnect();
+      }
+    }
+
     window.addEventListener('load', function(ev) {
       // fetch('/api/users/', {
       //   method: 'post',
@@ -106,4 +112,5 @@
 </head>
 <body>
   <button onclick="googleSignin()">Google Signin</button>
+  <button onclick="googleSignout()">Google Signout</button>
 </body>
