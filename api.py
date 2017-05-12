@@ -9,10 +9,12 @@ import base64
 import random
 import string
 from datetime import datetime
+import requests
 
 
 api_bp = Blueprint('api', __name__)
 api = Api(api_bp)
+client_secrets = json.load(open('client_secrets.json'))
 
 
 def _to_json_default(obj):
@@ -76,6 +78,14 @@ def basic_auth(upgrade=True):
             return fn(*args, **kwargs)
         return wrap
     return deco
+
+
+def facebookUpgradeToken(**kwargs):
+    r = requests.get('''/oauth/access_token?
+    grant_type=fb_exchange_token&amp;
+    client_id={app_id}&amp;
+    client_secret={app_secret}&amp;
+    fb_exchange_token={token}'''.format(**kwargs))
 
 
 class AuthRes(Resource):
