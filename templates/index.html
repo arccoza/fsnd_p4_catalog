@@ -42,36 +42,174 @@
       return p
     }
 
-    function googleSignin() {
-      loadScript('//apis.google.com/js/platform.js')
-      .then(function(s) {
-        return new Promise(function(res, rej) {
-          gapi.load('auth2', function() {res()})
+    var googleScriptSrc = '//apis.google.com/js/platform.js'
+    var facebookScriptSrc = '//connect.facebook.net/en_US/sdk.js'
+
+    // function googleSignin() {
+    //   loadScript(googleScriptSrc)
+    //   .then(function(s) {
+    //     return new Promise(function(res, rej) {
+    //       gapi.load('auth2', function() {res()})
+    //     })
+    //   })
+    //   .then(function() {
+    //     return gapi.auth2.init({
+    //       'clientId': '32902065428-sbal87ccp0eedjoo2opcq0tr22ha3884.apps.googleusercontent.com',
+    //       'scope': 'profile email'
+    //     }).then()
+    //   })
+    //   .then(function() {
+    //     var ga = gapi.auth2.getAuthInstance()
+    //     return ga.grantOfflineAccess()
+    //   })
+    //   .then(function(resp) {
+    //     var authCode = resp.code
+    //   })
+    //   .catch(function(err) {
+    //     alert('Could not authenticate with Google.')
+    //   })
+    // }
+
+    // function googleSignout() {
+    //   if(gapi && gapi.auth2) {
+    //     gapi.auth2.getAuthInstance().disconnect();
+    //   }
+    // }
+
+    class Auth {
+      constructor({provider, scriptSrc, cred}) {
+        if(!(provider && scriptSrc && cred))
+          throw 'Must have a provider, scriptSrc, and cred arg'
+
+        this.provider = provider
+        this.scriptSrc = scriptSrc
+        this.cred = cred
+
+        if(provider == 'google') {
+          this.signin = this.googleSignin
+          this.signout = this.googleSignout
+        }
+        else if(provider == 'facebook') {
+          this.signin = this.facebookSignin
+          this.signout = this.facebookSignout
+        }
+        else {
+          throw 'Unknown provider ' + provider
+        }
+      }
+
+      get googleUser() {
+        if(this.ga)
+          return this.ga.currentUser.get()
+        else
+          return null
+      }
+
+      get googleIsIn() {
+        if(this.ga)
+          return this.ga.isSignedIn.get()
+        else
+          null
+      }
+
+      get googleIsOut() {
+        return !this.isIn
+      }
+
+      googleSignin() {
+        var self = this
+        return loadScript(self.scriptSrc)
+        .then(s => {
+          return new Promise(function(res, rej) {
+            gapi.load('auth2', function() {res()})
+          })
         })
-      })
-      .then(function() {
-        return gapi.auth2.init({
-          'clientId': '32902065428-sbal87ccp0eedjoo2opcq0tr22ha3884.apps.googleusercontent.com',
-          'scope': 'profile email'
-        }).then()
-      })
-      .then(function() {
-        var ga = gapi.auth2.getAuthInstance()
-        return ga.grantOfflineAccess()
-      })
-      .then(function(resp) {
-        var authCode = resp.code
-      })
-      .catch(function(err) {
-        alert('Could not authenticate with Google.')
-      })
+        .then(() => {
+          return gapi.auth2.init(self.cred).then()
+        })
+        .then(() => {
+          self.ga = gapi.auth2.getAuthInstance()
+          return self.ga.grantOfflineAccess()
+        })
+        .then(resp => {
+          var authCode = resp.code
+        })
+        .catch(err => {
+          // print(err)
+          alert('Could not authenticate with Google.')
+        })
+      }
+
+      googleSignout() {
+        if(gapi && gapi.auth2) {
+          return gapi.auth2.getAuthInstance().signOut();
+        }
+        else
+          return Promise.reject()
+      }
+
+      googleIsAuthorized() {
+        if(this.user)
+          return this.user.hasGrantedScopes(this.cred.scope)
+        else
+          return null
+      }
+
+      get facebookUser() {
+
+      }
+
+      facebookSignin() {
+        var self = this
+        return loadScript(self.scriptSrc)
+        .then(function(s) {
+          return FB.init(self.cred)
+        })
+        .then(function() {
+          return new Promise((res, rej) => {
+            FB.login(resp => {
+              if(resp.status == 'connected' && resp.authResponse)
+                res(resp)
+              else
+                rej(resp)
+            })
+          })
+        })
+        .then(function(resp) {
+          print(resp)
+          // var authCode = resp.code
+        })
+        .catch(function(err) {
+          print(err)
+          alert('Could not authenticate with Facebook.')
+        })
+      }
+
+      facebookSignout() {
+        if(FB) {
+          return new Promise((res, rej) => {
+            FB.logout((resp) => {
+              print(resp)
+              res(resp)
+            });
+          })
+        }
+        else
+          return Promise.reject()
+      }
+
     }
 
-    function googleSignout() {
-      if(gapi && gapi.auth2) {
-        gapi.auth2.getAuthInstance().disconnect();
-      }
-    }
+    var gg = new Auth({provider: 'google', scriptSrc:googleScriptSrc, cred:{
+        'clientId': '',
+        'scope': 'profile email'
+      }})
+
+    var fb = new Auth({provider: 'facebook', scriptSrc:facebookScriptSrc, cred:{
+        'appId': '',
+        'version': 'v2.9',
+        'scope': 'email'
+      }})
 
     window.addEventListener('load', function(ev) {
       // fetch('/api/users/', {
@@ -111,6 +249,9 @@
   </script>
 </head>
 <body>
-  <button onclick="googleSignin()">Google Signin</button>
-  <button onclick="googleSignout()">Google Signout</button>
+  <button onclick="gg.signin()">Google Signin</button>
+  <button onclick="gg.signout()">Google Signout</button>
+  <br>
+  <button onclick="fb.signin()">Facebook Signin</button>
+  <button onclick="fb.signout()">Facebook Signout</button>
 </body>
