@@ -105,17 +105,26 @@ def upgradeToken(**kwargs):
         kwargs['code'] = token
         kwargs['redirect_uri'] = 'postmessage'
         kwargs['grant_type'] = 'authorization_code'
-        r = requests.post(url, data=kwargs)
+        r = requests.Request(method='POST', url=url, data=kwargs)
     elif provider == 'facebook':
         kwargs['fb_exchange_token'] = token
         url = 'https://graph.facebook.com/oauth/access_token'
         kwargs['grant_type'] = 'fb_exchange_token'
-        r = requests.get(url, params=kwargs)
+        r = requests.Request(method='GET', url=url, params=kwargs)
     else:
         raise Exception('Unknown provider.')
 
     # print(r.url, r.status_code)
-    r.raise_for_status()
+    r = r.prepare()
+    with requests.Session() as s:
+        r = s.send(r)
+    try:
+        r.raise_for_status()
+    except requests.HTTPError as ex:
+        ex.text = ex.response.text
+        ex.json = ex.response.json()
+        ex.status_code = ex.response.status_code
+        raise
     return r.json()
 
 
