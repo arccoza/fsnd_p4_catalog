@@ -5,18 +5,11 @@ from models import User, Item, Category, select, db_session, commit, rollback,\
     Set, SetInstance, ObjectNotFound, Password, OAuth
 import json
 import re
-from functools import wraps
-import base64
-import random
-import string
-from datetime import datetime
-import requests
-import oauth
+from security import authorize
 
 
 api_bp = Blueprint('api', __name__)
 api = Api(api_bp)
-client_secrets = json.load(open('client_secrets.json'))
 
 
 def _to_json_default(obj):
@@ -39,81 +32,6 @@ def to_json(obj):
 
 def json_response(obj):
     return Response(bytes(to_json(obj), 'utf8'), mimetype='application/json')
-
-
-def authorize(upgrade=True):
-    def deco(fn):
-        @wraps(fn)
-        def wrap(*args, **kwargs):
-            kind = None
-            # Grab the session cookie if it exists.
-            cookie = request.cookies.get(current_app.session_cookie_name, None)
-
-            # Try get the Auth header data.
-            try:
-                auth = request.headers['Authorization']
-                kind, _, value = auth.partition(' ')
-                if kind == 'Basic':
-                    value = base64.standard_b64decode(bytes(value, 'utf8'))
-                    id, _, pw = str(value, 'utf8').partition(':')
-                elif kind == 'Google' or kind == 'Facebook':
-                    xtra = request.headers['X-Requested-With']
-                # elif kind == 'Token':
-            except (KeyError, base64.binascii.Error) as ex:
-                # print(type(ex))
-                return fn(*args, **kwargs)
-
-            # Clear the session if there was an Auth header.
-            if kind is not None:  # An unknown kind or kind 'None'
-                session.clear()
-
-            # If there was an Auth header, autheticate with that info,
-            # and create a session.
-            if kind == 'Basic':
-                with db_session:
-                    user = select(u for u in User
-                                  if u.email == id or u.username == id)[:]
-                if len(user) == 1 and Password.verify(pw, user[0].password):
-                    sessionize(userid=user[0].id)
-            elif kind in ('Google', 'Facebook') and xtra == 'Fetch':
-                kind = kind.lower()
-                sec = client_secrets[kind]['web']
-                sec['provider'] = kind
-                sec['token'] = value
-                try:
-                    value = oauth.upgrade_token(**sec)
-                    suser = oauth.get_user(provider=kind, **value)
-                    print(suser)
-                    with db_session:
-                        user = select(o for o in OAuth
-                                      if o.puid == suser['id'])[:]
-                    if len(user) == 1:
-                        sessionize(userid=user[0].id)
-                    elif not user:
-                        with db_session:
-                            user = User(
-                                name=suser.get('name'))
-                            user_oauth = OAuth(
-                                provider=kind,
-                                puid=suser.get('id'),
-                                access_token=value.get('access_token', ''),
-                                refresh_token=value.get('refresh_token', ''),
-                                user=user)
-                        sessionize(userid=user[0].id)
-                except requests.HTTPError as ex:
-                    abort(make_response(ex.text, ex.status_code))
-                print(user)
-
-            return fn(*args, **kwargs)
-        return wrap
-    return deco
-
-
-def sessionize(**kwargs):
-    pop = string.ascii_uppercase + string.digits
-    session['state'] = ''.join(random.choice(pop) for _ in range(32))
-    session['timestamp'] = datetime.now().timestamp()
-    session.update(kwargs)
 
 
 class AuthRes(Resource):
