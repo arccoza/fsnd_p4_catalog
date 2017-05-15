@@ -127,6 +127,32 @@ def upgradeToken(**kwargs):
     return r.json()
 
 
+def getUser(**kwargs):
+    provider = kwargs.pop('provider').lower()
+    access_token = kwargs.pop('access_token')
+    headers = {'Authorization': 'Bearer ' + access_token}
+
+    if provider == 'google':
+        url = 'https://www.googleapis.com/oauth2/v1/userinfo'
+        params = {}
+    elif provider == 'facebook':
+        url = 'https://graph.facebook.com/me'
+        params = {'fields': 'id,name,email,picture'}
+
+    r = requests.Request(method='GET', headers=headers, url=url, params=params)
+    r = r.prepare()
+    with requests.Session() as s:
+        r = s.send(r)
+    try:
+        r.raise_for_status()
+    except requests.HTTPError as ex:
+        ex.text = ex.response.text
+        ex.json = ex.response.json()
+        ex.status_code = ex.response.status_code
+        raise
+    return r.json()
+
+
 class AuthRes(Resource):
     decorators = [basic_auth()]
 
