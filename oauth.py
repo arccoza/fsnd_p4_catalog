@@ -39,6 +39,11 @@ def upgrade_token(**kwargs):
 
 
 def get_user(**kwargs):
+    '''
+    Required kwargs:
+        provider
+        access_token
+    '''
     provider = kwargs.pop('provider').lower()
     access_token = kwargs.pop('access_token')
     headers = {'Authorization': 'Bearer ' + access_token}
