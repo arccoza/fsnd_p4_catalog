@@ -81,11 +81,34 @@ def basic_auth(upgrade=True):
 
 
 def facebookUpgradeToken(**kwargs):
-    r = requests.get('''/oauth/access_token?
-    grant_type=fb_exchange_token&amp;
-    client_id={app_id}&amp;
-    client_secret={app_secret}&amp;
-    fb_exchange_token={token}'''.format(**kwargs))
+    '''
+    Required args:
+        grant_type=fb_exchange_token
+        client_id
+        client_secret
+        fb_exchange_token
+    '''
+    kwargs['grant_type'] = 'fb_exchange_token'
+    r = requests.get('''https://graph.facebook.com/oauth/access_token''',
+                     params=kwargs)
+    print(r.url)
+    return r.json()
+
+
+def googleUpgradeToken(**kwargs):
+    '''
+    Required args:
+        grant_type=authorization_code
+        code  // the client auth code
+        client_id
+        client_secret
+    '''
+    kwargs['grant_type'] = 'authorization_code'
+    kwargs['redirect_uri'] = 'postmessage'
+    r = requests.post('https://accounts.google.com/o/oauth2/token',
+                      data=kwargs)
+    print(r.url)
+    return r.json()
 
 
 class AuthRes(Resource):
