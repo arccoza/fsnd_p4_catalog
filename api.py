@@ -1,7 +1,8 @@
-from flask import Blueprint, Response, request, url_for, session, current_app
+from flask import Blueprint, Response, request, url_for, session, current_app,\
+    make_response
 from flask_restful import Resource, Api, reqparse, abort
 from models import User, Item, Category, select, db_session, commit, rollback,\
-    Set, SetInstance, ObjectNotFound, Password
+    Set, SetInstance, ObjectNotFound, Password, OAuth
 import json
 import re
 from functools import wraps
@@ -10,6 +11,7 @@ import random
 import string
 from datetime import datetime
 import requests
+import oauth
 
 
 api_bp = Blueprint('api', __name__)
@@ -61,6 +63,10 @@ def basic_auth(upgrade=True):
                 # print(type(ex))
                 return fn(*args, **kwargs)
 
+            # Clear the session if there was an Auth header.
+            if kind is not None:  # An unknown kind or kind 'None'
+                session.clear()
+
             # If there was an Auth header, autheticate with that info,
             # and create a session.
             if kind == 'Basic':
@@ -68,22 +74,35 @@ def basic_auth(upgrade=True):
                     user = select(u for u in User
                                   if u.email == id or u.username == id)[:]
                 if len(user) == 1 and Password.verify(pw, user[0].password):
-                    pop = string.ascii_uppercase + string.digits
-                    session['userid'] = user[0].id
-                    session['state'] = ''.join(random.choice(pop) for _ in range(32))
-                    session['timestamp'] = datetime.now().timestamp()
-                else:
-                    session.clear()
+                    sessionize(userid=user[0].id)
             elif kind in ('Google', 'Facebook') and xtra == 'Fetch':
-                session.clear()
                 kind = kind.lower()
                 sec = client_secrets[kind]['web']
                 sec['provider'] = kind
                 sec['token'] = value
-                value = upgradeToken(**sec)
-                print(value)
-            elif kind is not None:  # An unknown kind or kind 'None'
-                session.clear()
+                try:
+                    value = oauth.upgrade_token(**sec)
+                    suser = oauth.get_user(provider=kind, **value)
+                    print(suser)
+                    with db_session:
+                        user = select(o for o in OAuth
+                                      if o.puid == suser['id'])[:]
+                    if len(user) == 1:
+                        sessionize(userid=user[0].id)
+                    elif not user:
+                        with db_session:
+                            user = User(
+                                name=suser.get('name'))
+                            user_oauth = OAuth(
+                                provider=kind,
+                                puid=suser.get('id'),
+                                access_token=value.get('access_token', ''),
+                                refresh_token=value.get('refresh_token', ''),
+                                user=user)
+                        sessionize(userid=user[0].id)
+                except requests.HTTPError as ex:
+                    abort(make_response(ex.text, ex.status_code))
+                print(user)
 
             return fn(*args, **kwargs)
         return wrap
