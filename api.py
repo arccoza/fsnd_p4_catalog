@@ -90,6 +90,13 @@ def basic_auth(upgrade=True):
     return deco
 
 
+def sessionize(**kwargs):
+    pop = string.ascii_uppercase + string.digits
+    session['state'] = ''.join(random.choice(pop) for _ in range(32))
+    session['timestamp'] = datetime.now().timestamp()
+    session.update(kwargs)
+
+
 class AuthRes(Resource):
     decorators = [basic_auth()]
 
