@@ -92,7 +92,7 @@ def basic_auth(upgrade=True):
 
 def upgradeToken(**kwargs):
     '''
-    Required args:
+    Required kwargs:
         provider
         token
         client_id
@@ -114,7 +114,6 @@ def upgradeToken(**kwargs):
     else:
         raise Exception('Unknown provider.')
 
-    # print(r.url, r.status_code)
     r = r.prepare()
     with requests.Session() as s:
         r = s.send(r)
