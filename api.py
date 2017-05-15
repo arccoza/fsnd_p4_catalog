@@ -41,7 +41,7 @@ def json_response(obj):
     return Response(bytes(to_json(obj), 'utf8'), mimetype='application/json')
 
 
-def basic_auth(upgrade=True):
+def authorize(upgrade=True):
     def deco(fn):
         @wraps(fn)
         def wrap(*args, **kwargs):
@@ -117,14 +117,14 @@ def sessionize(**kwargs):
 
 
 class AuthRes(Resource):
-    decorators = [basic_auth()]
+    decorators = [authorize()]
 
     def get(self):
         return json_response(dict(session.items()))
 
 
 class GenericRes(Resource):
-    decorators = [db_session, basic_auth()]
+    decorators = [db_session, authorize()]
 
     def _relation_handler(self, t, v):
         ret = []
