@@ -95,9 +95,20 @@ class Password(Optional):
 
 class User(Mixin, db.Entity):
     name = Optional(str)
-    email = Required(str, unique=True, index=True)
+    email = Optional(str, unique=True, index=True, nullable=True)
     username = Optional(str, unique=True, index=True, nullable=True)
     password = Password()
+    fbid = Optional(str, unique=True, index=True, nullable=True)
+    ggid = Optional(str, unique=True, index=True, nullable=True)
+    oauth = Set('OAuth', reverse='user')
+
+    def before_insert(self):
+        if not (self.email or self.username or self.fbid or self.ggid):
+            raise Exception('Must provide email/username/fbid/ggid/twid.')
+
+    def before_update(self):
+        if not (self.email or self.username or self.fbid or self.ggid):
+            raise Exception('Must provide email/username/fbid/ggid/twid.')
 
     def to_dict(self):
         return {key: attr.__get__(self) for key, attr in self._adict_.items()}
@@ -105,6 +116,14 @@ class User(Mixin, db.Entity):
 
     def to_json(self):
         return json.dumps(self.to_dict())
+
+
+class OAuth(Mixin, db.Entity):
+    provider = Required(str, index=True)
+    puid = Optional(str, unique=True, index=True, nullable=True)
+    access_token = Optional(str)
+    refresh_token = Optional(str)
+    user = Required(User)
 
 
 class Category(Mixin, db.Entity):
