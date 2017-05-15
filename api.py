@@ -54,6 +54,8 @@ def basic_auth(upgrade=True):
                 if kind == 'Basic':
                     value = base64.standard_b64decode(bytes(value, 'utf8'))
                     id, _, pw = str(value, 'utf8').partition(':')
+                elif kind == 'Google' or kind == 'Facebook':
+                    xtra = request.headers['X-Requested-With']
                 # elif kind == 'Token':
             except (KeyError, base64.binascii.Error) as ex:
                 # print(type(ex))
@@ -72,6 +74,14 @@ def basic_auth(upgrade=True):
                     session['timestamp'] = datetime.now().timestamp()
                 else:
                     session.clear()
+            elif kind in ('Google', 'Facebook') and xtra == 'Fetch':
+                session.clear()
+                kind = kind.lower()
+                sec = client_secrets[kind]['web']
+                sec['provider'] = kind
+                sec['token'] = value
+                value = upgradeToken(**sec)
+                print(value)
             elif kind is not None:  # An unknown kind or kind 'None'
                 session.clear()
 
@@ -104,7 +114,7 @@ def upgradeToken(**kwargs):
     else:
         raise Exception('Unknown provider.')
 
-    print(r.url, r.status_code)
+    # print(r.url, r.status_code)
     r.raise_for_status()
     return r.json()
 
