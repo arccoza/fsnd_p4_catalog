@@ -37,18 +37,23 @@ def authorize(upgrade=True):
                 # print(type(ex))
                 return fn(*args, **kwargs)
 
-            # Clear the session if there was an Auth header.
-            if kind is not None:  # An unknown kind or kind 'None'
-                session.clear()
-
             # If there was an Auth header, autheticate with that info,
             # and create a session.
             if kind == 'Basic':
                 with db_session:
                     user = select(u for u in User
                                   if u.email == id or u.username == id)[:]
-                if len(user) == 1 and Password.verify(pw, user[0].password):
-                    sessionize(userid=user[0].id)
+                if len(user) == 1:
+                    if Password.verify(pw, user[0].password):
+                        sessionize(userid=user[0].id)
+                    else:
+                        session.clear()
+                elif not user:
+                    with db_session:
+                        user = User(email=id, password=pw)
+                    sessionize(userid=user.id)
+                else:
+                    session.clear()
             elif kind in ('Google', 'Facebook') and xtra == 'Fetch':
                 kind = kind.lower()
                 sec = client_secrets[kind]['web']
@@ -56,20 +61,20 @@ def authorize(upgrade=True):
                 sec['token'] = value
                 try:
                     value = oauth.upgrade_token(**sec)
-                    suser = oauth.get_user(provider=kind, **value)
-                    print(suser)
+                    ouser = oauth.get_user(provider=kind, **value)
+                    print(ouser)
                     with db_session:
                         user = select(o for o in OAuth
-                                      if o.puid == suser['id'])[:]
+                                      if o.puid == ouser['id'])[:]
                     if len(user) == 1:
                         sessionize(userid=user[0].id)
                     elif not user:
                         with db_session:
                             user = User(
-                                name=suser.get('name'))
+                                name=ouser.get('name'))
                             user_oauth = OAuth(
                                 provider=kind,
-                                puid=suser.get('id'),
+                                puid=ouser.get('id'),
                                 access_token=value.get('access_token', ''),
                                 refresh_token=value.get('refresh_token', ''),
                                 user=user)
@@ -77,6 +82,8 @@ def authorize(upgrade=True):
                 except requests.HTTPError as ex:
                     abort(make_response(ex.text, ex.status_code))
                 print(user)
+            elif kind is not None:  # An unknown kind or kind 'None'
+                session.clear()
 
             return fn(*args, **kwargs)
         return wrap
