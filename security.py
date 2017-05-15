@@ -78,7 +78,7 @@ def authorize(upgrade=True):
                                 access_token=value.get('access_token', ''),
                                 refresh_token=value.get('refresh_token', ''),
                                 user=user)
-                        sessionize(userid=user[0].id)
+                        sessionize(userid=user.id)
                 except requests.HTTPError as ex:
                     abort(make_response(ex.text, ex.status_code))
                 print(user)
