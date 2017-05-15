@@ -80,34 +80,32 @@ def basic_auth(upgrade=True):
     return deco
 
 
-def facebookUpgradeToken(**kwargs):
+def upgradeToken(**kwargs):
     '''
     Required args:
-        grant_type=fb_exchange_token
-        client_id
-        client_secret
-        fb_exchange_token
-    '''
-    kwargs['grant_type'] = 'fb_exchange_token'
-    r = requests.get('''https://graph.facebook.com/oauth/access_token''',
-                     params=kwargs)
-    print(r.url)
-    return r.json()
-
-
-def googleUpgradeToken(**kwargs):
-    '''
-    Required args:
-        grant_type=authorization_code
-        code  // the client auth code
+        provider
+        token
         client_id
         client_secret
     '''
-    kwargs['grant_type'] = 'authorization_code'
-    kwargs['redirect_uri'] = 'postmessage'
-    r = requests.post('https://accounts.google.com/o/oauth2/token',
-                      data=kwargs)
-    print(r.url)
+    provider = kwargs.pop('provider').lower()
+    token = kwargs.pop('token')
+    if provider == 'google':
+        url = 'https://accounts.google.com/o/oauth2/token'
+        kwargs['code'] = token
+        kwargs['redirect_uri'] = 'postmessage'
+        kwargs['grant_type'] = 'authorization_code'
+        r = requests.post(url, data=kwargs)
+    elif provider == 'facebook':
+        kwargs['fb_exchange_token'] = token
+        url = 'https://graph.facebook.com/oauth/access_token'
+        kwargs['grant_type'] = 'fb_exchange_token'
+        r = requests.get(url, params=kwargs)
+    else:
+        raise Exception('Unknown provider.')
+
+    print(r.url, r.status_code)
+    r.raise_for_status()
     return r.json()
 
 
