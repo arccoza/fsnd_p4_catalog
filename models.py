@@ -103,12 +103,12 @@ class User(Mixin, db.Entity):
     oauth = Set('OAuth', reverse='user')
 
     def before_insert(self):
-        if not (self.email or self.username or self.fbid or self.ggid):
-            raise Exception('Must provide email/username/fbid/ggid/twid.')
+        if not ((self.email and self.password) or self.oauth):
+            raise Exception('Must provide email and password, or oauth.')
 
     def before_update(self):
-        if not (self.email or self.username or self.fbid or self.ggid):
-            raise Exception('Must provide email/username/fbid/ggid/twid.')
+        if not ((self.email and self.password) or self.oauth):
+            raise Exception('Must provide email and password, or oauth.')
 
     def to_dict(self):
         return {key: attr.__get__(self) for key, attr in self._adict_.items()}
@@ -120,7 +120,7 @@ class User(Mixin, db.Entity):
 
 class OAuth(Mixin, db.Entity):
     provider = Required(str, index=True)
-    puid = Optional(str, unique=True, index=True, nullable=True)
+    puid = Required(str, unique=True, index=True, nullable=True)
     access_token = Optional(str)
     refresh_token = Optional(str)
     user = Required(User)
