@@ -1,0 +1,28 @@
+{
+  "name": "catalog",
+  "version": "1.0.0",
+  "description": "Place your catalog project in this directory.",
+  "main": "app.py",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/arccoza/fsnd_p4_catalog.git"
+  },
+  "author": "Adrien de Pierres",
+  "license": "UNLICENSED",
+  "private": true,
+  "bugs": {
+    "url": "https://github.com/arccoza/fsnd_p4_catalog/issues"
+  },
+  "homepage": "https://github.com/arccoza/fsnd_p4_catalog#readme",
+  "dependencies": {
+    "fly-esnext": "^2.0.1",
+    "fly-rollup": "^2.1.0",
+    "rollup-plugin-babel": "^2.7.1",
+    "rollup-plugin-commonjs": "^8.0.2",
+    "rollup-plugin-json": "^2.1.1",
+    "rollup-plugin-node-resolve": "^3.0.0"
+  }
+}
