@@ -17,7 +17,10 @@
     "url": "https://github.com/arccoza/fsnd_p4_catalog/issues"
   },
   "homepage": "https://github.com/arccoza/fsnd_p4_catalog#readme",
-  "dependencies": {
+  "dependencies": {},
+  "devDependencies": {
+    "fly": "^2.0.6",
+    "fly-clear": "^1.0.1",
     "fly-esnext": "^2.0.1",
     "fly-rollup": "^2.1.0",
     "rollup-plugin-babel": "^2.7.1",
