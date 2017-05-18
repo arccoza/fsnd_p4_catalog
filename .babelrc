@@ -6,9 +6,11 @@
       {
         "modules": false
       }
-    ]
+    ],
+    ["react"]
   ],
   "plugins": [
-    "external-helpers"
+    "external-helpers",
+    "transform-react-jsx"
   ]
 }

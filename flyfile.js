@@ -3,6 +3,7 @@ const babel = require('rollup-plugin-babel')
 const nodeResolve = require('rollup-plugin-node-resolve')
 const commonjs = require('rollup-plugin-commonjs')
 const json = require('rollup-plugin-json')
+const replace = require('rollup-plugin-replace')
 // const svelte = require('rollup-plugin-svelte')
 const print = console.log.bind(console)
 
@@ -25,12 +26,16 @@ exports.js = function*(fly) {
         nodeResolve({ jsnext: true, main: true, browser: true, preferBuiltins: false }),
         commonjs({ include: 'node_modules/**' }),
         json(),
+        // REF: https://github.com/rollup/rollup/issues/487
+        replace({
+          'process.env.NODE_ENV': JSON.stringify('development')
+        }),
         babel({
           exclude: [
             'node_modules/**',
             '*.json'
           ],
-        }),
+        })
         // svelte({
         //   // By default, all .html and .svelte files are compiled
         //   // extensions: [ '.my-custom-extension' ],
