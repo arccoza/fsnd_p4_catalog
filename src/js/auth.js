@@ -67,19 +67,26 @@ export default class Auth {
         }
       })
     })
+    // .then(resp => {
+    //   if(response.ok) {
+    //     return resp
+    //   }
+    //   throw new Error('Network error.', resp.status)
+    // })
     .then(resp => Promise.all([resp, resp.json()]))
     .then(([resp, json]) => {
       if(!resp.ok)
         throw json
       return json
     })
-    .then(resp => {
-      print(resp)
-    })
-    .catch(err => {
-      print(err)
-      alert('Could not authenticate with Google.')
-    })
+    // .then(resp => {
+    //   print(resp)
+    //   return resp
+    // })
+    // .catch(err => {
+    //   print(err)
+    //   alert('Could not authenticate with Google.')
+    // })
   }
 
   googleSignout() {
@@ -127,19 +134,26 @@ export default class Auth {
         }
       })
     })
+    // .then(resp => {
+    //   if(response.ok) {
+    //     return resp
+    //   }
+    //   throw new Error('Network error.', resp.status)
+    // })
     .then(resp => Promise.all([resp, resp.json()]))
     .then(([resp, json]) => {
       if(!resp.ok)
         throw json
       return json
     })
-    .then(resp => {
-      print(resp)
-    })
-    .catch(function(err) {
-      print(err)
-      alert('Could not authenticate with Facebook.')
-    })
+    // .then(resp => {
+    //   print(resp)
+    //   return resp
+    // })
+    // .catch(function(err) {
+    //   print(err)
+    //   alert('Could not authenticate with Facebook.')
+    // })
   }
 
   facebookSignout() {
