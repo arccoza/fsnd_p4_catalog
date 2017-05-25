@@ -138,11 +138,12 @@ class AppHeader extends React.Component {
       isAuthed: false,
       isDialogOpen: false,
       isBusy: false,
+      provider: null,
     }
   }
 
   _signin = (provider) => {
-    this.setState({isBusy: true})
+    this.setState({isBusy: true, provider: authProviders[provider]})
 
     authProviders[provider]
       .signin()
