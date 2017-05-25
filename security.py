@@ -45,13 +45,13 @@ def authorize(upgrade=True):
                                   if u.email == id or u.username == id)[:]
                 if len(user) == 1:
                     if Password.verify(pw, user[0].password):
-                        sessionize(userid=user[0].id)
+                        sessionize(user=user[0].to_dict())
                     else:
                         session.clear()
                 elif not user:
                     with db_session:
                         user = User(email=id, password=pw)
-                    sessionize(userid=user.id)
+                    sessionize(user=user.to_dict())
                 else:
                     session.clear()
             elif kind in ('Google', 'Facebook') and xtra == 'Fetch':
@@ -64,12 +64,18 @@ def authorize(upgrade=True):
                     ouser = oauth.get_user(provider=kind, **value)
                     print(ouser)
                     with db_session:
-                        user = select(o for o in OAuth
+                        user_oauth = select(o for o in OAuth
                                       if o.puid == ouser['id'])[:]
-                    if len(user) == 1:
-                        sessionize(userid=user[0].id)
-                    elif not user:
-                        with db_session:
+                        if len(user_oauth) == 1:
+                            print(user_oauth[0].user)
+                            user = user_oauth[0].user.to_dict(('password', 'oauth'))
+                            try:
+                                user['picture'] = ouser['picture']['data']['url']
+                            except TypeError as ex:
+                                user['picture'] = ouser.get('picture', '')
+                            sessionize(user=user)
+                        elif not user_oauth:
+                            # with db_session:
                             user = User(
                                 name=ouser.get('name'))
                             user_oauth = OAuth(
@@ -78,10 +84,15 @@ def authorize(upgrade=True):
                                 access_token=value.get('access_token', ''),
                                 refresh_token=value.get('refresh_token', ''),
                                 user=user)
-                        sessionize(userid=user.id)
+                            commit()
+                            user = user.to_dict(('password', 'oauth'))
+                            try:
+                                user['picture'] = ouser['picture']['data']['url']
+                            except TypeError as ex:
+                                user['picture'] = ouser.get('picture', '')
+                            sessionize(user=user)
                 except requests.HTTPError as ex:
                     abort(make_response(ex.text, ex.status_code))
-                print(user)
             elif kind is not None:  # An unknown kind or kind 'None'
                 session.clear()
 
