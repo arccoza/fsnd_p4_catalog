@@ -5,6 +5,8 @@ import getMuiTheme from 'material-ui/styles/getMuiTheme'
 import {lightTheme, darkTheme} from './react-themes'
 import AppBar from 'material-ui/AppBar'
 import FlatButton from 'material-ui/FlatButton'
+import RaisedButton from 'material-ui/RaisedButton'
+import Dialog from 'material-ui/Dialog'
 import DropDownMenu from 'material-ui/DropDownMenu'
 import MenuItem from 'material-ui/MenuItem'
 import Toggle from 'material-ui/Toggle'
@@ -12,6 +14,8 @@ import {GridList, GridTile} from 'material-ui/GridList'
 import IconButton from 'material-ui/IconButton'
 import StarBorder from 'material-ui/svg-icons/toggle/star-border'
 import Subheader from 'material-ui/Subheader'
+import FontIcon from 'material-ui/FontIcon'
+import PropTypes from 'prop-types'
 
 
 console.log(lightTheme, darkTheme)
@@ -59,7 +63,24 @@ const tilesData = [
   },
 ]
 
-const layout = {
+const Theme = (props) => (
+  <MuiThemeProvider muiTheme={getMuiTheme(props.theme)}>
+    {props.children}
+  </MuiThemeProvider>
+)
+
+class Print extends React.Component {
+  static contextTypes = {
+    muiTheme: PropTypes.object.isRequired,
+  }
+
+  render() {
+    print(this.context)
+    return <div>{this.props.children}</div>
+  }
+}
+
+const vlayout = {
   display: 'flex',
   flexFlow: 'column wrap',
   justifyContent: 'space-between',
@@ -67,49 +88,126 @@ const layout = {
   alignItems: 'center',
 }
 
-const App = () => (
-  <MuiThemeProvider muiTheme={getMuiTheme(themeDark)}>
-    <div style={layout}>
-      <div className={'bg'}></div>
-      <AppBar
-        style={{boxShadow: 0, borderBottom: '1px solid rgba(255, 255, 255, 0.3)'}}
-        title="Title"
-        iconElementRight={<FlatButton label="Signin" secondary={true} />}
-      />
-      <div>
-        <DropDownMenu>
-          <MenuItem value={1} primaryText="Never" />
-          <MenuItem value={2} primaryText="Every Night" />
-          <MenuItem value={3} primaryText="Weeknights" />
-          <MenuItem value={4} primaryText="Weekends" />
-          <MenuItem value={5} primaryText="Weekly" />
-        </DropDownMenu>
-        <Toggle
-          label="Simple"
-          defaultToggled={false}
-        />
-      </div>
-      <GridList cellHeight={180} cols={4} style={{width: '80%'}}>
-        <Subheader>December</Subheader>
-        {tilesData.map((tile) => (
-          <GridTile
-            key={tile.img}
-            title={tile.title}
-            subtitle={<span>by <b>{tile.author}</b></span>}
-            actionIcon={<IconButton><StarBorder color="white" /></IconButton>}
+const hlayout = {
+  display: 'flex',
+  flexFlow: 'row wrap',
+  justifyContent: 'space-between',
+  alignContent: 'center',
+  alignItems: 'center',
+}
+
+const layoutStack = {
+  position: 'relative',
+  display: 'flex',
+  width: '100%',
+  flexFlow: 'column nowrap',
+  justifyContent: 'space-between',
+  alignContent: 'center',
+  alignItems: 'center',
+}
+
+function merge(...objs) {
+  return Object.assign({}, ...objs)
+}
+
+class AppHeader extends React.Component {
+  constructor(props) {
+    super(props)
+    this.state = {
+      isAuthed: false,
+      dialogOpen: false,
+    }
+  }
+
+  _openDialog = () => {
+    this.setState({dialogOpen: true})
+  }
+
+  _closeDialog = () => {
+    this.setState({dialogOpen: false})
+  }
+
+  render() {
+    // const comps = []
+    if(!this.state.isAuthed) {
+      var appBar = (
+        <div style={layoutStack}>
+          <AppBar style={{
+              backgroundColor: 'transparent',
+              borderBottom: '1px solid white',
+              borderBottomColor: lightTheme.palette.borderColor,
+            }}
+            title="Catalog"
+            iconElementRight={<FlatButton label='Signin' onTouchTap={this._openDialog}/>}
+          />
+          <Dialog
+            title='Sigin with...'
+            actions={[
+                <FlatButton label='Cancel' onTouchTap={this._closeDialog} />
+              ]}
+            modal={false}
+            open={this.state.dialogOpen}
+            onRequestClose={this._closeDialog}
           >
-            <img src={tile.img} />
-          </GridTile>
-        ))}
-      </GridList>
-    </div>
-  </MuiThemeProvider>
-)
+            <div style={merge(hlayout, {justifyContent: 'space-around'})}>
+              <RaisedButton
+                label='Facebook'
+                labelPosition='after'
+                primary={true}
+                icon={<FontIcon className='socicon-facebook' />}
+                buttonStyle={{backgroundColor: '#3e5b98'}}
+              />
+              <RaisedButton
+                label='Google'
+                labelPosition='after'
+                primary={true}
+                icon={<FontIcon className='socicon-google' />}
+                buttonStyle={{backgroundColor: '#dd4b39'}}
+              />
+            </div>
+          </Dialog>
+        </div>
+      )
+    }
 
-const AppKitchen = () => (
-  <MuiThemeProvider muiTheme={getMuiTheme(darkTheme)}>
-      <Kitchen />
-  </MuiThemeProvider>
-)
+    return appBar
+  }
+}
 
-export default AppKitchen
+class App extends React.Component {
+  render() {
+    return (
+      <div style={layoutStack}>
+        <Theme theme={lightTheme}>
+          <AppHeader />
+        </Theme>
+        <Theme theme={lightTheme}>
+          <div style={layoutStack}>
+            <DropDownMenu>
+              <MenuItem value={1} primaryText="Never" />
+              <MenuItem value={2} primaryText="Every Night" />
+              <MenuItem value={3} primaryText="Weeknights" />
+              <MenuItem value={4} primaryText="Weekends" />
+              <MenuItem value={5} primaryText="Weekly" />
+            </DropDownMenu>
+            <GridList cellHeight={180} cols={4} style={{width: '80%'}}>
+              <Subheader>December</Subheader>
+              {tilesData.map((tile) => (
+                <GridTile
+                  key={tile.img}
+                  title={tile.title}
+                  subtitle={<span>by <b>{tile.author}</b></span>}
+                  actionIcon={<IconButton><StarBorder color="white" /></IconButton>}
+                >
+                  <img src={tile.img} />
+                </GridTile>
+              ))}
+            </GridList>
+          </div>
+        </Theme>
+      </div>
+    )
+  }
+}
+
+export default App
