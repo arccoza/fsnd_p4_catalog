@@ -41,7 +41,7 @@ var darkPalette = {
   secondaryTextColor: white,
   alternateTextColor: teal500,
   canvasColor: teal500,
-  borderColor: teal100,
+  borderColor: teal300,
   disabledColor: fade(fullBlack, 0.3),
   pickerHeaderColor: white,
   clockCircleColor: teal500,
