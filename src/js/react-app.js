@@ -17,6 +17,8 @@ import Subheader from 'material-ui/Subheader'
 import FontIcon from 'material-ui/FontIcon'
 import CircularProgress from 'material-ui/CircularProgress'
 import Snackbar from 'material-ui/Snackbar'
+import Avatar from 'material-ui/Avatar'
+import NavigationClose from 'material-ui/svg-icons/navigation/close';
 import PropTypes from 'prop-types'
 import Auth from './auth'
 
@@ -236,6 +238,27 @@ class AppHeader extends React.Component {
           >
             {dialogContent}
           </Dialog>
+        </div>
+      )
+    }
+    else {
+      var appBar = (
+        <div style={layoutStack}>
+          <AppBar style={{
+              backgroundColor: 'transparent',
+              borderBottom: '1px solid white',
+              borderBottomColor: lightTheme.palette.borderColor,
+            }}
+            title="Catalog"
+            iconElementRight={
+              <FlatButton label={this.props.user.name} onTouchTap={this._signout} style={hlayout}>
+                <Theme theme={darkTheme}>
+                  <NavigationClose style={{verticalAlign: 'middle'}} />
+                </Theme>
+                <Avatar src={this.props.user.picture} size={28} style={{verticalAlign: 'middle'}} />
+              </FlatButton>
+            }
+          />
         </div>
       )
     }
