@@ -216,7 +216,7 @@ class AppHeader extends React.Component {
       )
     }
 
-    if(!this.state.isAuthed) {
+    if(!this.props.user) {
       var appBar = (
         <div style={layoutStack}>
           <AppBar style={{
