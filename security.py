@@ -91,7 +91,7 @@ def authorize(upgrade=True):
                             except TypeError as ex:
                                 user['picture'] = ouser.get('picture', '')
                             sessionize(user=user)
-                except requests.HTTPError as ex:
+                except oauth.HTTPError as ex:
                     abort(make_response(ex.text, ex.status_code))
             elif kind is not None:  # An unknown kind or kind 'None'
                 session.clear()
