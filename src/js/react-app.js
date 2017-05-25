@@ -311,7 +311,7 @@ class App extends React.Component {
     return (
       <div style={layoutStack}>
         <Theme theme={lightTheme}>
-          <AppHeader pub={this.pub} sub={this.sub} />
+          <AppHeader pub={this.pub} sub={this.sub} user={this.state.user} />
         </Theme>
         <Theme theme={lightTheme}>
           <div style={layoutStack}>
@@ -342,7 +342,7 @@ class App extends React.Component {
             open={this.state.message.isOpen}
             message={this.state.message.content}
             action={this.state.message.action}
-            autoHideDuration={this.state.message.duration || 3000}
+            autoHideDuration={this.state.message.duration || 2000}
             onRequestClose={reason => {
               if(reason == 'timeout')
                 this.setState({message: {isOpen: false, content: ''}})
