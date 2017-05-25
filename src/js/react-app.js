@@ -148,13 +148,15 @@ class AppHeader extends React.Component {
       .signin()
       .then(resp => {
         this._closeDialog()
-        this.state.isBusy = false
+        this.setState({isBusy: false})
         this.props.pub('message', {content: 'Welcome...', action: null})
+        this.props.pub('user', resp.user)
       })
       .catch(err => {
         this._closeDialog()
-        this.state.isBusy = false
+        this.setState({isBusy: false})
         this.props.pub('message', {content: 'Signin failed.', action: null})
+        this.props.pub('user', null)
       })
   }
 
