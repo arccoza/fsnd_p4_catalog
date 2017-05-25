@@ -18,8 +18,6 @@ import FontIcon from 'material-ui/FontIcon'
 import PropTypes from 'prop-types'
 
 
-console.log(lightTheme, darkTheme)
-
 const tilesData = [
   {
     img: 'images/grid-list/00-52-29-429_640.jpg',
@@ -119,11 +117,15 @@ class AppHeader extends React.Component {
     }
   }
 
-  _openDialog = () => {
+  _signin = (ev) => {
+    print(ev)
+  }
+
+  _openDialog = (ev) => {
     this.setState({dialogOpen: true})
   }
 
-  _closeDialog = () => {
+  _closeDialog = (ev) => {
     this.setState({dialogOpen: false})
   }
 
@@ -151,6 +153,8 @@ class AppHeader extends React.Component {
           >
             <div style={merge(hlayout, {justifyContent: 'space-around'})}>
               <RaisedButton
+                name='facebook'
+                onTouchTap={this._signin}
                 label='Facebook'
                 labelPosition='after'
                 primary={true}
@@ -158,6 +162,8 @@ class AppHeader extends React.Component {
                 buttonStyle={{backgroundColor: '#3e5b98'}}
               />
               <RaisedButton
+                name='google'
+                onTouchTap={this._signin}
                 label='Google'
                 labelPosition='after'
                 primary={true}
