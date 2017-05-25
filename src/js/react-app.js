@@ -1,4 +1,4 @@
-import Kitchen from './kitchen'
+// import Kitchen from './kitchen'
 import React from 'react'
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider'
 import getMuiTheme from 'material-ui/styles/getMuiTheme'
@@ -91,17 +91,6 @@ const Theme = (props) => (
     {props.children}
   </MuiThemeProvider>
 )
-
-class Print extends React.Component {
-  static contextTypes = {
-    muiTheme: PropTypes.object.isRequired,
-  }
-
-  render() {
-    print(this.context)
-    return <div>{this.props.children}</div>
-  }
-}
 
 const vlayout = {
   display: 'flex',
