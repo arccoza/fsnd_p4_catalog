@@ -147,9 +147,14 @@ class AppHeader extends React.Component {
     authProviders[provider]
       .signin()
       .then(resp => {
-        print(resp)
         this._closeDialog()
         this.state.isBusy = false
+        this.props.pub('message', {content: 'Welcome...', action: null})
+      })
+      .catch(err => {
+        this._closeDialog()
+        this.state.isBusy = false
+        this.props.pub('message', {content: 'Signin failed.', action: null})
       })
   }
 
@@ -225,11 +230,50 @@ class AppHeader extends React.Component {
 }
 
 class App extends React.Component {
+  constructor(props) {
+    super(props)
+    this.state = {
+      user: null,
+      message: {
+        isOpen: false,
+        content: '',
+      },
+    }
+  }
+
+  sub = (subject, subscriber) => {
+    if(!this._subs)
+      this._subs = {}
+
+    var subs = this._subs[subject] || []
+    subs.push(subscriber)
+    this._subs[subject] = subs
+  }
+
+  pub = (subject, data) => {
+    if(!this._subs)
+      return
+
+    var subs = this._subs[subject] || []
+    for(let sub of subs) {
+      sub(data)
+    }
+  }
+
+  componentDidMount = () => {
+    this.sub('user', data => {
+      this.setState({user: data})
+    })
+    this.sub('message', data => {
+      this.setState({message: Object.assign(data, {isOpen: true})})
+    })
+  }
+
   render() {
     return (
       <div style={layoutStack}>
         <Theme theme={lightTheme}>
-          <AppHeader />
+          <AppHeader pub={this.pub} sub={this.sub} />
         </Theme>
         <Theme theme={lightTheme}>
           <div style={layoutStack}>
@@ -255,14 +299,16 @@ class App extends React.Component {
             </GridList>
           </div>
         </Theme>
-        <Theme theme={lightTheme}>
+        <Theme theme={darkTheme}>
           <Snackbar
-            open={this.state.open}
-            message={this.state.message}
-            action="undo"
-            autoHideDuration={this.state.autoHideDuration}
-            onActionTouchTap={this.handleActionTouchTap}
-            onRequestClose={this.handleRequestClose}
+            open={this.state.message.isOpen}
+            message={this.state.message.content}
+            action={this.state.message.action}
+            autoHideDuration={this.state.message.duration || 3000}
+            onRequestClose={reason => {
+              if(reason == 'timeout')
+                this.setState({message: {isOpen: false, content: ''}})
+            }}
           />
         </Theme>
       </div>
