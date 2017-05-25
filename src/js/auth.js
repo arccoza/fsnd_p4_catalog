@@ -13,15 +13,32 @@ export default class Auth {
 
     if(provider == 'google') {
       this.signin = this.googleSignin
-      this.signout = this.googleSignout
+      // this.signout = this.googleSignout
     }
     else if(provider == 'facebook') {
       this.signin = this.facebookSignin
-      this.signout = this.facebookSignout
+      // this.signout = this.facebookSignout
     }
     else {
       throw 'Unknown provider ' + provider
     }
+  }
+
+  signout() {
+    return fetch('/api/auth/', {
+      method: 'get',
+      credentials: 'include',
+      headers: {
+        'X-Requested-With': 'Fetch',
+        'Authorization': 'None'
+      }
+    })
+    .then(resp => Promise.all([resp, resp.json()]))
+    .then(([resp, json]) => {
+      if(!resp.ok)
+        throw json
+      return json
+    })
   }
 
   get googleUser() {
