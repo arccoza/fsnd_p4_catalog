@@ -110,8 +110,9 @@ class User(Mixin, db.Entity):
         if not ((self.email and self.password) or self.oauth):
             raise Exception('Must provide email and password, or oauth.')
 
-    def to_dict(self):
-        return {key: attr.__get__(self) for key, attr in self._adict_.items()}
+    def to_dict(self, exclude=()):
+        return {key: attr.__get__(self) for key, attr in self._adict_.items()
+                if key not in exclude}
         # return {attr.name: val for attr, val in self._vals_.items()}
 
     def to_json(self):
