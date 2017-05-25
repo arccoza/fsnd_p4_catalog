@@ -1,4 +1,5 @@
 import requests
+from requests import HTTPError
 
 
 def upgrade_token(**kwargs):
