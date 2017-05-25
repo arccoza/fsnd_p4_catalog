@@ -161,6 +161,18 @@ class AppHeader extends React.Component {
       })
   }
 
+   _signout = (provider) => {
+    this.state.provider
+      .signout()
+      .then(resp => {
+        this.props.pub('message', {content: 'Goodbye...', action: null})
+        this.props.pub('user', null)
+      })
+      .catch(err => {
+        this.props.pub('message', {content: 'Signout failed.', action: null})
+      })
+   }
+
   _openDialog = () => {
     this.setState({isDialogOpen: true})
   }
