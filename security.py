@@ -65,12 +65,14 @@ def authorize(upgrade=True):
                     print(ouser)
                     with db_session:
                         user_oauth = select(o for o in OAuth
-                                      if o.puid == ouser['id'])[:]
+                                            if o.puid == ouser['id'])[:]
                         if len(user_oauth) == 1:
                             print(user_oauth[0].user)
-                            user = user_oauth[0].user.to_dict(('password', 'oauth'))
+                            user = user_oauth[0].user.to_dict(
+                                ('password', 'oauth'))
                             try:
-                                user['picture'] = ouser['picture']['data']['url']
+                                user['picture'] =\
+                                    ouser['picture']['data']['url']
                             except TypeError as ex:
                                 user['picture'] = ouser.get('picture', '')
                             sessionize(user=user)
@@ -87,7 +89,8 @@ def authorize(upgrade=True):
                             commit()
                             user = user.to_dict(('password', 'oauth'))
                             try:
-                                user['picture'] = ouser['picture']['data']['url']
+                                user['picture'] =\
+                                    ouser['picture']['data']['url']
                             except TypeError as ex:
                                 user['picture'] = ouser.get('picture', '')
                             sessionize(user=user)
