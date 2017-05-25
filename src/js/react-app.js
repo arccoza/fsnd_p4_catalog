@@ -15,8 +15,31 @@ import IconButton from 'material-ui/IconButton'
 import StarBorder from 'material-ui/svg-icons/toggle/star-border'
 import Subheader from 'material-ui/Subheader'
 import FontIcon from 'material-ui/FontIcon'
+import CircularProgress from 'material-ui/CircularProgress'
+import Snackbar from 'material-ui/Snackbar'
 import PropTypes from 'prop-types'
+import Auth from './auth'
 
+
+const googleScriptSrc = '//apis.google.com/js/platform.js'
+const facebookScriptSrc = '//connect.facebook.net/en_US/sdk.js'
+const authProviders = {}
+
+authProviders['google'] = new Auth({provider: 'google', scriptSrc:googleScriptSrc, cred:{
+  'clientId': '',
+  'scope': 'profile email'
+}})
+
+authProviders['facebook'] = new Auth({provider: 'facebook', scriptSrc:facebookScriptSrc, cred:{
+  'appId': '',
+  'cookie': true,
+  'xfbml': true,
+  'version': 'v2.9',
+  'scope': 'email'
+}})
+
+
+window.authProviders = authProviders
 
 const tilesData = [
   {
@@ -113,24 +136,64 @@ class AppHeader extends React.Component {
     super(props)
     this.state = {
       isAuthed: false,
-      dialogOpen: false,
+      isDialogOpen: false,
+      isBusy: false,
     }
   }
 
-  _signin = (ev) => {
-    print(ev)
+  _signin = (provider) => {
+    this.setState({isBusy: true})
+
+    authProviders[provider]
+      .signin()
+      .then(resp => {
+        print(resp)
+        this._closeDialog()
+        this.state.isBusy = false
+      })
   }
 
-  _openDialog = (ev) => {
-    this.setState({dialogOpen: true})
+  _openDialog = () => {
+    this.setState({isDialogOpen: true})
   }
 
-  _closeDialog = (ev) => {
-    this.setState({dialogOpen: false})
+  _closeDialog = () => {
+    this.setState({isDialogOpen: false})
   }
 
   render() {
-    // const comps = []
+    if(!this.state.isBusy) {
+      var dialogContent = (
+        <div style={merge(hlayout, {justifyContent: 'space-around'})}>
+          <RaisedButton
+            name='facebook'
+            onTouchTap={ev => this._signin('facebook')}
+            label='Facebook'
+            labelPosition='after'
+            primary={true}
+            icon={<FontIcon className='socicon-facebook' />}
+            buttonStyle={{backgroundColor: '#3e5b98'}}
+          />
+          <RaisedButton
+            name='google'
+            onTouchTap={ev => this._signin('google')}
+            label='Google'
+            labelPosition='after'
+            primary={true}
+            icon={<FontIcon className='socicon-google' />}
+            buttonStyle={{backgroundColor: '#dd4b39'}}
+          />
+        </div>
+      )
+    }
+    else {
+      var dialogContent = (
+        <div style={merge(hlayout, {justifyContent: 'space-around'})}>
+          <CircularProgress />
+        </div>
+      )
+    }
+
     if(!this.state.isAuthed) {
       var appBar = (
         <div style={layoutStack}>
@@ -148,29 +211,10 @@ class AppHeader extends React.Component {
                 <FlatButton label='Cancel' onTouchTap={this._closeDialog} />
               ]}
             modal={false}
-            open={this.state.dialogOpen}
+            open={this.state.isDialogOpen}
             onRequestClose={this._closeDialog}
           >
-            <div style={merge(hlayout, {justifyContent: 'space-around'})}>
-              <RaisedButton
-                name='facebook'
-                onTouchTap={this._signin}
-                label='Facebook'
-                labelPosition='after'
-                primary={true}
-                icon={<FontIcon className='socicon-facebook' />}
-                buttonStyle={{backgroundColor: '#3e5b98'}}
-              />
-              <RaisedButton
-                name='google'
-                onTouchTap={this._signin}
-                label='Google'
-                labelPosition='after'
-                primary={true}
-                icon={<FontIcon className='socicon-google' />}
-                buttonStyle={{backgroundColor: '#dd4b39'}}
-              />
-            </div>
+            {dialogContent}
           </Dialog>
         </div>
       )
@@ -210,6 +254,16 @@ class App extends React.Component {
               ))}
             </GridList>
           </div>
+        </Theme>
+        <Theme theme={lightTheme}>
+          <Snackbar
+            open={this.state.open}
+            message={this.state.message}
+            action="undo"
+            autoHideDuration={this.state.autoHideDuration}
+            onActionTouchTap={this.handleActionTouchTap}
+            onRequestClose={this.handleRequestClose}
+          />
         </Theme>
       </div>
     )
