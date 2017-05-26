@@ -18,8 +18,7 @@ import FontIcon from 'material-ui/FontIcon'
 import CircularProgress from 'material-ui/CircularProgress'
 import Snackbar from 'material-ui/Snackbar'
 import Avatar from 'material-ui/Avatar'
-import NavigationClose from 'material-ui/svg-icons/navigation/close';
-import PropTypes from 'prop-types'
+import NavigationClose from 'material-ui/svg-icons/navigation/close'
 import Auth from './auth'
 
 
