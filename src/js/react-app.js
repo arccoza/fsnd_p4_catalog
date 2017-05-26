@@ -19,6 +19,10 @@ import CircularProgress from 'material-ui/CircularProgress'
 import Snackbar from 'material-ui/Snackbar'
 import Avatar from 'material-ui/Avatar'
 import NavigationClose from 'material-ui/svg-icons/navigation/close'
+import NavigationChevronRight from 'material-ui/svg-icons/navigation/chevron-right'
+import Drawer from 'material-ui/Drawer'
+import {List, ListItem} from 'material-ui/List'
+import Divider from 'material-ui/Divider'
 import Auth from './auth'
 
 
@@ -214,6 +218,7 @@ class AppHeader extends React.Component {
             }}
             title="Catalog"
             iconElementRight={<FlatButton label='Signin' onTouchTap={this._openDialog}/>}
+            onLeftIconButtonTouchTap={ev => this.props.pub('nav', {isOpen: true})}
           />
           <Dialog
             title='Signin with...'
@@ -238,6 +243,7 @@ class AppHeader extends React.Component {
               borderBottomColor: lightTheme.palette.borderColor,
             }}
             title="Catalog"
+            onLeftIconButtonTouchTap={ev => this.props.pub('nav', {isOpen: true})}
             iconElementRight={
               <FlatButton label={this.props.user.name} onTouchTap={this._signout} style={hlayout}>
                 <Theme theme={darkTheme}>
@@ -255,6 +261,65 @@ class AppHeader extends React.Component {
   }
 }
 
+class AppNav extends React.Component {
+  constructor(props) {
+    super(props)
+    this.state = {
+      categories: []
+    }
+  }
+
+  componentDidMount = () => {
+    this.fetch()
+  }
+
+  fetch = () => {
+    return fetch('/api/categories/', {
+      method: 'get',
+      credentials: 'include',
+      headers: {
+        'X-Requested-With': 'Fetch'
+      },
+    })
+    .then(resp => Promise.all([resp, resp.json()]))
+    .then(([resp, json]) => {
+      if(!resp.ok)
+        throw json
+      return json
+    })
+    .then(resp => {
+      this.setState({categories: resp})
+    })
+    .catch(err => {
+      this.props.pub('message', {isOpen:true, content: 'Couldn\'t load categories.'})
+    })
+  }
+
+  render() {
+    var categoryList = this.state.categories.map(cat => {
+      return <ListItem key={cat.id} primaryText={cat.title} rightIcon={<NavigationChevronRight />} />
+    })
+
+    return (
+      <Drawer
+        docked={false}
+        open={this.props.nav.isOpen}
+        onRequestChange={(open, reason) => {
+            this.props.pub('nav', {isOpen: false})
+        }}
+      >
+        <List>
+          <ListItem primaryText="Home" rightIcon={<NavigationChevronRight />} />
+        </List>
+        <Divider />
+        <List>
+          {categoryList}
+        </List>
+      </Drawer>
+    )
+  }
+}
+
 class App extends React.Component {
   constructor(props) {
     super(props)
@@ -263,6 +328,9 @@ class App extends React.Component {
       message: {
         isOpen: false,
         content: '',
+      },
+      nav: {
+        isOpen: false,
       },
     }
   }
@@ -287,6 +355,9 @@ class App extends React.Component {
   }
 
   componentDidMount = () => {
+    this.sub('nav', data => {
+      this.setState({nav: data})
+    })
     this.sub('user', data => {
       this.setState({user: data})
     })
@@ -299,7 +370,10 @@ class App extends React.Component {
     return (
       <div style={layoutStack}>
         <Theme theme={lightTheme}>
-          <AppHeader pub={this.pub} sub={this.sub} user={this.state.user} />
+          <div style={layoutStack}>
+            <AppHeader pub={this.pub} sub={this.sub} user={this.state.user} />
+            <AppNav pub={this.pub} sub={this.sub} nav={this.state.nav} />
+          </div>
         </Theme>
         <Theme theme={lightTheme}>
           <div style={layoutStack}>
