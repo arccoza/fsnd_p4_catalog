@@ -217,7 +217,7 @@ class AppHeader extends React.Component {
             iconElementRight={<FlatButton label='Signin' onTouchTap={this._openDialog}/>}
           />
           <Dialog
-            title='Sigin with...'
+            title='Signin with...'
             actions={[
                 <FlatButton label='Cancel' onTouchTap={this._closeDialog} />
               ]}
