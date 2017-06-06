@@ -8,7 +8,9 @@ import FlatButton from 'material-ui/FlatButton'
 import RaisedButton from 'material-ui/RaisedButton'
 import Dialog from 'material-ui/Dialog'
 import DropDownMenu from 'material-ui/DropDownMenu'
+import Menu from 'material-ui/Menu'
 import MenuItem from 'material-ui/MenuItem'
+import Popover from 'material-ui/Popover'
 import Toggle from 'material-ui/Toggle'
 import {GridList, GridTile} from 'material-ui/GridList'
 import IconButton from 'material-ui/IconButton'
@@ -23,6 +25,10 @@ import NavigationChevronRight from 'material-ui/svg-icons/navigation/chevron-rig
 import Drawer from 'material-ui/Drawer'
 import {List, ListItem} from 'material-ui/List'
 import Divider from 'material-ui/Divider'
+import FloatingActionButton from 'material-ui/FloatingActionButton'
+import ContentAdd from 'material-ui/svg-icons/content/add'
+import ContentAddBox from 'material-ui/svg-icons/content/add-box'
+import AvLibraryAdd from 'material-ui/svg-icons/av/library-add'
 import Auth from './auth'
 
 
@@ -100,7 +106,7 @@ const vlayout = {
   flexFlow: 'column wrap',
   justifyContent: 'space-between',
   alignContent: 'center',
-  alignItems: 'center',
+  alignItems: 'stretch',
 }
 
 const hlayout = {
@@ -108,17 +114,17 @@ const hlayout = {
   flexFlow: 'row wrap',
   justifyContent: 'space-between',
   alignContent: 'center',
-  alignItems: 'center',
+  alignItems: 'stretch',
 }
 
 const layoutStack = {
   position: 'relative',
   display: 'flex',
-  width: '100%',
+  // width: '100%',
   flexFlow: 'column nowrap',
   justifyContent: 'space-between',
   alignContent: 'center',
-  alignItems: 'center',
+  alignItems: 'stretch',
 }
 
 function merge(...objs) {
@@ -129,7 +135,7 @@ class AppHeader extends React.Component {
   constructor(props) {
     super(props)
     this.state = {
-      isAuthed: false,
+      // isAuthed: false,
       isDialogOpen: false,
       isBusy: false,
       provider: null,
@@ -332,6 +338,10 @@ class App extends React.Component {
       nav: {
         isOpen: false,
       },
+      fab: {
+        isOpen: false,
+        anchor: null,
+      }
     }
   }
 
@@ -368,7 +378,7 @@ class App extends React.Component {
 
   render() {
     return (
-      <div style={layoutStack}>
+      <div style={merge(layoutStack, {marginBottom: '120px'})}>
         <Theme theme={lightTheme}>
           <div style={layoutStack}>
             <AppHeader pub={this.pub} sub={this.sub} user={this.state.user} />
@@ -384,7 +394,7 @@ class App extends React.Component {
               <MenuItem value={4} primaryText="Weekends" />
               <MenuItem value={5} primaryText="Weekly" />
             </DropDownMenu>
-            <GridList cellHeight={180} cols={4} style={{width: '80%'}}>
+            <GridList cellHeight={180} cols={4} style={{margin: '20px 180px 20px 180px'}}>
               <Subheader>December</Subheader>
               {tilesData.map((tile) => (
                 <GridTile
@@ -397,6 +407,43 @@ class App extends React.Component {
                 </GridTile>
               ))}
             </GridList>
+          </div>
+        </Theme>
+        <Theme theme={darkTheme}>
+          <div
+            style={{position: 'fixed', bottom: '80px', right: '80px', paddingTop: '1em'}}
+          >
+            <FloatingActionButton
+              onTouchTap={ev => this.setState({fab: {
+                isOpen: !this.state.fab.isOpen,
+                anchor: ev.currentTarget.parentElement.parentElement
+              }})}
+            >
+              <ContentAdd />
+              <Theme theme={lightTheme}>
+                <Popover
+                  open={this.state.fab.isOpen}
+                  anchorEl={this.state.fab.anchor}
+                  anchorOrigin={{horizontal: 'middle', vertical: 'top'}}
+                  targetOrigin={{horizontal: 'middle', vertical: 'bottom'}}
+                  onRequestClose={ev => this.setState({fab: {isOpen: !this.state.fab.isOpen, anchor: null}})}
+                  style={{overflowY: 'visible'}}
+                >
+                  <Menu autoWidth={false}>
+                    <MenuItem>
+                      <span title='Add Item'>
+                        <ContentAddBox />
+                      </span>
+                    </MenuItem>
+                    <MenuItem>
+                      <span title='Add Category'>
+                        <AvLibraryAdd />
+                      </span>
+                    </MenuItem>
+                  </Menu>
+                </Popover>
+              </Theme>
+            </FloatingActionButton>
           </div>
         </Theme>
         <Theme theme={darkTheme}>
