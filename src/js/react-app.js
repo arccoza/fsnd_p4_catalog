@@ -30,6 +30,7 @@ import ContentAdd from 'material-ui/svg-icons/content/add'
 import ContentAddBox from 'material-ui/svg-icons/content/add-box'
 import AvLibraryAdd from 'material-ui/svg-icons/av/library-add'
 import Auth from './auth'
+import AppNav from './react-app-nav'
 
 
 const googleScriptSrc = '//apis.google.com/js/platform.js'
@@ -264,65 +265,6 @@ class AppHeader extends React.Component {
     }
 
     return appBar
-  }
-}
-
-class AppNav extends React.Component {
-  constructor(props) {
-    super(props)
-    this.state = {
-      categories: []
-    }
-  }
-
-  componentDidMount = () => {
-    this.fetch()
-  }
-
-  fetch = () => {
-    return fetch('/api/categories/', {
-      method: 'get',
-      credentials: 'include',
-      headers: {
-        'X-Requested-With': 'Fetch'
-      },
-    })
-    .then(resp => Promise.all([resp, resp.json()]))
-    .then(([resp, json]) => {
-      if(!resp.ok)
-        throw json
-      return json
-    })
-    .then(resp => {
-      this.setState({categories: resp})
-    })
-    .catch(err => {
-      this.props.pub('message', {isOpen:true, content: 'Couldn\'t load categories.'})
-    })
-  }
-
-  render() {
-    var categoryList = this.state.categories.map(cat => {
-      return <ListItem key={cat.id} primaryText={cat.title} rightIcon={<NavigationChevronRight />} />
-    })
-
-    return (
-      <Drawer
-        docked={false}
-        open={this.props.nav.isOpen}
-        onRequestChange={(open, reason) => {
-            this.props.pub('nav', {isOpen: false})
-        }}
-      >
-        <List>
-          <ListItem primaryText="Home" rightIcon={<NavigationChevronRight />} />
-        </List>
-        <Divider />
-        <List>
-          {categoryList}
-        </List>
-      </Drawer>
-    )
   }
 }
 
