@@ -1,5 +1,5 @@
 from pony.orm import *
-from pony.orm.core import SetInstance, ObjectNotFound
+from pony.orm.core import SetInstance, ObjectNotFound, DataError
 from pony.orm.serialization import to_json, to_dict
 import json
 from datetime import *

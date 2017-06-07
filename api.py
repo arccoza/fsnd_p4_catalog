@@ -2,7 +2,7 @@ from flask import Blueprint, Response, request, url_for, session, current_app,\
     make_response
 from flask_restful import Resource, Api, reqparse, abort
 from models import User, Item, Category, select, db_session, commit, rollback,\
-    Set, SetInstance, ObjectNotFound, Password, OAuth
+    Set, SetInstance, ObjectNotFound, DataError, Password, OAuth
 import json
 import re
 from security import authorize
@@ -54,11 +54,13 @@ class GenericRes(Resource):
 
     def get(self, id=None):
         cls = self.model_class
+        ids = re.split('\s*,\s*', id)
 
         if id is not None:
             try:
-                objs = [cls[id]]
-            except ObjectNotFound as ex:
+                # objs = [cls[id]]
+                objs = select(i for i in cls if i.id in ids)[:]
+            except (ObjectNotFound, DataError) as ex:
                 abort(404)
         else:
             objs = select(i for i in cls)[:]
@@ -113,6 +115,6 @@ class CategoryRes(GenericRes):
 
 
 api.add_resource(AuthRes, '/auth/')
-api.add_resource(UserRes, '/users/', '/users/<int:id>')
-api.add_resource(ItemRes, '/items/', '/items/<int:id>')
-api.add_resource(CategoryRes, '/categories/', '/categories/<int:id>')
+api.add_resource(UserRes, '/users/', '/users/<id>')
+api.add_resource(ItemRes, '/items/', '/items/<id>')
+api.add_resource(CategoryRes, '/categories/', '/categories/<id>')
