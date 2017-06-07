@@ -10,7 +10,8 @@ const print = console.log.bind(console)
 
 const src = {
   js: 'src/**/js/index.js',
-  css: 'src/**/css/index.css'
+  css: 'src/**/css/*.css',
+  img: 'src/**/img/*'
 }
 
 const dest = 'pub'
@@ -59,11 +60,19 @@ exports.js = function*(fly) {
       sourceMap: true,
       moduleName: 'window'
     }
-  }).target(dest);
+  }).target(dest)
 }
 
-exports.default = async function(fly) {
-  await fly.serial(['js'])
+exports.css = function*(fly) {
+  yield fly.source(src.css).target(dest)
+}
+
+exports.img = function*(fly) {
+  yield fly.source(src.img).target(dest)
+}
+
+exports.default = function*(fly) {
+  yield fly.serial(['js', 'css', 'img'])
 }
 
 // const fly = new Fly(module.exports)
