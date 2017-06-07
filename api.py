@@ -54,9 +54,9 @@ class GenericRes(Resource):
 
     def get(self, id=None):
         cls = self.model_class
-        ids = re.split('\s*,\s*', id)
 
         if id is not None:
+            ids = re.split('\s*,\s*', id)
             try:
                 # objs = [cls[id]]
                 objs = select(i for i in cls if i.id in ids)[:]
