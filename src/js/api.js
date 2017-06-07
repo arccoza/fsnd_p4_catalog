@@ -27,3 +27,5 @@ var api = {
   add: apiRequest.bind(null, 'post'),
   rem: apiRequest.bind(null, 'delete'),
 }
+
+export default api
