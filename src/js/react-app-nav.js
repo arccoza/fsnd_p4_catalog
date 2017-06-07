@@ -44,9 +44,8 @@ export default class AppNav extends React.Component {
   render() {
     var categoryList = this.state.categories.map(cat => {
       return (
-        <Link to={`/category/${cat.id}`}>
+        <Link to={`/category/${cat.id}`} key={cat.id}>
           <ListItem
-            key={cat.id}
             primaryText={cat.title}
             rightIcon={<NavigationChevronRight />}
             onTouchTap={ev => this.props.pub('nav', {isOpen: false})}
