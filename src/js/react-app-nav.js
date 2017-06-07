@@ -4,6 +4,7 @@ import Divider from 'material-ui/Divider'
 import NavigationClose from 'material-ui/svg-icons/navigation/close'
 import NavigationChevronRight from 'material-ui/svg-icons/navigation/chevron-right'
 import Drawer from 'material-ui/Drawer'
+import {Link} from 'react-router-dom'
 
 
 export default class AppNav extends React.Component {
@@ -42,7 +43,16 @@ export default class AppNav extends React.Component {
 
   render() {
     var categoryList = this.state.categories.map(cat => {
-      return <ListItem key={cat.id} primaryText={cat.title} rightIcon={<NavigationChevronRight />} />
+      return (
+        <Link to={`/category/${cat.id}`}>
+          <ListItem
+            key={cat.id}
+            primaryText={cat.title}
+            rightIcon={<NavigationChevronRight />}
+            onTouchTap={ev => this.props.pub('nav', {isOpen: false})}
+          />
+        </Link>
+      )
     })
 
     return (
@@ -54,7 +64,13 @@ export default class AppNav extends React.Component {
         }}
       >
         <List>
-          <ListItem primaryText="Home" rightIcon={<NavigationChevronRight />} />
+          <Link to={'/'}>
+            <ListItem
+              primaryText='Home'
+              rightIcon={<NavigationChevronRight />}
+              onTouchTap={ev => this.props.pub('nav', {isOpen: false})}
+            />
+          </Link>
         </List>
         <Divider />
         <List>
