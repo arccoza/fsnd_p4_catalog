@@ -14,8 +14,7 @@ api = Api(api_bp)
 
 def _to_json_default(obj):
     if isinstance(obj, SetInstance):
-        pass
-        # return [i.to_dict() for i in obj]  # TODO: fix recursion error.
+        return [i.id for i in obj]
     try:
         return obj.to_dict()
     except AttributeError:
