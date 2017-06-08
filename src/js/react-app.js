@@ -32,6 +32,14 @@ import AvLibraryAdd from 'material-ui/svg-icons/av/library-add'
 import Auth from './auth'
 import AppHeader from './react-app-header'
 import AppNav from './react-app-nav'
+import {
+  Switch,
+  Route,
+  Link,
+  Redirect,
+  withRouter
+} from 'react-router-dom'
+import Items from './react-app-items'
 
 
 const googleScriptSrc = '//apis.google.com/js/platform.js'
@@ -53,49 +61,6 @@ authProviders['facebook'] = new Auth({provider: 'facebook', scriptSrc:facebookSc
 
 
 window.authProviders = authProviders
-
-const tilesData = [
-  {
-    img: 'images/grid-list/00-52-29-429_640.jpg',
-    title: 'Breakfast',
-    author: 'jill111',
-  },
-  {
-    img: 'images/grid-list/burger-827309_640.jpg',
-    title: 'Tasty burger',
-    author: 'pashminu',
-  },
-  {
-    img: 'images/grid-list/camera-813814_640.jpg',
-    title: 'Camera',
-    author: 'Danson67',
-  },
-  {
-    img: 'images/grid-list/morning-819362_640.jpg',
-    title: 'Morning',
-    author: 'fancycrave1',
-  },
-  {
-    img: 'images/grid-list/hats-829509_640.jpg',
-    title: 'Hats',
-    author: 'Hans',
-  },
-  {
-    img: 'images/grid-list/honey-823614_640.jpg',
-    title: 'Honey',
-    author: 'fancycravel',
-  },
-  {
-    img: 'images/grid-list/vegetables-790022_640.jpg',
-    title: 'Vegetables',
-    author: 'jill111',
-  },
-  {
-    img: 'images/grid-list/water-plant-821293_640.jpg',
-    title: 'Water plant',
-    author: 'BkrmadtyaKarki',
-  },
-]
 
 const Theme = (props) => (
   <MuiThemeProvider muiTheme={getMuiTheme(props.theme)}>
@@ -132,6 +97,40 @@ const layoutStack = {
 function merge(...objs) {
   return Object.assign({}, ...objs)
 }
+
+const Home = () => (
+  <div>
+    <h2>Home</h2>
+  </div>
+)
+
+const Item = ({ match }) => (
+  <div>
+    <h2>Item</h2>
+    <h3>{match.params.topicId}</h3>
+  </div>
+)
+
+const Category = ({ match }) => (
+  <div>
+    <h2>Category</h2>
+    <h3>{match.params.topicId}</h3>
+  </div>
+)
+
+const EditItem = ({ match }) => (
+  <div>
+    <h2>Edit Item</h2>
+    <h3>{match.params.topicId}</h3>
+  </div>
+)
+
+const EditCategory = ({ match }) => (
+  <div>
+    <h2>Edit Category</h2>
+    <h3>{match.params.topicId}</h3>
+  </div>
+)
 
 class App extends React.Component {
   constructor(props) {
@@ -194,26 +193,17 @@ class App extends React.Component {
         </Theme>
         <Theme theme={lightTheme}>
           <div style={layoutStack}>
-            <DropDownMenu>
-              <MenuItem value={1} primaryText="Never" />
-              <MenuItem value={2} primaryText="Every Night" />
-              <MenuItem value={3} primaryText="Weeknights" />
-              <MenuItem value={4} primaryText="Weekends" />
-              <MenuItem value={5} primaryText="Weekly" />
-            </DropDownMenu>
-            <GridList cellHeight={180} cols={4} style={{margin: '20px 180px 20px 180px'}}>
-              <Subheader>December</Subheader>
-              {tilesData.map((tile) => (
-                <GridTile
-                  key={tile.img}
-                  title={tile.title}
-                  subtitle={<span>by <b>{tile.author}</b></span>}
-                  actionIcon={<IconButton><StarBorder color="white" /></IconButton>}
-                >
-                  <img src={tile.img} />
-                </GridTile>
-              ))}
-            </GridList>
+            <Switch>
+              <Route exact path="/" component={Home}/>
+              <Route path='/category/:id' render={
+                ({match}) => {
+                  return <Items pub={this.pub} sub={this.sub} id={match.params.id} />
+                }
+              } />
+              <Route path='/item/:id' component={Item}/>
+              <Route path='/edit/item/:id' component={EditItem}/>
+              <Route path='/edit/category/:id' component={EditCategory}/>
+            </Switch>
           </div>
         </Theme>
         <Theme theme={darkTheme}>
