@@ -36,8 +36,16 @@ db.bind('postgres', database='catalog')
 db.generate_mapping(create_tables=True)
 
 
-@app.route("/")
-def root():
+@app.route('/')
+@app.route('/item/')
+@app.route('/item/<id>')
+@app.route('/edit/item/')
+@app.route('/edit/item/<id>')
+@app.route('/category/')
+@app.route('/category/<id>')
+@app.route('/edit/category/')
+@app.route('/edit/category/<id>')
+def root(id=None):
     return render_template('index.html')
 
 if __name__ == '__main__':
