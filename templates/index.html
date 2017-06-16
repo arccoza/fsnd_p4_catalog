@@ -4,10 +4,48 @@
   <meta http-equiv="x-ua-compatible" content="ie=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
   <title>Page Title</title>
+  <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500" rel="stylesheet">
+  <link rel="stylesheet" href="https://s3.amazonaws.com/icomoon.io/114779/Socicon/style.css?cp0z2c">
+  <link rel="stylesheet" href="/static/css/normalize.css">
   <!-- <link rel="stylesheet" href="styles.css"> -->
   <style type="text/css">
+    * {
+      box-sizing: border-box;
+      box-shadow: none !important;
+    }
+
+    html, body {
+      margin: 0;
+      padding: 0;
+      font-weight: 300;
+    }
+
+    a {
+      text-decoration: none;
+    }
+
+    b, em {
+      font-weight: 500;
+    }
+
     body {
-      background: #444;
+      background-color: /*#fff*/ #009688 /*#1c1440*/;
+      display: flex;
+      flex-flow: column wrap;
+      justify-content: space-between;
+      font-family: Roboto, sans-serif;
+    }
+
+    .bg {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      /*background-image: url(/static/img/wallhaven-91110.jpg);*/
+      background-size: cover;
+      background-attachment: fixed;
+      /*box-shadow: 0 0 400px rgba(0,0,0,0.7) inset;*/
     }
   </style>
   <!-- <script src="script.js"></script> -->
@@ -288,9 +326,11 @@
   </script>
 </head>
 <body>
-  <button onclick="gg.signin()">Google Signin</button>
+  <!-- <button onclick="gg.signin()">Google Signin</button>
   <button onclick="gg.signout()">Google Signout</button>
   <br>
   <button onclick="fb.signin()">Facebook Signin</button>
-  <button onclick="fb.signout()">Facebook Signout</button>
+  <button onclick="fb.signout()">Facebook Signout</button> -->
+  <div id="root">
+  </div>
 </body>
