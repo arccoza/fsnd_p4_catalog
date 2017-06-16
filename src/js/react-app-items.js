@@ -103,6 +103,7 @@ export default class Items extends React.Component {
       return resp
     })
     .then(resp => {
+      // Gather all the ids from each category into one array
       var ids = resp.reduce((acc, val) => acc.concat(val.items), [])
       return api.get('items', ids)
     })
