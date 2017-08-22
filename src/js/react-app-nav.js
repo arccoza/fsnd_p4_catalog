@@ -17,21 +17,10 @@ export default class AppNav extends React.Component {
   }
 
   componentDidMount = () => {
-    this.fetch()
-  }
-
-  fetch = () => {
-    return api.get('categories')
-    .then(resp => {
-      this.setState({categories: resp})
-    })
-    .catch(err => {
-      this.props.pub('message', {isOpen:true, content: 'Couldn\'t load categories.'})
-    })
   }
 
   render() {
-    var categoryList = this.state.categories.map(cat => {
+    var categoryList = this.props.categories.map(cat => {
       return (
         <Link to={`/category/${cat.id}`} key={cat.id}>
           <ListItem
