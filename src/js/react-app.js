@@ -40,6 +40,7 @@ import {
   withRouter
 } from 'react-router-dom'
 import Items from './react-app-items'
+import api from './api'
 
 
 const googleScriptSrc = '//apis.google.com/js/platform.js'
@@ -47,12 +48,12 @@ const facebookScriptSrc = '//connect.facebook.net/en_US/sdk.js'
 const authProviders = {}
 
 authProviders['google'] = new Auth({provider: 'google', scriptSrc:googleScriptSrc, cred:{
-  'clientId': '',
+  'clientId': '32902065428-sbal87ccp0eedjoo2opcq0tr22ha3884.apps.googleusercontent.com',
   'scope': 'profile email'
 }})
 
 authProviders['facebook'] = new Auth({provider: 'facebook', scriptSrc:facebookScriptSrc, cred:{
-  'appId': '',
+  'appId': '126309204593715',
   'cookie': true,
   'xfbml': true,
   'version': 'v2.9',
@@ -137,6 +138,8 @@ class App extends React.Component {
     super(props)
     this.state = {
       user: null,
+      categories: [],
+      items: [],
       message: {
         isOpen: false,
         content: '',
@@ -177,9 +180,37 @@ class App extends React.Component {
     this.sub('user', data => {
       this.setState({user: data})
     })
+    this.sub('categories', data => {
+      this.setState({categories: data})
+    })
+    this.sub('items', data => {
+      this.setState({items: data})
+    })
     this.sub('message', data => {
       this.setState({message: Object.assign(data, {isOpen: true})})
     })
+
+    this.fetch()
+  }
+
+  fetch = () => {
+    var cats = api.get('categories')
+    .then(resp => {
+      this.setState({categories: resp})
+    })
+    .catch(err => {
+      this.props.pub('message', {isOpen:true, content: 'Couldn\'t load categories.'})
+    })
+
+    var items = api.get('items')
+    .then(resp => {
+      this.setState({items: resp})
+    })
+    .catch(err => {
+      this.props.pub('message', {isOpen:true, content: 'Couldn\'t load items.'})
+    })
+
+    return Promise.all([cats, items])
   }
 
   render() {
@@ -187,8 +218,16 @@ class App extends React.Component {
       <div style={merge(layoutStack, {marginBottom: '120px'})}>
         <Theme theme={lightTheme}>
           <div style={layoutStack}>
-            <AppHeader pub={this.pub} sub={this.sub} user={this.state.user} />
-            <AppNav pub={this.pub} sub={this.sub} nav={this.state.nav} />
+            <AppHeader
+              pub={this.pub}
+              sub={this.sub}
+              user={this.state.user} />
+            <AppNav
+              pub={this.pub}
+              sub={this.sub}
+              nav={this.state.nav}
+              categories={this.state.categories}
+              items={this.state.items} />
           </div>
         </Theme>
         <Theme theme={lightTheme}>
