@@ -5,6 +5,7 @@ import NavigationClose from 'material-ui/svg-icons/navigation/close'
 import NavigationChevronRight from 'material-ui/svg-icons/navigation/chevron-right'
 import Drawer from 'material-ui/Drawer'
 import {Link} from 'react-router-dom'
+import api from './api'
 
 
 export default class AppNav extends React.Component {
@@ -20,19 +21,7 @@ export default class AppNav extends React.Component {
   }
 
   fetch = () => {
-    return fetch('/api/categories/', {
-      method: 'get',
-      credentials: 'include',
-      headers: {
-        'X-Requested-With': 'Fetch'
-      },
-    })
-    .then(resp => Promise.all([resp, resp.json()]))
-    .then(([resp, json]) => {
-      if(!resp.ok)
-        throw json
-      return json
-    })
+    return api.get('categories')
     .then(resp => {
       this.setState({categories: resp})
     })
