@@ -41,6 +41,7 @@ import {
 } from 'react-router-dom'
 import Items from './react-app-items'
 import api from './api'
+var print = console.log.bind(console)
 
 
 const googleScriptSrc = '//apis.google.com/js/platform.js'
@@ -108,28 +109,28 @@ const Home = () => (
 const Item = ({ match }) => (
   <div>
     <h2>Item</h2>
-    <h3>{match.params.topicId}</h3>
+    <h3>{match.params.id}</h3>
   </div>
 )
 
 const Category = ({ match }) => (
   <div>
     <h2>Category</h2>
-    <h3>{match.params.topicId}</h3>
+    <h3>{match.params.id}</h3>
   </div>
 )
 
 const EditItem = ({ match }) => (
   <div>
     <h2>Edit Item</h2>
-    <h3>{match.params.topicId}</h3>
+    <h3>{match.params.id}</h3>
   </div>
 )
 
 const EditCategory = ({ match }) => (
   <div>
     <h2>Edit Category</h2>
-    <h3>{match.params.topicId}</h3>
+    <h3>{match.params.id}</h3>
   </div>
 )
 
@@ -234,14 +235,9 @@ class App extends React.Component {
           <div style={layoutStack}>
             <Switch>
               <Route exact path="/" component={Home}/>
-              <Route path='/category/:id' render={
-                ({match}) => {
-                  return <Items pub={this.pub} sub={this.sub} id={match.params.id} />
-                }
-              } />
-              <Route path='/item/:id' component={Item}/>
-              <Route path='/edit/item/:id' component={EditItem}/>
-              <Route path='/edit/category/:id' component={EditCategory}/>
+              <Route path='/:mode(view|edit))' component={Items} params={{id: null}}/>
+              <Route path='/:mode(view|edit)/:id($|.*)' component={Items} params={{id: null}}/>
+              <Route path='/:mode(view|edit)/:category/:id($|.*)' component={Items} params={{id: null}}/>
             </Switch>
           </div>
         </Theme>
