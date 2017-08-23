@@ -45,7 +45,7 @@ db.generate_mapping(create_tables=True)
 @app.route('/edit/<cat>/')
 @app.route('/view/<cat>/<id>')
 @app.route('/edit/<cat>/<id>')
-def root(id=None):
+def root(cat=None, id=None):
     return render_template('index.html')
 
 if __name__ == '__main__':
