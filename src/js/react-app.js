@@ -1,8 +1,6 @@
 // import Kitchen from './kitchen'
 import React from 'react'
-import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider'
-import getMuiTheme from 'material-ui/styles/getMuiTheme'
-import {lightTheme, darkTheme} from './react-themes'
+import {lightTheme, darkTheme, Theme} from './react-themes'
 import AppBar from 'material-ui/AppBar'
 import FlatButton from 'material-ui/FlatButton'
 import RaisedButton from 'material-ui/RaisedButton'
@@ -63,12 +61,6 @@ authProviders['facebook'] = new Auth({provider: 'facebook', scriptSrc:facebookSc
 
 
 window.authProviders = authProviders
-
-const Theme = (props) => (
-  <MuiThemeProvider muiTheme={getMuiTheme(props.theme)}>
-    {props.children}
-  </MuiThemeProvider>
-)
 
 const vlayout = {
   display: 'flex',
@@ -237,7 +229,7 @@ class App extends React.Component {
               <Route exact path="/" component={Home}/>
               <Route path='/:mode(view|edit))' component={Items} params={{id: null}}/>
               <Route path='/:mode(view|edit)/:id($|.*)' component={Items} params={{id: null}}/>
-              <Route path='/:mode(view|edit)/:category/:id($|.*)' component={Items} params={{id: null}}/>
+              <Route path='/:mode(view|edit)/:cat/:id($|.*)' component={Items} params={{id: null}}/>
             </Switch>
           </div>
         </Theme>
