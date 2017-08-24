@@ -1,16 +1,15 @@
 import React from 'react'
+import {lightTheme, darkTheme, Theme} from './react-themes'
 import {GridList, GridTile} from 'material-ui/GridList'
 import Subheader from 'material-ui/Subheader'
+import TextField from 'material-ui/TextField'
+import SelectField from 'material-ui/SelectField'
+import MenuItem from 'material-ui/MenuItem'
+import Paper from 'material-ui/Paper'
 import api from './api.js'
 var h = React.createElement
 var print = console.log.bind(console)
 
-
-const Theme = (props) => (
-  <MuiThemeProvider muiTheme={getMuiTheme(props.theme)}>
-    {props.children}
-  </MuiThemeProvider>
-)
 
 const vlayout = {
   display: 'flex',
@@ -89,8 +88,18 @@ export default class Items extends React.Component {
   constructor(props) {
     super(props)
     this.state = {
-      categories: [],
-      items: tilesData
+      categories: [{
+          id: '',
+          title: 'hello',
+        }],
+      items: tilesData,
+      editingItem: {
+        img: {},
+        title: '',
+        description: '',
+        categories: [],
+        author: 'Brock Samson'
+      }
     }
   }
 
@@ -118,16 +127,94 @@ export default class Items extends React.Component {
 
   render() {
     print(this.props.match)
+    var content
 
-    return h('div', {style: merge(layoutStack, {margin: '20px 180px 20px 180px'})},
-      h('h1', null, 'View'),
-      h(GridList, {cellHeight: 180, cols: 4},
-        h(Subheader, null, 'December'),
-        this.state.items.map((item) => (
-          h(GridTile, {key: item.id, title: item.title, subtitle: item.author},
-            h('img', {src: item.image})
+    if (this.props.match.params.mode == 'edit') {
+      var col1 = h('div', {style: merge(vlayout, {justifyContent: 'flex-start'})},
+        h('h2', null, 'Edit Item'),
+        h(TextField, {
+          hintText: 'ex: Snowboard',
+          floatingLabelText: 'Enter item name',
+          value: this.state.editingItem.name,
+          onChange: ev => {
+            this.setState({
+              editingItem: {
+                // ...this.state.editingItem,
+                name: ev.target.value
+              }
+            })
+          }
+        }),
+        h(SelectField, {
+          floatingLabelText: 'Select a category',
+          value: this.state.editingItem.categories,
+          listStyle: {backgroundColor: '#fff'},
+          menuItemStyle: {color: '#00bcd4'},
+        },
+          this.state.categories.map(cat => (
+              h(MenuItem, {key: cat.id, value: cat.id, primaryText: cat.title})
+            )
           )
-        ))
+        ),
+        h(TextField, {
+          hintText: 'ex: Hank Venture',
+          floatingLabelText: 'The author of this item',
+          value: this.state.editingItem.author,
+        }),
+        h(TextField, {
+          hintText: 'ex: item.png',
+          floatingLabelText: 'An image of the item',
+          value: this.state.editingItem.img.name,
+          onTouchTap: ev => this.fileInput.click()
+        }),
+        h('input', {
+          ref: el => this.fileInput = el,
+          type: 'file',
+          accept: 'image/*',
+          style: {display: 'none'},
+          onChange: ev => {
+            if (ev.target.files) {
+              var file = ev.target.files[0]
+              // URL.createObjectURL(blob)
+              this.setState({
+                editingItem: {
+                  // ...this.state.editingItem,
+                  img: file
+                }
+              })
+            }
+          },
+        }),
+      )
+
+      var col2 = h(Theme, {theme: lightTheme},
+        h(Paper, {style: merge(vlayout, {flex: 1, margin: '0 0 0 3em', padding: '1em'})},
+          h('img', {
+            style: {maxWidth: '100%'},
+            src: this.state.editingItem.img instanceof Blob && URL.createObjectURL(this.state.editingItem.img)
+          })
+        )
+      )
+
+      content = [h('div', {style: hlayout}, col1, col2)]
+    }
+    else {
+      content = [
+        h('h2', null, 'View'),
+        h(GridList, {cellHeight: 180, cols: 4},
+          h(Subheader, null, 'December'),
+          this.state.items.map((item) => (
+            h(GridTile, {key: item.id, title: item.title, subtitle: item.author},
+              h('img', {src: item.image})
+            )
+          ))
+        )
+      ]
+    }
+
+    return h(Theme, {theme: darkTheme},
+      h('div', {style: merge(layoutStack, {margin: '20px 180px 20px 180px'})},
+        ...content
       )
     )
   }
