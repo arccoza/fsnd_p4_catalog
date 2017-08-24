@@ -80,3 +80,20 @@ exports.default = function*(fly) {
 // fly.start('js')
 // .then(print)
 // .catch(print)
+
+if (require && require.main === module) {
+  print('oi')
+  const fly = new Fly({
+    tasks: module.exports,
+    plugins: [
+      require('fly-clear'),
+      require('fly-rollup')
+    ]
+  })
+
+  fly.start('js')
+    .then(res => print(res))
+    .catch(err => {
+      console.error(err)
+    })
+}
