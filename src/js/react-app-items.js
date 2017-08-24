@@ -2,6 +2,8 @@ import React from 'react'
 import {GridList, GridTile} from 'material-ui/GridList'
 import Subheader from 'material-ui/Subheader'
 import api from './api.js'
+var h = React.createElement
+var print = console.log.bind(console)
 
 
 const Theme = (props) => (
@@ -88,21 +90,19 @@ export default class Items extends React.Component {
     super(props)
     this.state = {
       categories: [],
-      items: []
+      items: tilesData
     }
   }
 
   componentDidMount = () => {
-    this.fetch()
+    // this.fetch()
   }
 
   fetch = () => {
     return api.get('categories', this.props.id)
     .then(resp => {
-      this.setState({categories: resp})
-      return resp
-    })
-    .then(resp => {
+      // this.setState({categories: resp})
+      this.state.categories = resp
       // Gather all the ids from each category into one array
       var ids = resp.reduce((acc, val) => acc.concat(val.items), [])
       return api.get('items', ids)
@@ -117,21 +117,18 @@ export default class Items extends React.Component {
   }
 
   render() {
-    return (
-      <div style={merge(layoutStack, {margin: '20px 180px 20px 180px'})}>
-        <GridList cellHeight={180} cols={4}>
-          <Subheader>December</Subheader>
-          {this.state.items.map((item) => (
-            <GridTile
-              key={item.id}
-              title={item.title}
-              subtitle={<span>by <b>{item.author}</b></span>}
-            >
-              <img src={item.image} />
-            </GridTile>
-          ))}
-        </GridList>
-      </div>
+    print(this.props.match)
+
+    return h('div', {style: merge(layoutStack, {margin: '20px 180px 20px 180px'})},
+      h('h1', null, 'View'),
+      h(GridList, {cellHeight: 180, cols: 4},
+        h(Subheader, null, 'December'),
+        this.state.items.map((item) => (
+          h(GridTile, {key: item.id, title: item.title, subtitle: item.author},
+            h('img', {src: item.image})
+          )
+        ))
+      )
     )
   }
 }
