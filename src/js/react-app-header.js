@@ -1,7 +1,5 @@
 import React from 'react'
-import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider'
-import getMuiTheme from 'material-ui/styles/getMuiTheme'
-import {lightTheme, darkTheme} from './react-themes'
+import {lightTheme, darkTheme, Theme} from './react-themes'
 import AppBar from 'material-ui/AppBar'
 import FlatButton from 'material-ui/FlatButton'
 import RaisedButton from 'material-ui/RaisedButton'
@@ -13,12 +11,6 @@ import Avatar from 'material-ui/Avatar'
 import NavigationClose from 'material-ui/svg-icons/navigation/close'
 import Auth from './auth'
 
-
-const Theme = (props) => (
-  <MuiThemeProvider muiTheme={getMuiTheme(props.theme)}>
-    {props.children}
-  </MuiThemeProvider>
-)
 
 const vlayout = {
   display: 'flex',
