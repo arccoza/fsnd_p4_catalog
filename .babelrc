@@ -12,6 +12,7 @@
   "plugins": [
     "external-helpers",
     "transform-react-jsx",
-    "transform-class-properties"
+    "transform-class-properties",
+    "transform-object-rest-spread"
   ]
 }
