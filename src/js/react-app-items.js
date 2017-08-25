@@ -43,42 +43,42 @@ function merge(...objs) {
 
 const tilesData = [
   {
-    img: 'images/grid-list/00-52-29-429_640.jpg',
+    image: 'images/grid-list/00-52-29-429_640.jpg',
     title: 'Breakfast',
     author: 'jill111',
   },
   {
-    img: 'images/grid-list/burger-827309_640.jpg',
+    image: 'images/grid-list/burger-827309_640.jpg',
     title: 'Tasty burger',
     author: 'pashminu',
   },
   {
-    img: 'images/grid-list/camera-813814_640.jpg',
+    image: 'images/grid-list/camera-813814_640.jpg',
     title: 'Camera',
     author: 'Danson67',
   },
   {
-    img: 'images/grid-list/morning-819362_640.jpg',
+    image: 'images/grid-list/morning-819362_640.jpg',
     title: 'Morning',
     author: 'fancycrave1',
   },
   {
-    img: 'images/grid-list/hats-829509_640.jpg',
+    image: 'images/grid-list/hats-829509_640.jpg',
     title: 'Hats',
     author: 'Hans',
   },
   {
-    img: 'images/grid-list/honey-823614_640.jpg',
+    image: 'images/grid-list/honey-823614_640.jpg',
     title: 'Honey',
     author: 'fancycravel',
   },
   {
-    img: 'images/grid-list/vegetables-790022_640.jpg',
+    image: 'images/grid-list/vegetables-790022_640.jpg',
     title: 'Vegetables',
     author: 'jill111',
   },
   {
-    img: 'images/grid-list/water-plant-821293_640.jpg',
+    image: 'images/grid-list/water-plant-821293_640.jpg',
     title: 'Water plant',
     author: 'BkrmadtyaKarki',
   },
@@ -93,12 +93,16 @@ export default class Items extends React.Component {
           title: 'hello',
         }],
       items: tilesData,
-      editingItem: {
-        img: {},
+      curItem: {
+        image: null,
         title: '',
         description: '',
         categories: [],
-        author: 'Brock Samson'
+        author: 'Brock Samson',
+      },
+      curImage: {
+        name: '',
+        content: null,
       }
     }
   }
@@ -135,11 +139,11 @@ export default class Items extends React.Component {
         h(TextField, {
           hintText: 'ex: Snowboard',
           floatingLabelText: 'Enter item name',
-          value: this.state.editingItem.name,
+          value: this.state.curItem.name,
           onChange: ev => {
             this.setState({
-              editingItem: {
-                // ...this.state.editingItem,
+              curItem: {
+                // ...this.state.curItem,
                 name: ev.target.value
               }
             })
@@ -147,7 +151,7 @@ export default class Items extends React.Component {
         }),
         h(SelectField, {
           floatingLabelText: 'Select a category',
-          value: this.state.editingItem.categories,
+          value: this.state.curItem.categories,
           listStyle: {backgroundColor: '#fff'},
           menuItemStyle: {color: '#00bcd4'},
         },
@@ -159,12 +163,12 @@ export default class Items extends React.Component {
         h(TextField, {
           hintText: 'ex: Hank Venture',
           floatingLabelText: 'The author of this item',
-          value: this.state.editingItem.author,
+          value: this.state.curItem.author,
         }),
         h(TextField, {
           hintText: 'ex: item.png',
           floatingLabelText: 'An image of the item',
-          value: this.state.editingItem.img.name,
+          value: this.state.curImage.name,
           onTouchTap: ev => this.fileInput.click()
         }),
         h('input', {
@@ -177,9 +181,9 @@ export default class Items extends React.Component {
               var file = ev.target.files[0]
               // URL.createObjectURL(blob)
               this.setState({
-                editingItem: {
-                  // ...this.state.editingItem,
-                  img: file
+                curImage: {
+                  name: file.name,
+                  content: file,  // TODO
                 }
               })
             }
@@ -191,7 +195,7 @@ export default class Items extends React.Component {
         h(Paper, {style: merge(vlayout, {flex: 1, margin: '0 0 0 3em', padding: '1em'})},
           h('img', {
             style: {maxWidth: '100%'},
-            src: this.state.editingItem.img instanceof Blob && URL.createObjectURL(this.state.editingItem.img)
+            src: this.state.curImage.content instanceof Blob && URL.createObjectURL(this.state.curImage.content)
           })
         )
       )
