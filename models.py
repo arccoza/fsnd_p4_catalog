@@ -5,6 +5,7 @@ import json
 from datetime import *
 import re
 from passlib.hash import pbkdf2_sha256 as pw_hasher
+from hashlib import md5
 
 
 db = Database()
@@ -127,6 +128,26 @@ class OAuth(Mixin, db.Entity):
     user = Required(User)
 
 
+# class FileAlias(Mixin, db.Entity):
+#     name = Required(str, index=True)
+#     files = Set(File)
+
+
+class File(Mixin, db.Entity):
+    created = Required(datetime, sql_default='CURRENT_TIMESTAMP')
+    name = Required(str, index=True)
+    content = Optional(bytes)
+    hash = Optional(str, unique=True, nullable=True, index=True)
+
+    def before_insert(self):
+        if len(self.hash) > 0:
+            self.hash = md5(self.content).digest().encode('b64')
+
+    def before_update(self):
+        if len(self.hash) > 0:
+            self.hash = md5(self.content).digest().encode('b64')
+
+
 class Category(Mixin, db.Entity):
     created = Required(datetime, sql_default='CURRENT_TIMESTAMP')
     title = Required(str)
@@ -136,6 +157,7 @@ class Category(Mixin, db.Entity):
 
 class Item(Mixin, db.Entity):
     created = Required(datetime, sql_default='CURRENT_TIMESTAMP')
+    image = Optional(int, nullable=True)
     title = Required(str)
     description = Optional(str, nullable=True)
     categories = Set('Category', reverse='items', nullable=True)

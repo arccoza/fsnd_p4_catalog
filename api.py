@@ -1,7 +1,7 @@
 from flask import Blueprint, Response, request, url_for, session, current_app,\
     make_response
 from flask_restful import Resource, Api, reqparse, abort
-from models import User, Item, Category, select, db_session, commit, rollback,\
+from models import User, File, Item, Category, select, db_session, commit, rollback,\
     Set, SetInstance, ObjectNotFound, DataError, Password, OAuth
 import json
 import re
@@ -102,6 +102,12 @@ class UserRes(GenericRes):
         self.model_class = User
 
 
+class FileRes(GenericRes):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.model_class = File
+
+
 class ItemRes(GenericRes):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -116,5 +122,6 @@ class CategoryRes(GenericRes):
 
 api.add_resource(AuthRes, '/auth/')
 api.add_resource(UserRes, '/users/', '/users/<id>')
+api.add_resource(FileRes, '/files/', '/files/<id>')
 api.add_resource(ItemRes, '/items/', '/items/<id>')
 api.add_resource(CategoryRes, '/categories/', '/categories/<id>')
