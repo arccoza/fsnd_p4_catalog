@@ -48,6 +48,13 @@ export default class AppNav extends React.Component {
               onTouchTap={ev => this.props.pub('nav', {isOpen: false})}
             />
           </Link>
+          <Link to={'/view'}>
+            <ListItem
+              primaryText='Items'
+              rightIcon={<NavigationChevronRight />}
+              onTouchTap={ev => this.props.pub('nav', {isOpen: false})}
+            />
+          </Link>
         </List>
         <Divider />
         <List>

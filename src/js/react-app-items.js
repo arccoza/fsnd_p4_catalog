@@ -6,6 +6,7 @@ import TextField from 'material-ui/TextField'
 import SelectField from 'material-ui/SelectField'
 import MenuItem from 'material-ui/MenuItem'
 import Paper from 'material-ui/Paper'
+import RaisedButton from 'material-ui/RaisedButton'
 import api from './api.js'
 var h = React.createElement
 var print = console.log.bind(console)
@@ -132,6 +133,14 @@ export default class Items extends React.Component {
   render() {
     print(this.props.match)
     var content
+    var setField = (obj, fld, idx) => ev => {
+      this.setState({
+        [obj]: {
+          ...this.state[obj],
+          [fld]: ev.target.value
+        }
+      })
+    }
 
     if (this.props.match.params.mode == 'edit') {
       var col1 = h('div', {style: merge(vlayout, {justifyContent: 'flex-start'})},
@@ -139,21 +148,21 @@ export default class Items extends React.Component {
         h(TextField, {
           hintText: 'ex: Snowboard',
           floatingLabelText: 'Enter item name',
-          value: this.state.curItem.name,
-          onChange: ev => {
-            this.setState({
-              curItem: {
-                // ...this.state.curItem,
-                name: ev.target.value
-              }
-            })
-          }
+          value: this.state.curItem.title,
+          onChange: setField('curItem', 'title'),
+        }),
+        h(TextField, {
+          hintText: 'ex: An awesome snowboard',
+          floatingLabelText: 'Enter item description',
+          value: this.state.curItem.description,
+          onChange: setField('curItem', 'description'),
         }),
         h(SelectField, {
           floatingLabelText: 'Select a category',
           value: this.state.curItem.categories,
           listStyle: {backgroundColor: '#fff'},
           menuItemStyle: {color: '#00bcd4'},
+          onChange: setField('curItem', 'categories'),
         },
           this.state.categories.map(cat => (
               h(MenuItem, {key: cat.id, value: cat.id, primaryText: cat.title})
@@ -179,15 +188,27 @@ export default class Items extends React.Component {
           onChange: ev => {
             if (ev.target.files) {
               var file = ev.target.files[0]
-              // URL.createObjectURL(blob)
               this.setState({
                 curImage: {
                   name: file.name,
-                  content: file,  // TODO
+                  content: file,
                 }
               })
+              print('adding...')
+              api.add('files', null, {
+                  name: file.name,
+                  content: file,
+                })
             }
           },
+        }),
+        h(RaisedButton, {
+          label: 'Save',
+          primary: true,
+          style: {margin: '1em 0 0 0'},
+          onTouchTap: ev => {
+            print(this.state.curItem, this.state.curImage)
+          }
         }),
       )
 

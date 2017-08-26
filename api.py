@@ -6,6 +6,7 @@ from models import User, File, Item, Category, select, db_session, commit, rollb
 import json
 import re
 from security import authorize
+from base64 import b64decode
 
 
 api_bp = Blueprint('api', __name__)
@@ -70,11 +71,14 @@ class GenericRes(Resource):
     def post(self):
         cls = self.model_class
         rvals = request.get_json() or request.values.to_dict()  # request data
+        # rvals['content'] = b64decode(rvals['content'])
+        print(rvals)
 
-        obj = cls.from_dict(rvals, self._relation_handler)
-        commit()
+        # obj = cls.from_dict(rvals, self._relation_handler)
+        # commit()
 
-        return json_response([obj])
+        # return json_response([obj])
+        return json_response([])
 
     def put(self, id):
         cls = self.model_class
