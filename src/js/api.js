@@ -1,3 +1,12 @@
+import {b64EncodeUnicode} from './utils.js'
+
+
+function tmpl(str, args) {
+  return str.replace(/\{\{(.*)\}\}/g, (m, i) => {
+    return args[i]
+  })
+}
+
 function apiRequest(method, what, id, data) {
   var input = `/api/${what}/${Array.isArray(id) ? id.join(',') : id || ''}`
   var init = {
@@ -5,13 +14,43 @@ function apiRequest(method, what, id, data) {
     credentials: 'include',
     headers: {
       'X-Requested-With': 'Fetch',
+      'Content-Type': 'application/json',
     },
   }
+  var start = Promise.resolve()
+  var promises = []
+  var blobs = []
 
-  if(data)
-    init.body = JSON.stringify(data)
+  if(data) {
+    init.body = JSON.stringify(data, (k, v) => {
+      if (v instanceof Blob) {
+        blobs.push(v)
+        return `{{${blobs.length - 1}}}`
+      }
+      return v
+    })
 
-  return fetch(input, init)
+    for (var blob of blobs) {
+      var r = new FileReader()
+      promises.push(
+        new Promise((res, rej) => {
+          r.onloadend = ev => {
+            if (ev.target.error)
+              rej(ev)
+            else
+              res(b64EncodeUnicode(ev.target.result))
+          }
+        })
+      )
+      r.readAsText(blob)
+    }
+  }
+
+  if (promises.length) {
+    start = Promise.all(promises).then(out => init.body = tmpl(init.body, out))
+  }
+
+  return start.then(resp => fetch(input, init))
   .then(resp => Promise.all([resp, resp.json()]))
   .then(([resp, json]) => {
     if(!resp.ok)
