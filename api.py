@@ -6,7 +6,8 @@ from models import User, File, Item, Category, select, db_session, commit, rollb
 import json
 import re
 from security import authorize
-from base64 import b64decode
+from base64 import b64encode, b64decode
+import binascii
 
 
 api_bp = Blueprint('api', __name__)
@@ -66,19 +67,32 @@ class GenericRes(Resource):
         else:
             objs = select(i for i in cls)[:]
 
-        return json_response(objs)
+        objs2 = []
+
+        for o in objs:
+            o = o.to_dict()
+            try:
+                o['blob'] = b64encode(o['blob'])
+            except (KeyError, binascii.Error):
+                pass
+            objs2.append(o)
+
+        return json_response(objs2)
 
     def post(self):
         cls = self.model_class
         rvals = request.get_json() or request.values.to_dict()  # request data
-        # rvals['content'] = b64decode(rvals['content'])
-        print(rvals)
+        try:
+            rvals['blob'] = b64decode(rvals['blob'])
+        except (KeyError, binascii.Error):
+            pass
+        # print(rvals)
 
-        # obj = cls.from_dict(rvals, self._relation_handler)
-        # commit()
+        obj = cls.from_dict(rvals, self._relation_handler)
+        commit()
 
         # return json_response([obj])
-        return json_response([])
+        return json_response([obj.id])
 
     def put(self, id):
         cls = self.model_class
