@@ -6,6 +6,7 @@ from datetime import *
 import re
 from passlib.hash import pbkdf2_sha256 as pw_hasher
 from hashlib import md5
+from base64 import urlsafe_b64encode as b64encode
 
 
 db = Database()
@@ -136,16 +137,20 @@ class OAuth(Mixin, db.Entity):
 class File(Mixin, db.Entity):
     created = Required(datetime, sql_default='CURRENT_TIMESTAMP')
     name = Required(str, index=True)
-    content = Optional(bytes)
+    blob = Optional(bytes)
     hash = Optional(str, unique=True, nullable=True, index=True)
 
+    def hasher(self):
+        if len(self.blob) > 0:
+            self.hash = b64encode(md5(self.blob).digest()).decode('utf-8')
+        else:
+            self.hash = None
+
     def before_insert(self):
-        if len(self.hash) > 0:
-            self.hash = md5(self.content).digest().encode('b64')
+        self.hasher()
 
     def before_update(self):
-        if len(self.hash) > 0:
-            self.hash = md5(self.content).digest().encode('b64')
+        self.hasher()
 
 
 class Category(Mixin, db.Entity):
