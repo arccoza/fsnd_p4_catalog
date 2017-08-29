@@ -39,13 +39,27 @@ function prepJson(init, data) {
   }
 
   if (promises.length) {
-    return Promise.all(promises).then(out => init.body = tmpl(init.body, out))
+    return Promise.all(promises).then(b64blob => init.body = tmpl(init.body, b64blob))
   }
   else
     return Promise.resolve()
 }
 
-function apiRequest(method, what, id, data) {
+function prepForm(init, data) {
+  var form = new FormData()
+
+  for (var k in data) {
+    if (data.hasOwnProperty(k)) {
+      form.set(k, data[k])
+    }
+  }
+
+  init.body = form
+
+  return Promise.resolve(form)
+}
+
+function apiRequest(method, what, id, data, type='json') {
   var input = `/api/${what}/${Array.isArray(id) ? id.join(',') : id || ''}`
   var init = {
     method: method,
@@ -54,7 +68,12 @@ function apiRequest(method, what, id, data) {
       'X-Requested-With': 'Fetch',
     },
   }
-  var start = prepJson(init, data)
+  var start
+
+  if (type == 'json')
+    start = prepJson(init, data)
+  else
+    start = prepForm(init, data)
 
   return start.then(resp => fetch(input, init))
   .then(resp => Promise.all([resp, resp.json()]))
