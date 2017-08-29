@@ -125,6 +125,52 @@ class FileRes(GenericRes):
         super().__init__(*args, **kwargs)
         self.model_class = File
 
+    def getData(self):
+        cls = self.model_class
+        content_type = request.headers['Content-Type']
+
+        if content_type == 'application/json':
+            rvals = request.get_json()
+            try:
+                rvals['blob'] = b64decode(rvals['blob'])
+            except (KeyError, binascii.Error):
+                abort(400)
+        elif content_type.startswith('multipart/form-data'):
+            rvals = request.form.to_dict()
+            files = request.files.to_dict()
+            for n, f in files.items():
+                rvals[n] = f.read()
+        else:
+            abort(400)
+
+        return rvals
+
+    def post(self):
+        cls = self.model_class
+        rvals = self.getData()
+
+        obj = cls.from_dict(rvals, self._relation_handler)
+        rollback()
+        print(obj)
+        # print(rvals)
+
+        return json_response([obj.id])
+        # return json_response([])
+
+    def put(self, id):
+        cls = self.model_class
+
+        try:
+            obj = cls[id]
+        except ObjectNotFound as ex:
+            abort(404)
+
+        rvals = self.getData()
+
+        obj.update(rvals, self._relation_handler)
+        commit()
+        return json_response([obj])
+
 
 class ItemRes(GenericRes):
     def __init__(self, *args, **kwargs):
