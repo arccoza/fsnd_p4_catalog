@@ -82,16 +82,10 @@ class GenericRes(Resource):
     def post(self):
         cls = self.model_class
         rvals = request.get_json() or request.values.to_dict()  # request data
-        try:
-            rvals['blob'] = b64decode(rvals['blob'])
-        except (KeyError, binascii.Error):
-            pass
-        # print(rvals)
 
         obj = cls.from_dict(rvals, self._relation_handler)
         commit()
 
-        # return json_response([obj])
         return json_response([obj.id])
 
     def put(self, id):
@@ -106,6 +100,7 @@ class GenericRes(Resource):
 
         obj.update(rvals, self._relation_handler)
         commit()
+
         return json_response([obj])
 
     def delete(self, id):
@@ -169,6 +164,7 @@ class FileRes(GenericRes):
 
         obj.update(rvals, self._relation_handler)
         commit()
+
         return json_response([obj])
 
 
