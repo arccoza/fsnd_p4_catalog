@@ -119,7 +119,6 @@ class FileRes(GenericRes):
         if id is not None:
             ids = re.split('\s*,\s*', id)
             try:
-                # objs = [cls[id]]
                 objs = select(i for i in cls if i.id in ids)[:]
             except (ObjectNotFound, DataError) as ex:
                 abort(404)
@@ -129,7 +128,6 @@ class FileRes(GenericRes):
         return objs
 
     def get(self, blob=None, id=None):
-        print('GET FILES')
         cls = self.model_class
 
         if blob == 'blob' and id is not None:
@@ -169,11 +167,8 @@ class FileRes(GenericRes):
 
         obj = cls.from_dict(rvals, self._relation_handler)
         commit()
-        # print(obj)
-        # print(rvals)
 
         return json_response([obj.id])
-        # return json_response([])
 
     def put(self, id):
         cls = self.model_class
