@@ -11,7 +11,7 @@ function prepJson(init, data) {
   var promises = []
   var blobs = []
 
-  init['Content-Type'] = 'application/json'
+  init.headers['Content-Type'] = 'application/json'
 
   if(data) {
     init.body = JSON.stringify(data, (k, v) => {
@@ -39,7 +39,7 @@ function prepJson(init, data) {
   }
 
   if (promises.length) {
-    return Promise.all(promises).then(b64blob => init.body = tmpl(init.body, b64blob))
+    return Promise.all(promises).then(b64blobs => init.body = tmpl(init.body, b64blobs))
   }
   else
     return Promise.resolve()
@@ -79,8 +79,8 @@ function apiRequest(method, what, id, data, type='json') {
   .then(resp => Promise.all([resp, resp.json()]))
   .then(([resp, json]) => {
     if(!resp.ok)
-      throw json
-    return json
+      throw [json, resp]
+    return [json, resp]
   })
 }
 
