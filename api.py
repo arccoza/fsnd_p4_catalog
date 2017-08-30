@@ -67,17 +67,7 @@ class GenericRes(Resource):
         else:
             objs = select(i for i in cls)[:]
 
-        objs2 = []
-
-        for o in objs:
-            o = o.to_dict()
-            try:
-                o['blob'] = b64encode(o['blob'])
-            except (KeyError, binascii.Error):
-                pass
-            objs2.append(o)
-
-        return json_response(objs2)
+        return json_response(objs)
 
     def post(self):
         cls = self.model_class
