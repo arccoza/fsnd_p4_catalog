@@ -133,7 +133,7 @@ class FileRes(GenericRes):
         if blob == 'blob' and id is not None:
             objs = self.getResData(id)
             try:
-                mimetype = objs[0].mimetype or 'application/octet-stream'
+                mimetype = objs[0].type or 'application/octet-stream'
                 return bin_response(objs[0].blob, mimetype)
             except IndexError:
                 abort(404)
