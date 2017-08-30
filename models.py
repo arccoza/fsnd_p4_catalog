@@ -143,7 +143,7 @@ class File(Mixin, db.Entity):
     name = Required(str, index=True)
     blob = Optional(bytes)
     hash = Optional(str, unique=True, nullable=True, index=True)
-    mimetype = Optional(str, nullable=True)
+    type = Optional(str, nullable=True)
 
     def hasher(self):
         if len(self.blob) > 0:
