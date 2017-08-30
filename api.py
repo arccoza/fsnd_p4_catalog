@@ -14,25 +14,28 @@ api_bp = Blueprint('api', __name__)
 api = Api(api_bp)
 
 
-def _to_json_default(obj):
+def _to_json_default(obj, exclude=()):
     if isinstance(obj, SetInstance):
         return [i.id for i in obj]
     try:
-        return obj.to_dict()
+        return obj.to_dict(exclude)
     except AttributeError:
         return str(obj)
 
 
-def to_json(obj):
+def to_json(obj, exclude=()):
     try:
-        obj = obj.to_dict()
+        obj = obj.to_dict(exclude)
     except AttributeError:
         pass
-    return json.dumps(obj, indent=4, sort_keys=True, default=_to_json_default)
+    return json.dumps(obj, indent=4, sort_keys=True, default=lambda obj: _to_json_default(obj, exclude))
 
 
-def json_response(obj):
-    return Response(bytes(to_json(obj), 'utf8'), mimetype='application/json')
+def json_response(obj, exclude=()):
+    return Response(bytes(to_json(obj, exclude=exclude), 'utf8'), mimetype='application/json')
+
+def bin_response(bin, mimetype='application/octet-stream'):
+    return Response(bin, mimetype=mimetype)
 
 
 class AuthRes(Resource):
@@ -110,7 +113,37 @@ class FileRes(GenericRes):
         super().__init__(*args, **kwargs)
         self.model_class = File
 
-    def getData(self):
+    def getResData(self, id=None):
+        cls = self.model_class
+
+        if id is not None:
+            ids = re.split('\s*,\s*', id)
+            try:
+                # objs = [cls[id]]
+                objs = select(i for i in cls if i.id in ids)[:]
+            except (ObjectNotFound, DataError) as ex:
+                abort(404)
+        else:
+            objs = select(i for i in cls)[:]
+
+        return objs
+
+    def get(self, blob=None, id=None):
+        print('GET FILES')
+        cls = self.model_class
+
+        if blob == 'blob' and id is not None:
+            objs = self.getResData(id)
+            try:
+                return bin_response(objs[0].blob)
+            except IndexError:
+                abort(404)
+        else:
+            objs = self.getResData(id)
+
+        return json_response(objs, exclude=('blob'))
+
+    def getReqData(self):
         cls = self.model_class
         content_type = request.headers['Content-Type']
 
@@ -172,6 +205,6 @@ class CategoryRes(GenericRes):
 
 api.add_resource(AuthRes, '/auth/')
 api.add_resource(UserRes, '/users/', '/users/<id>')
-api.add_resource(FileRes, '/files/', '/files/<id>')
+api.add_resource(FileRes, '/files/', '/files/<id>', '/files/<blob>/<id>')
 api.add_resource(ItemRes, '/items/', '/items/<id>')
 api.add_resource(CategoryRes, '/categories/', '/categories/<id>')
