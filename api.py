@@ -50,7 +50,13 @@ class GenericRes(Resource):
 
     def _relation_handler(self, t, v):
         ret = []
-        for i in re.split('\s*,\s*', v):
+
+        try:
+            v = re.split('\s*,\s*', v)
+        except TypeError:
+            pass
+
+        for i in v:
             try:
                 ret.append(t[int(i)])
             except ObjectNotFound:
