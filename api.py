@@ -132,11 +132,11 @@ class FileRes(GenericRes):
 
     def post(self):
         cls = self.model_class
-        rvals = self.getData()
+        rvals = self.getReqData()
 
         obj = cls.from_dict(rvals, self._relation_handler)
-        rollback()
-        print(obj)
+        commit()
+        # print(obj)
         # print(rvals)
 
         return json_response([obj.id])
@@ -150,12 +150,12 @@ class FileRes(GenericRes):
         except ObjectNotFound as ex:
             abort(404)
 
-        rvals = self.getData()
+        rvals = self.getReqData()
 
         obj.update(rvals, self._relation_handler)
         commit()
 
-        return json_response([obj])
+        return json_response([obj.id])
 
 
 class ItemRes(GenericRes):
