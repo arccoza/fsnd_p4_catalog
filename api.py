@@ -2,7 +2,7 @@ from flask import Blueprint, Response, request, url_for, session, current_app,\
     make_response
 from flask_restful import Resource, Api, reqparse, abort
 from models import User, File, Item, Category, select, db_session, commit, rollback,\
-    Set, SetInstance, ObjectNotFound, DataError, Password, OAuth
+    Set, SetInstance, ObjectNotFound, DataError, Password, OAuth, TransactionIntegrityError
 import json
 import re
 from security import authorize
