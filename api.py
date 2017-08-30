@@ -167,9 +167,13 @@ class FileRes(GenericRes):
         rvals = self.getReqData()
 
         obj = cls.from_dict(rvals, self._relation_handler)
-        commit()
+        try:
+            commit()
+        except TransactionIntegrityError as ex:
+            obj = select(i for i in cls if i.hash == obj.hash)[:][0]
+            abort(409, id=obj.id)
 
-        return json_response([obj.id])
+        return json_response({'id': obj.id})
 
     def put(self, id):
         cls = self.model_class
@@ -184,7 +188,7 @@ class FileRes(GenericRes):
         obj.update(rvals, self._relation_handler)
         commit()
 
-        return json_response([obj.id])
+        return json_response({'id': obj.id})
 
 
 class ItemRes(GenericRes):
