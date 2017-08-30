@@ -43,18 +43,22 @@ class Mixin(object):
                 kwargs[key] = None if attr.nullable else ''
         return cls(**kwargs)
 
-    def to_dict(self):
-        return {key: attr.__get__(self) for key, attr in self._adict_.items()}
-        # ret = {}
-        # for key, attr in self._adict_.items():
-        #     try:
-        #         attr = attr.to_dict()
-        #     except AttributeError:
-        #         attr = attr.__get__(self)
-        #         if attr isinstance(SetInstance):
-        #             attr = (i.to_dict() for i in attr)
-        #     ret[key] = attr
-        # return ret
+    # def to_dict(self):
+    #     return {key: attr.__get__(self) for key, attr in self._adict_.items()}
+    #     # ret = {}
+    #     # for key, attr in self._adict_.items():
+    #     #     try:
+    #     #         attr = attr.to_dict()
+    #     #     except AttributeError:
+    #     #         attr = attr.__get__(self)
+    #     #         if attr isinstance(SetInstance):
+    #     #             attr = (i.to_dict() for i in attr)
+    #     #     ret[key] = attr
+    #     # return ret
+
+    def to_dict(self, exclude=()):
+        return {key: attr.__get__(self) for key, attr in self._adict_.items()
+                if key not in exclude}
 
     def to_json(self):
         return json.dumps(self.to_dict(), indent=4, sort_keys=True, default=str)
@@ -139,6 +143,7 @@ class File(Mixin, db.Entity):
     name = Required(str, index=True)
     blob = Optional(bytes)
     hash = Optional(str, unique=True, nullable=True, index=True)
+    mimetype = Optional(str, nullable=True)
 
     def hasher(self):
         if len(self.blob) > 0:
