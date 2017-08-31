@@ -12,30 +12,36 @@ var h = React.createElement
 var print = console.log.bind(console)
 
 
-const vlayout = {
-  display: 'flex',
-  flexFlow: 'column wrap',
-  justifyContent: 'space-between',
-  alignContent: 'center',
-  alignItems: 'stretch',
+const ja = {
+  '<': 'flex-start',
+  '>': 'flex-end',
+  '+': 'center',
+  '~': 'stretch',
+  '_': 'baseline',
+  'a': 'space-around',
+  'b': 'space-between',
+  'e': 'space-evenly',
 }
 
-const hlayout = {
-  display: 'flex',
-  flexFlow: 'row wrap',
-  justifyContent: 'space-between',
-  alignContent: 'center',
-  alignItems: 'stretch',
-}
+function layout({dr='v', jc='b', ac='+', ai='~', fx=null, mg=null, pd=null}) {
+  var style = {
+    display: 'flex',
+    flexFlow: dr.indexOf('v') != -1 ? 'column' : 'row' +
+      dr.indexOf('-') != -1 ? '-reverse ' : ' ' +
+      dr.indexOf('.') != -1 ? 'nowrap' : 'wrap',
+    justifyContent: ja[jc],
+    alignContent: ja[ac],
+    alignItems: ja[ai],
+  }
 
-const layoutStack = {
-  position: 'relative',
-  display: 'flex',
-  // width: '100%',
-  flexFlow: 'column nowrap',
-  justifyContent: 'space-between',
-  alignContent: 'center',
-  alignItems: 'stretch',
+  if (fx)
+    style.flex = fx
+  if (mg)
+    style.margin = mg
+  if (pd)
+    style.padding = pd
+
+  return style
 }
 
 const tilesData = [
@@ -142,7 +148,7 @@ export default class Items extends React.Component {
     }
 
     if (this.props.match.params.mode == 'edit') {
-      var col1 = h('div', {style: {...vlayout, ...{justifyContent: 'flex-start'}}},
+      var col1 = h('div', {style: layout({dr: 'v', 'jc': '<'})},
         h('h2', null, 'Edit Item'),
         h(TextField, {
           hintText: 'ex: Snowboard',
@@ -227,7 +233,7 @@ export default class Items extends React.Component {
       )
 
       var col2 = h(Theme, {theme: lightTheme},
-        h(Paper, {style: {...vlayout, ...{flex: 1, margin: '0 0 0 3em', padding: '1em'}}},
+        h(Paper, {style: layout({dr: 'v', fx: '1', mg: '0 0 0 3em', pd: '1em'})},
           h('img', {
             style: {maxWidth: '100%'},
             src: this.state.curImage.blob instanceof Blob && URL.createObjectURL(this.state.curImage.blob)
@@ -235,7 +241,7 @@ export default class Items extends React.Component {
         )
       )
 
-      content = [h('div', {style: hlayout}, col1, col2)]
+      content = [h('div', {style: layout({dr: 'h'})}, col1, col2)]
     }
     else {
       content = [
@@ -252,7 +258,7 @@ export default class Items extends React.Component {
     }
 
     return h(Theme, {theme: darkTheme},
-      h('div', {style: {...layoutStack, ...{margin: '20px 180px 20px 180px'}}},
+      h('div', {style: layout({dr: 'v.', mg: '20px 180px 20px 180px'})},
         ...content
       )
     )
