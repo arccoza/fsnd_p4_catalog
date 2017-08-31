@@ -7,42 +7,11 @@ import SelectField from 'material-ui/SelectField'
 import MenuItem from 'material-ui/MenuItem'
 import Paper from 'material-ui/Paper'
 import RaisedButton from 'material-ui/RaisedButton'
+import {layout} from './utils'
 import api from './api.js'
 var h = React.createElement
 var print = console.log.bind(console)
 
-
-const ja = {
-  '<': 'flex-start',
-  '>': 'flex-end',
-  '+': 'center',
-  '~': 'stretch',
-  '_': 'baseline',
-  'a': 'space-around',
-  'b': 'space-between',
-  'e': 'space-evenly',
-}
-
-function layout({dr='v', jc='b', ac='+', ai='~', fx=null, mg=null, pd=null}) {
-  var style = {
-    display: 'flex',
-    flexFlow: dr.indexOf('v') != -1 ? 'column' : 'row' +
-      dr.indexOf('-') != -1 ? '-reverse ' : ' ' +
-      dr.indexOf('.') != -1 ? 'nowrap' : 'wrap',
-    justifyContent: ja[jc],
-    alignContent: ja[ac],
-    alignItems: ja[ai],
-  }
-
-  if (fx)
-    style.flex = fx
-  if (mg)
-    style.margin = mg
-  if (pd)
-    style.padding = pd
-
-  return style
-}
 
 const tilesData = [
   {
