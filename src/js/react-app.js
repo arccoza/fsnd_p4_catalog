@@ -5,12 +5,8 @@ import {AppBar, FlatButton, RaisedButton, Dialog, DropDownMenu, Menu, MenuItem,
   Popover, Toggle, GridList, GridTile, IconButton, Subheader, FontIcon,
   CircularProgress, Snackbar, Avatar, Drawer, List, ListItem, Divider,
   FloatingActionButton} from './widgets'
-import StarBorder from 'material-ui/svg-icons/toggle/star-border'
-import NavigationClose from 'material-ui/svg-icons/navigation/close'
-import NavigationChevronRight from 'material-ui/svg-icons/navigation/chevron-right'
-import ContentAdd from 'material-ui/svg-icons/content/add'
-import ContentAddBox from 'material-ui/svg-icons/content/add-box'
-import AvLibraryAdd from 'material-ui/svg-icons/av/library-add'
+import {StarBorder, NavigationClose, NavigationChevronRight, ContentAdd,
+  ContentAddBox, AvLibraryAdd} from './icons'
 import Auth from './auth'
 import AppHeader from './react-app-header'
 import AppNav from './react-app-nav'

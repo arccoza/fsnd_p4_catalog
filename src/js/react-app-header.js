@@ -2,7 +2,7 @@ import React from 'react'
 import {lightTheme, darkTheme, Theme} from './react-themes'
 import {AppBar, FlatButton, RaisedButton, Dialog, IconButton,
   FontIcon, CircularProgress, Avatar} from './widgets'
-import NavigationClose from 'material-ui/svg-icons/navigation/close'
+import {NavigationClose} from './icons'
 import Auth from './auth'
 
 
