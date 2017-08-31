@@ -38,10 +38,6 @@ const layoutStack = {
   alignItems: 'stretch',
 }
 
-function merge(...objs) {
-  return Object.assign({}, ...objs)
-}
-
 const tilesData = [
   {
     image: 'images/grid-list/00-52-29-429_640.jpg',
@@ -95,6 +91,7 @@ export default class Items extends React.Component {
         }],
       items: tilesData,
       curItem: {
+        id: null,
         image: null,
         title: '',
         description: '',
@@ -102,8 +99,10 @@ export default class Items extends React.Component {
         author: 'Brock Samson',
       },
       curImage: {
+        id: null,
         name: '',
-        content: null,
+        type: null,
+        blob: null,
       }
     }
   }
@@ -131,7 +130,7 @@ export default class Items extends React.Component {
   }
 
   render() {
-    print(this.props.match)
+    // print(this.props.match)
     var content
     var setField = (obj, fld, idx) => ev => {
       this.setState({
@@ -143,7 +142,7 @@ export default class Items extends React.Component {
     }
 
     if (this.props.match.params.mode == 'edit') {
-      var col1 = h('div', {style: merge(vlayout, {justifyContent: 'flex-start'})},
+      var col1 = h('div', {style: {...vlayout, ...{justifyContent: 'flex-start'}}},
         h('h2', null, 'Edit Item'),
         h(TextField, {
           hintText: 'ex: Snowboard',
@@ -191,14 +190,10 @@ export default class Items extends React.Component {
               this.setState({
                 curImage: {
                   name: file.name,
-                  content: file,
+                  type: file.type,
+                  blob: file,
                 }
               })
-              print('adding...')
-              api.add('files', null, {
-                  name: file.name,
-                  content: file,
-                })
             }
           },
         }),
@@ -207,16 +202,35 @@ export default class Items extends React.Component {
           primary: true,
           style: {margin: '1em 0 0 0'},
           onTouchTap: ev => {
-            print(this.state.curItem, this.state.curImage)
+            // print(this.state.curItem, this.state.curImage)
+            api.add('files', null, this.state.curImage, 'form')
+            .catch(([data, resp]) => {
+              if ('id' in data)
+                return data
+              else
+                throw [data, resp]
+            })
+            .then(data => {
+              this.state.curItem.image = data.id
+              this.state.curImage.image = data.id
+
+              print(this.state.curItem)
+
+              if (this.state.curItem.id != null)
+                return api.set('items', this.state.curItem.id, this.state.curItem)
+              else
+                return api.add('items', null, this.state.curItem)
+            })
+            .then(([data]) => print(data))
           }
         }),
       )
 
       var col2 = h(Theme, {theme: lightTheme},
-        h(Paper, {style: merge(vlayout, {flex: 1, margin: '0 0 0 3em', padding: '1em'})},
+        h(Paper, {style: {...vlayout, ...{flex: 1, margin: '0 0 0 3em', padding: '1em'}}},
           h('img', {
             style: {maxWidth: '100%'},
-            src: this.state.curImage.content instanceof Blob && URL.createObjectURL(this.state.curImage.content)
+            src: this.state.curImage.blob instanceof Blob && URL.createObjectURL(this.state.curImage.blob)
           })
         )
       )
@@ -238,7 +252,7 @@ export default class Items extends React.Component {
     }
 
     return h(Theme, {theme: darkTheme},
-      h('div', {style: merge(layoutStack, {margin: '20px 180px 20px 180px'})},
+      h('div', {style: {...layoutStack, ...{margin: '20px 180px 20px 180px'}}},
         ...content
       )
     )

@@ -88,10 +88,6 @@ const layoutStack = {
   alignItems: 'stretch',
 }
 
-function merge(...objs) {
-  return Object.assign({}, ...objs)
-}
-
 const Home = () => (
   <div>
     <h2>Home</h2>
@@ -208,7 +204,7 @@ class App extends React.Component {
 
   render() {
     return (
-      <div style={merge(layoutStack, {marginBottom: '120px'})}>
+      <div style={{...layoutStack, ...{marginBottom: '120px'}}}>
         <Theme theme={lightTheme}>
           <div style={layoutStack}>
             <AppHeader

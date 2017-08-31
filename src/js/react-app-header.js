@@ -38,10 +38,6 @@ const layoutStack = {
   alignItems: 'stretch',
 }
 
-function merge(...objs) {
-  return Object.assign({}, ...objs)
-}
-
 export default class AppHeader extends React.Component {
   constructor(props) {
     super(props)
@@ -95,7 +91,7 @@ export default class AppHeader extends React.Component {
   render() {
     if(!this.state.isBusy) {
       var dialogContent = (
-        <div style={merge(hlayout, {justifyContent: 'space-around'})}>
+        <div style={{...hlayout, ...{justifyContent: 'space-around'}}}>
           <RaisedButton
             name='facebook'
             onTouchTap={ev => this._signin('facebook')}
@@ -119,7 +115,7 @@ export default class AppHeader extends React.Component {
     }
     else {
       var dialogContent = (
-        <div style={merge(hlayout, {justifyContent: 'space-around'})}>
+        <div style={{...hlayout, ...{justifyContent: 'space-around'}}}>
           <CircularProgress />
         </div>
       )
