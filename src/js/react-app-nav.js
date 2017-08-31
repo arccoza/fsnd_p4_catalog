@@ -1,9 +1,7 @@
 import React from 'react'
-import {List, ListItem} from 'material-ui/List'
-import Divider from 'material-ui/Divider'
 import NavigationClose from 'material-ui/svg-icons/navigation/close'
 import NavigationChevronRight from 'material-ui/svg-icons/navigation/chevron-right'
-import Drawer from 'material-ui/Drawer'
+import {List, ListItem, Divider, Drawer} from './widgets'
 import {Link} from 'react-router-dom'
 import api from './api'
 

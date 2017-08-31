@@ -1,12 +1,7 @@
 import React from 'react'
 import {lightTheme, darkTheme, Theme} from './react-themes'
-import {GridList, GridTile} from 'material-ui/GridList'
-import Subheader from 'material-ui/Subheader'
-import TextField from 'material-ui/TextField'
-import SelectField from 'material-ui/SelectField'
-import MenuItem from 'material-ui/MenuItem'
-import Paper from 'material-ui/Paper'
-import RaisedButton from 'material-ui/RaisedButton'
+import {GridList, GridTile, Subheader, TextField, SelectField,
+  MenuItem, Paper, RaisedButton} from './widgets'
 import {layout} from './utils'
 import api from './api.js'
 var h = React.createElement

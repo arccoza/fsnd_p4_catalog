@@ -1,13 +1,7 @@
 import React from 'react'
 import {lightTheme, darkTheme, Theme} from './react-themes'
-import AppBar from 'material-ui/AppBar'
-import FlatButton from 'material-ui/FlatButton'
-import RaisedButton from 'material-ui/RaisedButton'
-import Dialog from 'material-ui/Dialog'
-import IconButton from 'material-ui/IconButton'
-import FontIcon from 'material-ui/FontIcon'
-import CircularProgress from 'material-ui/CircularProgress'
-import Avatar from 'material-ui/Avatar'
+import {AppBar, FlatButton, RaisedButton, Dialog, IconButton,
+  FontIcon, CircularProgress, Avatar} from './widgets'
 import NavigationClose from 'material-ui/svg-icons/navigation/close'
 import Auth from './auth'
 
