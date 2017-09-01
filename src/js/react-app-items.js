@@ -2,7 +2,7 @@ import React from 'react'
 import {lightTheme, darkTheme, Theme} from './react-themes'
 import {GridList, GridTile, Subheader, TextField, SelectField,
   MenuItem, Paper, RaisedButton} from './widgets'
-import {layout} from './utils'
+import {layout, modify} from './utils'
 import api from './api.js'
 var h = React.createElement
 var print = console.log.bind(console)
@@ -54,6 +54,9 @@ const tilesData = [
 export default class Items extends React.Component {
   constructor(props) {
     super(props)
+
+    this.modify = modify.bind(this)
+
     this.state = {
       categories: [{
           id: '',
@@ -97,29 +100,6 @@ export default class Items extends React.Component {
     .catch(err => {
       this.props.pub('message', {isOpen:true, content: 'Couldn\'t load content.'})
     })
-  }
-
-  modify(fnOrVal, ...path) {
-    var s = this.state
-
-    for (var i = 0, k; k = path[i], i < path.length - 1; i++) {
-      s = s[k]
-    }
-
-    // If the last obj in the path is an Array and the last key is < 0,
-    // assume it means you want the reverse index, where -1 == length.
-    if (Array.isArray(s) && k < 0)
-      k = s.length + k + 1
-
-    if (fnOrVal == undefined)
-      return s[k]
-    else if(typeof fnOrVal == 'function')
-      return fnOrVal(s, k)
-    else {
-      s[k] = fnOrVal
-      this.setState(s)
-      return s[k]
-    }
   }
 
   render() {
