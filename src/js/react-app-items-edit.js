@@ -1,27 +1,38 @@
-export function ViewItems(props) {
+import React from 'react'
+import {lightTheme, darkTheme, Theme} from './react-themes'
+import {TextField, SelectField, MenuItem, Paper, RaisedButton} from './widgets'
+import {layout} from './utils'
+import api from './api.js'
+var h = React.createElement
+var print = console.log.bind(console)
+
+
+export function EditItem({categories, curItem, curImage, setField}) {
+  var fileInput
+
   var col1 =
   h('div', {style: layout({dr: 'v', 'jc': '<'})},
     h('h2', null, 'Edit Item'),
     h(TextField, {
       hintText: 'ex: Snowboard',
       floatingLabelText: 'Enter item name',
-      value: this.state.curItem.title,
+      value: curItem.title,
       onChange: setField('curItem', 'title'),
     }),
     h(TextField, {
       hintText: 'ex: An awesome snowboard',
       floatingLabelText: 'Enter item description',
-      value: this.state.curItem.description,
+      value: curItem.description,
       onChange: setField('curItem', 'description'),
     }),
     h(SelectField, {
       floatingLabelText: 'Select a category',
-      value: this.state.curItem.categories,
+      value: curItem.categories,
       listStyle: {backgroundColor: '#fff'},
       menuItemStyle: {color: '#00bcd4'},
       onChange: setField('curItem', 'categories'),
     },
-      this.state.categories.map(cat => (
+      categories.map(cat => (
           h(MenuItem, {key: cat.id, value: cat.id, primaryText: cat.title})
         )
       )
@@ -29,16 +40,16 @@ export function ViewItems(props) {
     h(TextField, {
       hintText: 'ex: Hank Venture',
       floatingLabelText: 'The author of this item',
-      value: this.state.curItem.author,
+      value: curItem.author,
     }),
     h(TextField, {
       hintText: 'ex: item.png',
       floatingLabelText: 'An image of the item',
-      value: this.state.curImage.name,
-      onTouchTap: ev => this.fileInput.click()
+      value: curImage.name,
+      onTouchTap: ev => fileInput.click()
     }),
     h('input', {
-      ref: el => this.fileInput = el,
+      ref: el => fileInput = el,
       type: 'file',
       accept: 'image/*',
       style: {display: 'none'},
@@ -60,8 +71,8 @@ export function ViewItems(props) {
       primary: true,
       style: {margin: '1em 0 0 0'},
       onTouchTap: ev => {
-        // print(this.state.curItem, this.state.curImage)
-        api.add('files', null, this.state.curImage, 'form')
+        // print(curItem, curImage)
+        api.add('files', null, curImage, 'form')
         .catch(([data, resp]) => {
           if ('id' in data)
             return data
@@ -69,15 +80,15 @@ export function ViewItems(props) {
             throw [data, resp]
         })
         .then(data => {
-          this.state.curItem.image = data.id
-          this.state.curImage.image = data.id
+          curItem.image = data.id
+          curImage.image = data.id
 
-          print(this.state.curItem)
+          print(curItem)
 
-          if (this.state.curItem.id != null)
-            return api.set('items', this.state.curItem.id, this.state.curItem)
+          if (curItem.id != null)
+            return api.set('items', curItem.id, curItem)
           else
-            return api.add('items', null, this.state.curItem)
+            return api.add('items', null, curItem)
         })
         .then(([data]) => print(data))
       }
@@ -88,7 +99,7 @@ export function ViewItems(props) {
     h(Paper, {style: layout({dr: 'v', fx: '1', mg: '0 0 0 3em', pd: '1em'})},
       h('img', {
         style: {maxWidth: '100%'},
-        src: this.state.curImage.blob instanceof Blob && URL.createObjectURL(this.state.curImage.blob)
+        src: curImage.blob instanceof Blob && URL.createObjectURL(curImage.blob)
       })
     )
   )
