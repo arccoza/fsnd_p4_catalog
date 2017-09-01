@@ -79,7 +79,7 @@ export function modify(fnOrVal, ...path) {
       return fnOrVal(s, k)
     else {
       s[k] = fnOrVal
-      this.setState(s)
+      this.setState(this.state)
       return s[k]
     }
   }
