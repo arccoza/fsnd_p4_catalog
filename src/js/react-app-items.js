@@ -115,8 +115,11 @@ export default class Items extends React.Component {
       return s[k]
     else if(typeof fnOrVal == 'function')
       return fnOrVal(s, k)
-    else
-      return s[k] = fnOrVal
+    else {
+      s[k] = fnOrVal
+      this.setState(s)
+      return s[k]
+    }
   }
 
   render() {
