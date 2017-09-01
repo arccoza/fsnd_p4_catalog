@@ -99,6 +99,26 @@ export default class Items extends React.Component {
     })
   }
 
+  mod(fnOrVal, ...path) {
+    var s = this.state
+
+    for (var i = 0, k; k = path[i], i < path.length - 1; i++) {
+      s = s[k]
+    }
+
+    // If the last obj in the path is an Array and the last key is < 0,
+    // assume it means you want the reverse index, where -1 == length.
+    if (Array.isArray(s) && k < 0)
+      k = s.length + k + 1
+
+    if (fnOrVal == undefined)
+      return s[k]
+    else if(typeof fnOrVal == 'function')
+      return fnOrVal(s, k)
+    else
+      return s[k] = fnOrVal
+  }
+
   render() {
     // print(this.props.match)
     var content
