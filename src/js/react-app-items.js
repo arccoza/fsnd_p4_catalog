@@ -99,7 +99,7 @@ export default class Items extends React.Component {
     })
   }
 
-  mod(fnOrVal, ...path) {
+  modify(fnOrVal, ...path) {
     var s = this.state
 
     for (var i = 0, k; k = path[i], i < path.length - 1; i++) {
@@ -125,7 +125,7 @@ export default class Items extends React.Component {
   render() {
     // print(this.props.match)
     var content
-    var setField = (...args) => ev => this.mod(ev.target.value, ...args)
+    var setField = (...args) => ev => this.modify(ev.target.value, ...args)
 
     if (this.props.match.params.mode == 'edit') {
       var col1 = h('div', {style: layout({dr: 'v', 'jc': '<'})},
