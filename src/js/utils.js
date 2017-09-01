@@ -1,3 +1,4 @@
+// Base64 encoder that can handle unicode characters.
 // REF: https://developer.mozilla.org/en/docs/Web/API/WindowBase64/Base64_encoding_and_decoding
 export function b64EncodeUnicode(str) {
   return btoa(encodeURIComponent(str).replace(/%([0-9A-F]{2})/g,
@@ -6,6 +7,7 @@ export function b64EncodeUnicode(str) {
     }))
 }
 
+// Loads scripts from the server.
 export function loadScript(url) {
   var id = b64EncodeUnicode(url)
   var script = document.getElementById(id)
@@ -29,6 +31,7 @@ export function loadScript(url) {
   return p
 }
 
+// Tokens used in the layout fn.
 const ja = {
   '<': 'flex-start',
   '>': 'flex-end',
@@ -40,6 +43,7 @@ const ja = {
   'e': 'space-evenly',
 }
 
+// A funtion providing a shorthand way to build FlexBox CSS layouts.
 export function layout({dr='v', jc='b', ac='+', ai='~', fx=null, mg=null, pd=null}) {
   var style = {
     display: 'flex',
@@ -61,6 +65,8 @@ export function layout({dr='v', jc='b', ac='+', ai='~', fx=null, mg=null, pd=nul
   return style
 }
 
+// This fn is a mixin that is added to React Components to provided
+// an easy state modifier.
 export function modify(fnOrVal, ...path) {
     var s = this.state
 
