@@ -125,14 +125,7 @@ export default class Items extends React.Component {
   render() {
     // print(this.props.match)
     var content
-    var setField = (obj, fld, idx) => ev => {
-      this.setState({
-        [obj]: {
-          ...this.state[obj],
-          [fld]: ev.target.value
-        }
-      })
-    }
+    var setField = (...args) => ev => this.mod(ev.target.value, ...args)
 
     if (this.props.match.params.mode == 'edit') {
       var col1 = h('div', {style: layout({dr: 'v', 'jc': '<'})},
