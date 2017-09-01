@@ -65,7 +65,7 @@ export function layout({dr='v', jc='b', ac='+', ai='~', fx=null, mg=null, pd=nul
   return style
 }
 
-// This fn is a mixin that is added to React Components to provided
+// This fn is a mixin that is added to React Components to provide
 // an easy state modifier.
 export function modify(fnOrVal, ...path) {
     var s = this.state
