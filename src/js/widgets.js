@@ -17,6 +17,7 @@ import Drawer from 'material-ui/Drawer'
 import FlatButton from 'material-ui/FlatButton'
 import RaisedButton from 'material-ui/RaisedButton'
 import IconButton from 'material-ui/IconButton'
+import Chip from 'material-ui/Chip'
 import FloatingActionButton from 'material-ui/FloatingActionButton'
 import FontIcon from 'material-ui/FontIcon'
 import CircularProgress from 'material-ui/CircularProgress'
@@ -44,6 +45,7 @@ export {
   FlatButton,
   RaisedButton,
   IconButton,
+  Chip,
   FloatingActionButton,
   FontIcon,
   CircularProgress,
