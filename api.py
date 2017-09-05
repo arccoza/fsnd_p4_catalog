@@ -136,7 +136,7 @@ class FileRes(GenericRes):
 
         return objs
 
-    def get(self, blob=None, id=None):
+    def get(self, id=None, blob=None):
         cls = self.model_class
 
         if blob == 'blob' and id is not None:
@@ -214,6 +214,6 @@ class CategoryRes(GenericRes):
 
 api.add_resource(AuthRes, '/auth/')
 api.add_resource(UserRes, '/users/', '/users/<id>')
-api.add_resource(FileRes, '/files/', '/files/<id>', '/files/<blob>/<id>')
+api.add_resource(FileRes, '/files/', '/files/<id>', '/files/<id>/<blob>')
 api.add_resource(ItemRes, '/items/', '/items/<id>')
 api.add_resource(CategoryRes, '/categories/', '/categories/<id>')
