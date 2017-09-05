@@ -76,7 +76,6 @@ export function modify(fnOrVal, ...path) {
       s = s[k]
     }
 
-    print(fnOrVal, k, s)
     // If the last obj in the path is an Array and the last key is < 0,
     // assume it means you want the reverse index, where -1 == length.
     if (Array.isArray(s) && k < 0)
