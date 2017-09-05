@@ -88,6 +88,11 @@ export function EditItem({categories, curItem, curImage, setField, modify}) {
     }),
   )
 
+  var cats = curItem.categories.map((v, i) => h(Chip, {key: v,
+    onRequestDelete: ev => modify(null, 'curItem', 'categories', i),
+    style: {margin: '0.25em'},
+  }, (categories.find(e => e.id === v) || {}).title ))
+
   var col2 = h(Theme, {theme: lightTheme},
     h(Paper, {style: layout({dr: 'v', fx: '1', mg: '0 0 0 3em', pd: '1em'})},
       h('img', {
@@ -97,5 +102,6 @@ export function EditItem({categories, curItem, curImage, setField, modify}) {
     )
   )
 
-  return [h('div', {style: layout({dr: 'h'})}, col1, col2)]
+  return [h('div', {style: layout({dr: 'h'})}, col1, col2),
+    h('div', {style: layout({dr: 'h', jc: '<', pd: '1em 0.75em 0 0.75em'})}, cats)]
 }
