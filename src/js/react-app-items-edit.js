@@ -7,7 +7,7 @@ var h = React.createElement
 var print = console.log.bind(console)
 
 
-export function EditItem({categories, curItem, curImage, setField}) {
+export function EditItem({categories, curItem, curImage, setField, modify}) {
   var fileInput
 
   var col1 =
@@ -30,7 +30,8 @@ export function EditItem({categories, curItem, curImage, setField}) {
       value: curItem.categories,
       listStyle: {backgroundColor: '#fff'},
       menuItemStyle: {color: '#00bcd4'},
-      onChange: setField('curItem', 'categories'),
+      multiple: true,
+      onChange: (ev, k, v) => modify(v, 'curItem', 'categories'),
     },
       categories.map(cat => (
           h(MenuItem, {key: cat.id, value: cat.id, primaryText: cat.title})
@@ -53,17 +54,9 @@ export function EditItem({categories, curItem, curImage, setField}) {
       type: 'file',
       accept: 'image/*',
       style: {display: 'none'},
-      onChange: ev => {
-        if (ev.target.files) {
-          var file = ev.target.files[0]
-          this.setState({
-            curImage: {
-              name: file.name,
-              type: file.type,
-              blob: file,
-            }
-          })
-        }
+      onChange: ({target:{files:[file]}}) => {
+        if (file)
+          modify({name: file.name, type: file.type, blob: file}, 'curImage')
       },
     }),
     h(RaisedButton, {

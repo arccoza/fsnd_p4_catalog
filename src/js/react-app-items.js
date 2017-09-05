@@ -60,7 +60,7 @@ export default class Items extends React.Component {
 
     this.state = {
       categories: [{
-          id: '',
+          id: 12,
           title: 'hello',
         }],
       items: tilesData,
@@ -107,9 +107,10 @@ export default class Items extends React.Component {
     // print(this.props.match)
     var content
     var setField = (...args) => ev => this.modify(ev.target.value, ...args)
+    var modify = this.modify
 
     if (this.props.match.params.mode == 'edit') {
-      content = EditItem({...this.state, setField})
+      content = EditItem({...this.state, setField, modify})
     }
     else {
       content = [
