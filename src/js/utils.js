@@ -1,3 +1,5 @@
+var print = console.log.bind(console)
+
 // Base64 encoder that can handle unicode characters.
 // REF: https://developer.mozilla.org/en/docs/Web/API/WindowBase64/Base64_encoding_and_decoding
 export function b64EncodeUnicode(str) {
@@ -74,15 +76,24 @@ export function modify(fnOrVal, ...path) {
       s = s[k]
     }
 
+    print(fnOrVal, k, s)
     // If the last obj in the path is an Array and the last key is < 0,
     // assume it means you want the reverse index, where -1 == length.
     if (Array.isArray(s) && k < 0)
       k = s.length + k + 1
 
-    if (fnOrVal == undefined)
+    if (fnOrVal === undefined)
       return s[k]
-    else if(typeof fnOrVal == 'function')
+    else if (typeof fnOrVal === 'function')
       return fnOrVal(s, k)
+    else if (fnOrVal === null) {
+      if (Array.isArray(s))
+        s = s.filter((e, i) => i != k)
+      else
+        delete s[k]
+      this.setState(this.state)
+      return s
+    }
     else {
       s[k] = fnOrVal
       this.setState(this.state)
