@@ -104,7 +104,10 @@ class GenericRes(Resource):
 
     def delete(self, id):
         cls = self.model_class
-        cls[id].delete()
+        try:
+            cls[id].delete()
+        except ObjectNotFound:
+            abort(404)
         return '', 204
 
 
