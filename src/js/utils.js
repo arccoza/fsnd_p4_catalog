@@ -88,7 +88,7 @@ export function modify(fnOrVal, ...path) {
       return fnOrVal(s, k)
     else if (fnOrVal === null) {
       if (Array.isArray(s))
-        s = s.filter((e, i) => i != k)
+        s.splice(k, k + 1)
       else
         delete s[k]
       this.setState(this.state)
