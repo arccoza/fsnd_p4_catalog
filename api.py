@@ -85,7 +85,7 @@ class GenericRes(Resource):
         obj = cls.from_dict(rvals, self._relation_handler)
         commit()
 
-        return json_response([obj.id])
+        return json_response({'id': obj.id})
 
     def put(self, id):
         cls = self.model_class
@@ -100,7 +100,7 @@ class GenericRes(Resource):
         obj.update(rvals, self._relation_handler)
         commit()
 
-        return json_response([obj])
+        return json_response({'id': obj.id})
 
     def delete(self, id):
         cls = self.model_class
