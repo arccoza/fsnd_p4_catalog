@@ -1,6 +1,6 @@
 import React from 'react'
 import {lightTheme, darkTheme, Theme} from './react-themes'
-import {TextField, SelectField, MenuItem, Paper, RaisedButton} from './widgets'
+import {TextField, SelectField, MenuItem, Paper, RaisedButton, Chip} from './widgets'
 import {layout} from './utils'
 import api from './api.js'
 var h = React.createElement
@@ -64,7 +64,7 @@ export function EditItem({categories, curItem, curImage, setField, modify}) {
       primary: true,
       style: {margin: '1em 0 0 0'},
       onTouchTap: ev => {
-        // print(curItem, curImage)
+        // Promise.resolve(curImage.blob ? api.add('files', null, curImage, 'form') : null)
         api.add('files', null, curImage, 'form')
         .catch(([data, resp]) => {
           if ('id' in data)
@@ -74,7 +74,7 @@ export function EditItem({categories, curItem, curImage, setField, modify}) {
         })
         .then(data => {
           curItem.image = data.id
-          curImage.image = data.id
+          curImage.id = data.id
 
           print(curItem)
 
