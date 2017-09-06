@@ -62,6 +62,10 @@ export default class Items extends React.Component {
       categories: [{
           id: 12,
           title: 'hello',
+        },
+        {
+          id: 34,
+          title: 'oi',
         }],
       items: tilesData,
       curItem: {
@@ -77,12 +81,16 @@ export default class Items extends React.Component {
         name: '',
         type: null,
         blob: null,
-      }
+      },
+      isBusy: false,
     }
   }
 
   componentDidMount = () => {
     // this.fetch()
+    api.get('items', null)
+    .then(([data]) => this.modify(data, 'items'))
+    .then(() => print(this.state.items))
   }
 
   fetch = () => {
@@ -104,7 +112,7 @@ export default class Items extends React.Component {
   }
 
   render() {
-    // print(this.props.match)
+    // print(this.state.items)
     var content
     var setField = (...args) => ev => this.modify(ev.target.value, ...args)
     var modify = this.modify
@@ -119,7 +127,7 @@ export default class Items extends React.Component {
           h(Subheader, null, 'December'),
           this.state.items.map((item) => (
             h(GridTile, {key: item.id, title: item.title, subtitle: item.author},
-              h('img', {src: item.image})
+              h('img', {src: `/api/files/${item.image}/blob`})
             )
           ))
         )

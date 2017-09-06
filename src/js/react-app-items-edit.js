@@ -1,13 +1,18 @@
 import React from 'react'
 import {lightTheme, darkTheme, Theme} from './react-themes'
-import {TextField, SelectField, MenuItem, Paper, RaisedButton, FlatButton, Chip} from './widgets'
+import {TextField, SelectField, MenuItem, Paper, RaisedButton,
+  FlatButton, Chip, CircularProgress} from './widgets'
 import {layout} from './utils'
 import api from './api.js'
 var h = React.createElement
 var print = console.log.bind(console)
 
 
-export function EditItem({categories, curItem, curImage, setField, modify}) {
+Promise.prototype.finally = function(cb) {
+  return this.then(cb, cb)
+}
+
+export function EditItem({categories, curItem, isBusy, curImage, setField, modify}) {
   var fileInput
 
   var cats = curItem.categories.map((v, i) => h(Chip, {key: v,
@@ -19,37 +24,53 @@ export function EditItem({categories, curItem, curImage, setField, modify}) {
   h('div', {style: layout({dr: 'v', 'jc': '<'})},
     h('h2', null, 'Edit Item'),
     h(RaisedButton, {
-      label: 'Save',
+      label: isBusy ? null : 'Save',
+      disabled: isBusy,
       primary: true,
       style: {margin: '1em 0 0 0'},
       onTouchTap: ev => {
+        if (isBusy) return
+
+        modify(true, 'isBusy')
         // Promise.resolve(curImage.blob ? api.add('files', null, curImage, 'form') : null)
         api.add('files', null, curImage, 'form')
         .catch(([data, resp]) => {
+          print('resp set img: ', data, resp)
           if ('id' in data)
-            return data
+            return [data, resp]
           else
             throw [data, resp]
         })
-        .then(data => {
-          curItem.image = data.id
-          curImage.id = data.id
-
-          print(curItem)
+        .then(([data]) => {
+          print('set item: ', data)
+          modify(data.id, 'curItem', 'image')
+          modify(data.id, 'curImage', 'id')
 
           if (curItem.id != null)
             return api.set('items', curItem.id, curItem)
           else
             return api.add('items', null, curItem)
         })
-        .then(([data]) => print(data))
+        .then(([data]) => modify(data.id, 'curItem', 'id'))
+        .finally(() => modify(false, 'isBusy'))
       }
-    }),
+    }, !isBusy ? null : h(CircularProgress, {size: 15, thickness: 1, className: 'CircularProgress'})),
     h(FlatButton, {
-      label: 'Delete',
-      primary: false,
+      label: isBusy ? null : 'Delete',
+      disabled: isBusy || !curItem.id,
       style: {margin: '1em 0 0 0'},
-    }),
+      onTouchTap: ev => {
+        if (isBusy) return
+
+        if (curItem.id) {
+          modify(true, 'isBusy')
+          api.rem('items', curItem.id)
+          .then(resp => print(resp))
+          .catch(err => print(err))
+          .finally(() => modify(false, 'isBusy'))
+        }
+      }
+    }, !isBusy ? null : h(CircularProgress, {size: 15, thickness: 1, className: 'CircularProgress'})),
     h(TextField, {
       hintText: 'ex: Snowboard',
       floatingLabelText: 'Enter item name',
