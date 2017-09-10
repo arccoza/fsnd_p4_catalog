@@ -36,16 +36,17 @@ db.bind('postgres', database='catalog')
 db.generate_mapping(create_tables=True)
 
 
-@app.route('/')
-@app.route('/view/')
-@app.route('/edit/')
-@app.route('/view/<id>')
-@app.route('/edit/<id>')
-@app.route('/view/<cat>/')
-@app.route('/edit/<cat>/')
-@app.route('/view/<cat>/<id>')
-@app.route('/edit/<cat>/<id>')
-def root(cat=None, id=None):
+# @app.route('/')
+# @app.route('/view/')
+# @app.route('/edit/')
+# @app.route('/view/<id>')
+# @app.route('/edit/<id>')
+# @app.route('/view/<cat>/')
+# @app.route('/edit/<cat>/')
+# @app.route('/view/<cat>/<id>')
+# @app.route('/edit/<cat>/<id>')
+@app.route('/<path:path>')
+def root(cat=None, id=None, path=None):
     return render_template('index.html')
 
 if __name__ == '__main__':
