@@ -116,8 +116,9 @@ export default class Items extends React.Component {
     var content
     var setField = (...args) => ev => this.modify(ev.target.value, ...args)
     var modify = this.modify
+    var {id, cat, mode} = this.props
 
-    if (this.props.match.params.mode == 'edit') {
+    if (mode == 'edit') {
       content = EditItem({...this.state, setField, modify})
     }
     else {

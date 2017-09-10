@@ -203,9 +203,9 @@ class App extends React.Component {
           <div style={layoutStack}>
             <Switch>
               <Route exact path="/" component={Home}/>
-              <Route path='/:mode(view|edit))' exact component={Items} params={{id: null}}/>
-              <Route path='/:mode(view|edit)/:id' exact component={Items} params={{id: null}}/>
-              <Route path='/:mode(view)/:cat/:id' exact component={Items} params={{id: null}}/>
+              <Route path='/:mode(view|edit))' exact render={({match:{params}}) => <Items {...params} />} params={{id: null}}/>
+              <Route path='/:mode(view|edit)/:id' exact render={({match:{params}}) => <Items {...params} />} params={{id: null}}/>
+              <Route path='/:mode(view)/:cat/:id' exact render={({match:{params}}) => <Items {...params} />} params={{id: null}}/>
             </Switch>
           </div>
         </Theme>
