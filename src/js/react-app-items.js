@@ -58,6 +58,20 @@ export default class Items extends React.Component {
 
     this.modify = modify.bind(this)
 
+    this.types = {  // Provides a mapping of singular type names to plural for REST requests.
+      'item': 'items',
+      'category': 'categories',
+      'items': 'items',
+      'categories': 'categories',
+    }
+
+    this.typesInv = {  // Provides an inverse mapping of type names.
+      'item': 'categories',
+      'category': 'items',
+      'items': 'categories',
+      'categories': 'items',
+    }
+
     this.state = {
       categories: [{
           id: 12,
