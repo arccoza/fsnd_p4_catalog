@@ -88,28 +88,42 @@ export default class Items extends React.Component {
 
   componentDidMount = () => {
     // this.fetch()
-    api.get('items', null)
-    .then(([data]) => this.modify(data, 'items'))
-    .then(() => print(this.state.items))
+    var modify = this.modify
+    var {mode, type, id} = this.props
+    type = this.types[type]  // Use `this.types` for singular to plural conversion for the REST API.
+
+    if (type == undefined) return  // If the type couldn't be found return.
+
+    var p = api.get(type, id)
+    .then(([data, resp]) => (modify(data, type), [data, resp]))
+    .then(([data, resp]) => {
+      var ids = data.reduce((acc, val) => acc.concat(val[type]), []).filter(e => e !== undefined)
+      print(this.typesInv[type], ids)
+      if (ids.length)
+        return api.get(this.typesInv[type], ids)
+      else
+        return [[], resp]
+    })
+    .then(([data, resp]) => (modify(data, this.typesInv[type]), [data, resp]))
   }
 
-  fetch = () => {
-    return api.get('categories', this.props.id)
-    .then(resp => {
-      // this.setState({categories: resp})
-      this.state.categories = resp
-      // Gather all the ids from each category into one array
-      var ids = resp.reduce((acc, val) => acc.concat(val.items), [])
-      return api.get('items', ids)
-    })
-    .then(resp => {
-      this.setState({items: resp})
-      return resp
-    })
-    .catch(err => {
-      this.props.pub('message', {isOpen:true, content: 'Couldn\'t load content.'})
-    })
-  }
+  // fetch = () => {
+  //   return api.get('categories', this.props.id)
+  //   .then(resp => {
+  //     // this.setState({categories: resp})
+  //     this.state.categories = resp
+  //     // Gather all the ids from each category into one array
+  //     var ids = resp.reduce((acc, val) => acc.concat(val.items), [])
+  //     return api.get('items', ids)
+  //   })
+  //   .then(resp => {
+  //     this.setState({items: resp})
+  //     return resp
+  //   })
+  //   .catch(err => {
+  //     this.props.pub('message', {isOpen:true, content: 'Couldn\'t load content.'})
+  //   })
+  // }
 
   render() {
     // print(this.state.items)
