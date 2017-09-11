@@ -2,6 +2,7 @@ import React from 'react'
 import {lightTheme, darkTheme, Theme} from './react-themes'
 import {GridList, GridTile, Subheader, TextField, SelectField,
   MenuItem, Paper, RaisedButton} from './widgets'
+import {Link} from 'react-router-dom'
 import {EditItem} from './react-app-items-edit'
 import {layout, modify} from './utils'
 import api from './api.js'
@@ -108,10 +109,8 @@ export default class Items extends React.Component {
     }
   }
 
-  componentDidMount = () => {
-    // this.fetch()
+  fetch({mode, type, id}) {
     var modify = this.modify
-    var {mode, type, id} = this.props
     type = this.types[type]  // Use `this.types` for singular to plural conversion for the REST API.
 
     if (type == undefined) return  // If the type couldn't be found return.
@@ -133,7 +132,7 @@ export default class Items extends React.Component {
     // `items` if `categories` or `categories` if `items`.
     p = p.then(([data, resp]) => {
       var ids = data.reduce((acc, val) => acc.concat(val[type]), []).filter(e => e !== undefined)
-      print(this.typesInv[type], ids)
+
       if (ids.length)
         return api.get(this.typesInv[type], ids)
       else
@@ -142,23 +141,18 @@ export default class Items extends React.Component {
     .then(([data, resp]) => (modify(data, this.typesInv[type]), [data, resp]))
   }
 
-  // fetch = () => {
-  //   return api.get('categories', this.props.id)
-  //   .then(resp => {
-  //     // this.setState({categories: resp})
-  //     this.state.categories = resp
-  //     // Gather all the ids from each category into one array
-  //     var ids = resp.reduce((acc, val) => acc.concat(val.items), [])
-  //     return api.get('items', ids)
-  //   })
-  //   .then(resp => {
-  //     this.setState({items: resp})
-  //     return resp
-  //   })
-  //   .catch(err => {
-  //     this.props.pub('message', {isOpen:true, content: 'Couldn\'t load content.'})
-  //   })
-  // }
+  componentDidMount() {
+    this.fetch(this.props)
+  }
+
+  componentWillReceiveProps(nextProps) {
+    var {mode, type, id} = this.props
+
+    if (nextProps.type === type && nextProps.id === id)
+      return
+
+    this.fetch(nextProps)
+  }
 
   render() {
     // print(this.state.items)
@@ -176,11 +170,17 @@ export default class Items extends React.Component {
     }
     else {
       content = [
-        h('h2', null, 'View'),
+        h('h2', null, 'View '),
         h(GridList, {cellHeight: 180, cols: 4},
           h(Subheader, null, 'December'),
           this.state.items.map((item) => (
-            h(GridTile, {key: item.id, title: item.title, subtitle: item.author},
+            h(GridTile, {
+              key: item.id,
+              containerElement: h(Link, {to: '/view/item/' + item.id}),
+              title: item.title,
+              subtitle: item.author,
+              style: {borderRadius: '4px'}
+            },
               h('img', {src: `/api/files/${item.image}/blob`})
             )
           ))
