@@ -81,7 +81,15 @@ export default class Items extends React.Component {
           id: 34,
           title: 'oi',
         }],
-      items: tilesData,
+      items: [],
+      files: [],
+      curCategory: {
+        id: null,
+        title: '',
+        description: '',
+        items: [],
+        author: '',
+      },
       curItem: {
         id: null,
         image: null,
@@ -110,7 +118,20 @@ export default class Items extends React.Component {
 
     var p = api.get(type, id)
     .then(([data, resp]) => (modify(data, type), [data, resp]))
-    .then(([data, resp]) => {
+
+    // Branch the promise here to fetch the attached image
+    // if the first element is an `item` with an `image` prop.
+    p.then(([data]) => {
+      if (data[0] && data[0].image)
+        return api.get('files', data[0].image)
+      else
+        return []
+    })
+    .then(([data]) => modify(data, 'files'))
+
+    // Continue the original branch fetching the alternate data:
+    // `items` if `categories` or `categories` if `items`.
+    p = p.then(([data, resp]) => {
       var ids = data.reduce((acc, val) => acc.concat(val[type]), []).filter(e => e !== undefined)
       print(this.typesInv[type], ids)
       if (ids.length)
@@ -144,7 +165,11 @@ export default class Items extends React.Component {
     var content
     var setField = (...args) => ev => this.modify(ev.target.value, ...args)
     var modify = this.modify
-    var {id, cat, mode} = this.props
+    var {mode, type, id} = this.props
+
+    this.state.curCategory = this.state.categories[0] || this.state.curCategory
+    this.state.curItem = this.state.items[0] || this.state.curItem
+    this.state.curImage = this.state.files[0] || this.state.curImage
 
     if (mode == 'edit') {
       content = EditItem({...this.state, setField, modify})
