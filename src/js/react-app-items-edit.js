@@ -124,7 +124,7 @@ export function EditItem({categories, curItem, isBusy, curImage, setField, modif
     h(Paper, {style: layout({dr: 'v', jc: 'a', ai: '+', fx: '1', mg: '0 0 0 3em', pd: '1em'})},
       h('img', {
         style: {maxWidth: '100%', width: 'fit-content'},
-        src: curImage.blob instanceof Blob && URL.createObjectURL(curImage.blob)
+        src: curImage.blob instanceof Blob ? URL.createObjectURL(curImage.blob) : `/api/files/${curImage.id}/blob`
       })
     )
   )
