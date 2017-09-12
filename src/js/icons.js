@@ -4,6 +4,7 @@ import NavigationChevronRight from 'material-ui/svg-icons/navigation/chevron-rig
 import ContentAdd from 'material-ui/svg-icons/content/add'
 import ContentAddBox from 'material-ui/svg-icons/content/add-box'
 import AvLibraryAdd from 'material-ui/svg-icons/av/library-add'
+import EditorModeEdit from 'material-ui/svg-icons/editor/mode-edit'
 
 export {
   StarBorder,
@@ -12,4 +13,5 @@ export {
   ContentAdd,
   ContentAddBox,
   AvLibraryAdd,
+  EditorModeEdit,
 }
