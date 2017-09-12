@@ -1,8 +1,7 @@
 import React from 'react'
 import {lightTheme, darkTheme, Theme} from './react-themes'
 import {GridList, GridTile, Subheader, TextField, SelectField,
-  MenuItem, Paper, IconButton, RaisedButton,
-  Card, CardTitle, CardText, CardMedia, Chip, Divider} from './widgets'
+  MenuItem, Paper, IconButton, RaisedButton, Chip, Divider} from './widgets'
 import {EditorModeEdit} from './icons'
 import {Link} from 'react-router-dom'
 import {Item} from './react-app-items-item'
