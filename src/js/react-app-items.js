@@ -5,7 +5,7 @@ import {GridList, GridTile, Subheader, TextField, SelectField,
   Card, CardTitle, CardText, CardMedia, Chip, Divider} from './widgets'
 import {EditorModeEdit} from './icons'
 import {Link} from 'react-router-dom'
-import {EditItem} from './react-app-items-edit'
+import {Item} from './react-app-items-item'
 import {layout, modify} from './utils'
 import api from './api.js'
 var h = React.createElement
@@ -177,7 +177,7 @@ export default class Items extends React.Component {
     var curImage = this.state.curImage = this.state.files[0] || this.state.curImage
 
     if (id !== null) {
-      content = EditItem({...this.state, setField, modify, mode})
+      content = Item({...this.state, setField, modify, mode})
     }
     else {
       content = [
