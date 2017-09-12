@@ -1,7 +1,7 @@
 import React from 'react'
 import {lightTheme, darkTheme, Theme} from './react-themes'
 import {GridList, GridTile, Subheader, TextField, SelectField,
-  MenuItem, Paper, RaisedButton} from './widgets'
+  MenuItem, Paper, RaisedButton, Card, CardTitle, CardText, CardMedia, Chip} from './widgets'
 import {Link} from 'react-router-dom'
 import {EditItem} from './react-app-items-edit'
 import {layout, modify} from './utils'
@@ -161,16 +161,25 @@ export default class Items extends React.Component {
     var modify = this.modify
     var {mode, type, id} = this.props
 
-    this.state.curCategory = this.state.categories[0] || this.state.curCategory
-    this.state.curItem = this.state.items[0] || this.state.curItem
-    this.state.curImage = this.state.files[0] || this.state.curImage
+    var testCats = [{
+      id: 12,
+      title: 'hello',
+    },
+    {
+      id: 34,
+      title: 'oi',
+    }]
+
+    var curCategory = this.state.curCategory = this.state.categories[0] || this.state.curCategory
+    var curItem = this.state.curItem = this.state.items[0] || this.state.curItem
+    var curImage = this.state.curImage = this.state.files[0] || this.state.curImage
 
     if (mode == 'edit') {
       content = EditItem({...this.state, setField, modify})
     }
-    else {
+    else if (this.state.items.length > 1) {
       content = [
-        h('h2', null, 'View '),
+        h('h2', null, 'View Items'),
         h(GridList, {cellHeight: 180, cols: 4},
           h(Subheader, null, 'December'),
           this.state.items.map((item) => (
@@ -184,6 +193,24 @@ export default class Items extends React.Component {
               h('img', {src: `/api/files/${item.image}/blob`})
             )
           ))
+        )
+      ]
+    }
+    else {
+      content = [
+        h('h2', null, 'View Item'),
+        h(Card, {containerStyle: layout({dr: 'h'})},
+          h('div', {style: layout({dr: 'v', jc: '<', fx: '4'})},
+            h(CardTitle, {title: curItem.title}),
+            h(CardText, null, curItem.description),
+            h('div', {style: layout({dr: 'h', jc: '<', pd: '1em 0.75em'})},
+              testCats.map(cat => h(Chip, {key: cat.id, style: {margin: '0 0.25em'}}, cat.title))
+            )
+          ),
+          h(CardMedia, {style: {flex: '8'}},
+            h('img', {src: `/api/files/${curImage.id}/blob`,
+              style: {maxWidth: '100%', minWidth: 'auto', width: 'fit-content', }})
+          ),
         )
       ]
     }
