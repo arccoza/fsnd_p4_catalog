@@ -2,6 +2,7 @@ import React from 'react'
 import {lightTheme, darkTheme, Theme} from './react-themes'
 import {TextField, SelectField, MenuItem, Paper, RaisedButton,
   FlatButton, Chip, CircularProgress} from './widgets'
+import {Link} from 'react-router-dom'
 import {layout} from './utils'
 import api from './api.js'
 var h = React.createElement
@@ -24,6 +25,10 @@ function Text({value, children=[]}) {
 
 export function Item({categories, curItem, curImage, isBusy, setField, modify, mode}) {
   var fileInput
+  var modeInv = {
+    'edit': 'view',
+    'view': 'edit',
+  }
 
   var cats = curItem.categories.map((v, i) => h(Chip, {key: v,
     onRequestDelete: ev => modify(null, 'curItem', 'categories', i),
@@ -81,6 +86,13 @@ export function Item({categories, curItem, curImage, isBusy, setField, modify, m
         }
       }
     }, !isBusy ? null : h(CircularProgress, {size: 15, thickness: 1, className: 'CircularProgress'})),
+    h(Link, {to: `/${modeInv[mode]}/item/${curItem.id}`},
+      h(FlatButton, {
+        label: isBusy ? null : mode == 'edit' ? 'view' : 'edit',
+        disabled: isBusy || !curItem.id,
+        style: {margin: '1em 0 0 0', width: '100%'},
+      }, !isBusy ? null : h(CircularProgress, {size: 15, thickness: 1, className: 'CircularProgress'}))
+    ),
     h(mode != 'edit' ? Text : TextField, {
       floatingLabelText: 'Item name',
       hintText: 'ex: Snowboard',
