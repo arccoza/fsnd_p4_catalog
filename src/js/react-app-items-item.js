@@ -142,5 +142,5 @@ export function Item({categories, curItem, curImage, isBusy, setField, modify, m
     )
   )
 
-  return [h('div', {style: layout({dr: 'h'})}, col1, col2)]
+  return h('div', {style: layout({dr: 'h'})}, col1, col2)
 }

@@ -177,7 +177,7 @@ export default class Items extends React.Component {
     var curImage = this.state.curImage = this.state.files[0] || this.state.curImage
 
     if (id !== null) {
-      content = Item({...this.state, setField, modify, mode})
+      content = [Item({...this.state, setField, modify, mode})]
     }
     else {
       content = [
