@@ -12,7 +12,7 @@ Promise.prototype.finally = function(cb) {
   return this.then(cb, cb)
 }
 
-export function EditItem({categories, curItem, isBusy, curImage, setField, modify}) {
+export function EditItem({categories, curItem, curImage, isBusy, setField, modify}) {
   var fileInput
 
   var cats = curItem.categories.map((v, i) => h(Chip, {key: v,
@@ -72,25 +72,27 @@ export function EditItem({categories, curItem, isBusy, curImage, setField, modif
       }
     }, !isBusy ? null : h(CircularProgress, {size: 15, thickness: 1, className: 'CircularProgress'})),
     h(TextField, {
+      floatingLabelText: 'Item name',
       hintText: 'ex: Snowboard',
-      floatingLabelText: 'Enter item name',
       value: curItem.title,
       onChange: setField('curItem', 'title'),
     }),
     h(TextField, {
+      floatingLabelText: 'Item description',
       hintText: 'ex: An awesome snowboard',
-      floatingLabelText: 'Enter item description',
       value: curItem.description,
       onChange: setField('curItem', 'description'),
     }),
     h(TextField, {
+      disabled: true,
+      floatingLabelText: 'Item author',
       hintText: 'ex: Hank Venture',
-      floatingLabelText: 'The author of this item',
-      value: curItem.author,
+      value: curItem.author || '',
+      style: {cursor: 'default'}
     }),
     h(TextField, {
+      floatingLabelText: 'Item image',
       hintText: 'ex: item.png',
-      floatingLabelText: 'An image of the item',
       value: curImage.name,
       onTouchTap: ev => fileInput.click()
     }),
