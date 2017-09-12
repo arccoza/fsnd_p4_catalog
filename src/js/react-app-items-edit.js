@@ -12,7 +12,17 @@ Promise.prototype.finally = function(cb) {
   return this.then(cb, cb)
 }
 
-export function EditItem({categories, curItem, curImage, isBusy, setField, modify}) {
+function Text({value, children=[]}) {
+  return h('div', {style: {
+    width: '256px',
+    height: '72px',
+    lineHeight: '30px',
+    ...layout({dr: 'v', jc: '+'})}},
+    h('span', null, value, ...children),
+  )
+}
+
+export function EditItem({categories, curItem, curImage, isBusy, setField, modify, mode}) {
   var fileInput
 
   var cats = curItem.categories.map((v, i) => h(Chip, {key: v,
@@ -23,7 +33,7 @@ export function EditItem({categories, curItem, curImage, isBusy, setField, modif
   var col1 =
   h('div', {style: layout({dr: 'v', 'jc': '<'})},
     h('h2', null, 'Edit Item'),
-    h(RaisedButton, {
+    mode != 'edit' ? null : h(RaisedButton, {
       label: isBusy ? null : 'Save',
       disabled: isBusy,
       primary: true,
@@ -55,7 +65,7 @@ export function EditItem({categories, curItem, curImage, isBusy, setField, modif
         .finally(() => modify(false, 'isBusy'))
       }
     }, !isBusy ? null : h(CircularProgress, {size: 15, thickness: 1, className: 'CircularProgress'})),
-    h(FlatButton, {
+    mode != 'edit' ? null : h(FlatButton, {
       label: isBusy ? null : 'Delete',
       disabled: isBusy || !curItem.id,
       style: {margin: '1em 0 0 0'},
@@ -71,26 +81,26 @@ export function EditItem({categories, curItem, curImage, isBusy, setField, modif
         }
       }
     }, !isBusy ? null : h(CircularProgress, {size: 15, thickness: 1, className: 'CircularProgress'})),
-    h(TextField, {
+    h(mode != 'edit' ? Text : TextField, {
       floatingLabelText: 'Item name',
       hintText: 'ex: Snowboard',
       value: curItem.title,
       onChange: setField('curItem', 'title'),
     }),
-    h(TextField, {
+    h(mode != 'edit' ? Text : TextField, {
       floatingLabelText: 'Item description',
       hintText: 'ex: An awesome snowboard',
       value: curItem.description,
       onChange: setField('curItem', 'description'),
     }),
-    h(TextField, {
+    h(mode != 'edit' ? Text : TextField, {
       disabled: true,
       floatingLabelText: 'Item author',
       hintText: 'ex: Hank Venture',
       value: curItem.author || '',
       style: {cursor: 'default'}
     }),
-    h(TextField, {
+    mode != 'edit' ? null : h(TextField, {
       floatingLabelText: 'Item image',
       hintText: 'ex: item.png',
       value: curImage.name,
@@ -106,7 +116,7 @@ export function EditItem({categories, curItem, curImage, isBusy, setField, modif
           modify({name: file.name, type: file.type, blob: file}, 'curImage')
       },
     }),
-    h(SelectField, {
+    mode != 'edit' ? null : h(SelectField, {
       floatingLabelText: 'Select category',
       value: curItem.categories,
       listStyle: {backgroundColor: '#fff'},
@@ -122,7 +132,8 @@ export function EditItem({categories, curItem, curImage, isBusy, setField, modif
     h('div', {style: layout({dr: 'h', jc: '<', pd: '1em 0 0 0'})}, cats),
   )
 
-  var col2 = h(Theme, {theme: lightTheme},
+  var col2 =
+  h(Theme, {theme: lightTheme},
     h(Paper, {style: layout({dr: 'v', jc: 'a', ai: '+', fx: '1', mg: '0 0 0 3em', pd: '1em'})},
       h('img', {
         style: {maxWidth: '100%', width: 'fit-content'},

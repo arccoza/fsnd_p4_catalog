@@ -176,10 +176,10 @@ export default class Items extends React.Component {
     var curItem = this.state.curItem = this.state.items[0] || this.state.curItem
     var curImage = this.state.curImage = this.state.files[0] || this.state.curImage
 
-    if (mode == 'edit') {
+    if (id !== null) {
       content = EditItem({...this.state, setField, modify, mode})
     }
-    else if (this.state.items.length > 1) {
+    else {
       content = [
         h('h2', null, 'View Items'),
         h(GridList, {cellHeight: 180, cols: 4},
@@ -196,51 +196,6 @@ export default class Items extends React.Component {
             )
           ))
         )
-      ]
-    }
-    else {
-      var col1 =
-      h('div', {style: layout({dr: 'v', 'jc': '<'})},
-        h('h2', null, 'View Item'),
-        h('div', {style: {width: '256px', height: '72px'}}, curItem.title),
-        h(Divider),
-        h('div', {style: {
-          width: '256px',
-          height: '72px',
-          lineHeight: '30px',
-          ...layout({dr: 'v', jc: '+'})}},
-          h('span', null, curItem.description,),
-        ),
-        testCats.map(cat => h(Chip, {key: cat.id, style: {margin: '0 0.25em'}}, cat.title))
-      )
-
-      var col2 =
-      h(Theme, {theme: lightTheme},
-        h(Paper, {style: layout({dr: 'v', jc: 'a', ai: '+', fx: '1', mg: '0 0 0 3em', pd: '1em'})},
-          h('img', {
-            style: {maxWidth: '100%', width: 'fit-content'},
-            src: `/api/files/${curImage.id}/blob`
-          })
-        )
-      )
-
-      content = [
-        // h('h2', null, 'View Item'),
-        // h(Card, {containerStyle: layout({dr: 'h'})},
-        //   h('div', {style: layout({dr: 'v', jc: '<', fx: '4'})},
-        //     h(CardTitle, {title: curItem.title}),
-        //     h(CardText, null, curItem.description),
-        //     h('div', {style: layout({dr: 'h', jc: '<', pd: '1em 0.75em'})},
-        //       testCats.map(cat => h(Chip, {key: cat.id, style: {margin: '0 0.25em'}}, cat.title))
-        //     )
-        //   ),
-        //   h(CardMedia, {style: {flex: '8'}},
-        //     h('img', {src: `/api/files/${curImage.id}/blob`,
-        //       style: {maxWidth: '100%', minWidth: 'auto', width: 'fit-content', }})
-        //   ),
-        // )
-
-        h('div', {style: layout({dr: 'h'})}, col1, col2)
       ]
     }
 
