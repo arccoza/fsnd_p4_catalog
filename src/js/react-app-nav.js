@@ -19,7 +19,7 @@ export default class AppNav extends React.Component {
   render() {
     var categoryList = this.props.categories.map(cat => {
       return (
-        <Link to={`/category/${cat.id}`} key={cat.id}>
+        <Link to={`/view/category/${cat.id}`} key={cat.id}>
           <ListItem
             primaryText={cat.title}
             rightIcon={<NavigationChevronRight />}
