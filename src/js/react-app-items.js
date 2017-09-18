@@ -74,7 +74,32 @@ export default class Items extends React.Component {
       'categories': 'items',
     }
 
+    this.blank = {
+      category: () => ({
+        id: null,
+        title: '',
+        description: '',
+        items: [],
+        author: '',
+      }),
+      item: () => ({
+        id: null,
+        image: null,
+        title: '',
+        description: '',
+        categories: [],
+        author: 'Brock Samson',
+      }),
+      image: () => ({
+        id: null,
+        name: '',
+        type: null,
+        blob: null,
+      }),
+    }
+
     this.state = {
+      action: null,
       categories: [{
           id: 12,
           title: 'hello',
@@ -85,27 +110,9 @@ export default class Items extends React.Component {
         }],
       items: [],
       files: [],
-      curCategory: {
-        id: null,
-        title: '',
-        description: '',
-        items: [],
-        author: '',
-      },
-      curItem: {
-        id: null,
-        image: null,
-        title: '',
-        description: '',
-        categories: [],
-        author: 'Brock Samson',
-      },
-      curImage: {
-        id: null,
-        name: '',
-        type: null,
-        blob: null,
-      },
+      curCategory: this.blank.category(),
+      curItem: this.blank.item(),
+      curImage: this.blank.image(),
       isBusy: false,
     }
   }
@@ -155,12 +162,69 @@ export default class Items extends React.Component {
     this.fetch(nextProps)
   }
 
+  // componentWillUpdate(nextProps, nextState) {
+
+  // }
+
+  save({curCategory, curItem, curImage}) {
+    var modify = this.modify
+    print(curCategory, curItem, curImage)
+    // return Promise.resolve(true)
+
+    return Promise.resolve(curImage.blob ? api.add('files', null, curImage, 'form') : [{id: curImage.id}])
+    .catch(([data, resp]) => {
+      print('resp set img: ', data, resp)
+      if ('id' in data)
+        return [data, resp]
+      else
+        throw [data, resp]
+    })
+    .then(([data]) => {
+      print('set item: ', data)
+      modify(data.id, 'curItem', 'image')
+      modify(data.id, 'curImage', 'id')
+      curItem.image = data.id
+      curImage.id = data.id
+      print('curItem')
+
+      if (curItem.id != null)
+        return api.set('items', curItem.id, curItem)
+      else
+        return api.add('items', null, curItem)
+    })
+  }
+
+  componentDidUpdate(prevProps, prevState) {
+    var modify = this.modify
+    var state = this.state
+
+    if (state.action) {
+      // if (state.curCategory !== prevState.curCategory)
+        var curCategory = state.curCategory
+
+      // if (state.curItem !== prevState.curItem)
+        var curItem = state.curItem
+
+      // if (state.curImage !== prevState.curImage)
+        var curImage = state.curImage
+    }
+
+    if (state.action == 'save' && (curCategory || curItem || curImage)) {
+      modify(true, 'isBusy')
+      this.save({curCategory, curItem, curImage})
+      .finally(() => (state.action = null, modify(false, 'isBusy')))
+    }
+
+    state.action = null
+  }
+
   render() {
     // print(this.state.items)
     var content
     var setField = (...args) => ev => this.modify(ev.target.value, ...args)
     var modify = this.modify
     var {mode, type, id} = this.props
+    // print(mode, type, id)
 
     var testCats = [{
       id: 12,
@@ -171,11 +235,18 @@ export default class Items extends React.Component {
       title: 'oi',
     }]
 
-    var curCategory = this.state.curCategory = this.state.categories[0] || this.state.curCategory
-    var curItem = this.state.curItem = this.state.items[0] || this.state.curItem
-    var curImage = this.state.curImage = this.state.files[0] || this.state.curImage
+    if (id == null) {
+      var curCategory = this.state.curCategory = this.blank.category()
+      var curItem = this.state.curItem = this.blank.item()
+      var curImage = this.state.curImage = this.blank.image()
+    }
+    else {
+      var curCategory = this.state.curCategory = this.state.categories[0] || this.state.curCategory
+      var curItem = this.state.curItem = this.state.items[0] || this.state.curItem
+      var curImage = this.state.curImage = this.state.files[0] || this.state.curImage
+    }
 
-    if (id !== null) {
+    if (id !== null || mode == 'edit') {
       content = [Item({...this.state, setField, modify, mode})]
     }
     else {
