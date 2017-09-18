@@ -13,9 +13,11 @@ db = Database()
 
 
 class Mixin(object):
-    def update(self, d, relation_handler=None):
+    def update(self, d, relation_handler=None, exclude=()):
         for attr in self.__class__._attrs_:
             key = attr.name
+            if key in exclude or key in ('created', 'updated'):
+                continue
             val = d.get(key, None)
             if val is not None:
                 if val is '':

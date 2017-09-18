@@ -89,7 +89,6 @@ class GenericRes(Resource):
 
     def put(self, id):
         cls = self.model_class
-
         try:
             obj = cls[id]
         except ObjectNotFound as ex:
@@ -97,7 +96,7 @@ class GenericRes(Resource):
 
         rvals = request.get_json() or request.values.to_dict()  # request data
 
-        obj.update(rvals, self._relation_handler)
+        obj.update(rvals, self._relation_handler, exclude=('id'))
         commit()
 
         return json_response({'id': obj.id})
@@ -194,7 +193,7 @@ class FileRes(GenericRes):
 
         rvals = self.getReqData()
 
-        obj.update(rvals, self._relation_handler)
+        obj.update(rvals, self._relation_handler, exclude=('id'))
         commit()
 
         return json_response({'id': obj.id})
