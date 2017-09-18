@@ -16,7 +16,7 @@ class Mixin(object):
     def update(self, d, relation_handler=None, exclude=()):
         for attr in self.__class__._attrs_:
             key = attr.name
-            if key in exclude or key in ('created', 'updated'):
+            if key in exclude or key in ('created', 'updated', 'id'):
                 continue
             val = d.get(key, None)
             if val is not None:
@@ -30,10 +30,12 @@ class Mixin(object):
         return self
 
     @classmethod
-    def from_dict(cls, d, relation_handler=None):
+    def from_dict(cls, d, relation_handler=None, exclude=()):
         kwargs = {}
         for attr in cls._attrs_:
             key = attr.name
+            if key in exclude or key in ('created', 'updated', 'id'):
+                continue
             val = d.get(key, None)
             if val is not None:
                 if attr.is_relation:
