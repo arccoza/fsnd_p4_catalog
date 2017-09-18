@@ -76,7 +76,7 @@ export function Item({categories, curItem, curImage, isBusy, setField, modify, m
       disabled: isBusy || !curItem.id,
       style: {margin: '1em 0 0 0'},
       onTouchTap: ev => {
-        if (isBusy) return
+        if (isBusy || !curItem.id) return
 
         if (curItem.id) {
           modify(true, 'isBusy')
@@ -87,7 +87,7 @@ export function Item({categories, curItem, curImage, isBusy, setField, modify, m
         }
       }
     }, !isBusy ? null : h(CircularProgress, {size: 15, thickness: 1, className: 'CircularProgress'})),
-    h(Link, {to: `/${modeInv[mode]}/item/${curItem.id}`},
+    !curItem.id ? null : h(Link, {to: `/${modeInv[mode]}/item/${curItem.id}`},
       h(FlatButton, {
         label: isBusy ? null : mode == 'edit' ? 'view' : 'edit',
         disabled: isBusy || !curItem.id,
