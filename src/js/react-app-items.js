@@ -148,6 +148,8 @@ export default class Items extends React.Component {
         return [[], resp]
     })
     .then(([data, resp]) => (modify(data, this.typesInv[type]), [data, resp]))
+
+    return p
   }
 
   // Saves the current state of an item, category or image to the server.
