@@ -272,6 +272,9 @@ export default class Items extends React.Component {
     if (singleItem) {
       content = [Item({...this.state, setField, modify, mode})]
     }
+    if (singleCategory) {
+      print('singleCategory')
+    }
     else if (mode == 'view' && id === null) {
       content = [
         h('h2', null, 'View Items'),
@@ -292,7 +295,7 @@ export default class Items extends React.Component {
       ]
     }
     else {
-      content = ['not found']
+      content = [h('h2', {style: {textAlign: 'center'}}, 'Not found')]
     }
 
     return h(Theme, {theme: darkTheme},
