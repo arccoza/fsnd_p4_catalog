@@ -194,6 +194,18 @@ export default class Items extends React.Component {
     })
   }
 
+  remove({curCategory, curItem}) {
+    var modify = this.modify
+
+    if (curItem.id) {
+      return api.rem('items', curItem.id)
+      .then(resp => print(resp))
+      .catch(err => print(err))
+    }
+    else
+      return Promise.reject('Object must exist (needs an id).')
+  }
+
   componentDidUpdate(prevProps, prevState) {
     var modify = this.modify
     var state = this.state
