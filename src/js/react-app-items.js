@@ -226,6 +226,11 @@ export default class Items extends React.Component {
       this.save({curCategory, curItem, curImage})
       .finally(() => (state.action = null, modify(false, 'isBusy')))
     }
+    else if (state.action == 'remove') {
+      modify(true, 'isBusy')
+      this.remove({curCategory, curItem})
+      .finally(() => (state.action = null, modify(false, 'isBusy')))
+    }
 
     state.action = null
   }
