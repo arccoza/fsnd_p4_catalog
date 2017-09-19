@@ -246,10 +246,20 @@ export default class Items extends React.Component {
       var curImage = this.state.curImage = this.state.files[0] || this.state.curImage
     }
 
-    if (id !== null || mode == 'edit') {
+
+    if (type == 'item') {
+      if ((id !== null && this.state.items[0] && this.state.items[0].id == id) || (id === null && mode == 'edit'))
+        var singleItem = true
+    }
+    else if (type == 'category') {
+      if ((id !== null && this.state.categories[0] && this.state.categories[0].id == id) || (id === null && mode == 'edit'))
+        var singleCategory = true
+    }
+
+    if (singleItem) {
       content = [Item({...this.state, setField, modify, mode})]
     }
-    else {
+    else if (mode == 'view' && id === null) {
       content = [
         h('h2', null, 'View Items'),
         h(GridList, {cellHeight: 180, cols: 4},
@@ -267,6 +277,9 @@ export default class Items extends React.Component {
           ))
         )
       ]
+    }
+    else {
+      content = ['not found']
     }
 
     return h(Theme, {theme: darkTheme},
