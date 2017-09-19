@@ -117,6 +117,7 @@ export default class Items extends React.Component {
     }
   }
 
+  // Fetches data from the server.
   fetch({mode, type, id}) {
     var modify = this.modify
     type = this.types[type]  // Use `this.types` for singular to plural conversion for the REST API.
@@ -149,19 +150,7 @@ export default class Items extends React.Component {
     .then(([data, resp]) => (modify(data, this.typesInv[type]), [data, resp]))
   }
 
-  componentDidMount() {
-    this.fetch(this.props)
-  }
-
-  componentWillReceiveProps(nextProps) {
-    var {mode, type, id} = this.props
-
-    if (nextProps.type === type && nextProps.id === id)
-      return
-
-    this.fetch(nextProps)
-  }
-
+  // Saves the current state of an item, category or image to the server.
   save({curCategory, curItem, curImage}) {
     var modify = this.modify
 
@@ -185,6 +174,7 @@ export default class Items extends React.Component {
     })
   }
 
+  // Deletes an item or category from the server.
   remove({curCategory, curItem}) {
     var modify = this.modify
 
@@ -195,6 +185,21 @@ export default class Items extends React.Component {
     }
     else
       return Promise.reject('Object must exist (needs an id).')
+  }
+
+  // Tries to fetch data with the initial props.
+  componentDidMount() {
+    this.fetch(this.props)
+  }
+
+  // Fetches data whenver the view changes and there are new props.
+  componentWillReceiveProps(nextProps) {
+    var {mode, type, id} = this.props
+
+    if (nextProps.type === type && nextProps.id === id)
+      return
+
+    this.fetch(nextProps)
   }
 
   componentDidUpdate(prevProps, prevState) {
