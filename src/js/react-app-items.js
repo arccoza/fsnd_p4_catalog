@@ -162,30 +162,21 @@ export default class Items extends React.Component {
     this.fetch(nextProps)
   }
 
-  // componentWillUpdate(nextProps, nextState) {
-
-  // }
-
   save({curCategory, curItem, curImage}) {
     var modify = this.modify
-    print(curCategory, curItem, curImage)
-    // return Promise.resolve(true)
 
     return Promise.resolve(curImage.blob ? api.add('files', null, curImage, 'form') : [{id: curImage.id}])
     .catch(([data, resp]) => {
-      print('resp set img: ', data, resp)
       if ('id' in data)
         return [data, resp]
       else
         throw [data, resp]
     })
     .then(([data]) => {
-      print('set item: ', data)
       modify(data.id, 'curItem', 'image')
       modify(data.id, 'curImage', 'id')
       curItem.image = data.id
       curImage.id = data.id
-      print('curItem')
 
       if (curItem.id != null)
         return api.set('items', curItem.id, curItem)
