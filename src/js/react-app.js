@@ -231,16 +231,20 @@ class App extends React.Component {
                   style={{overflowY: 'visible'}}
                 >
                   <Menu autoWidth={false}>
-                    <MenuItem>
-                      <span title='Add Item'>
-                        <ContentAddBox />
-                      </span>
-                    </MenuItem>
-                    <MenuItem>
-                      <span title='Add Category'>
-                        <AvLibraryAdd />
-                      </span>
-                    </MenuItem>
+                    <Link to={'/edit/item/'}>
+                      <MenuItem>
+                        <span title='Add Item'>
+                          <ContentAddBox />
+                        </span>
+                      </MenuItem>
+                    </Link>
+                    <Link to={'/edit/category/'}>
+                      <MenuItem>
+                        <span title='Add Category'>
+                          <AvLibraryAdd />
+                        </span>
+                      </MenuItem>
+                    </Link>
                   </Menu>
                 </Popover>
               </Theme>
