@@ -119,6 +119,7 @@ export default class Items extends React.Component {
 
   // Fetches data from the server.
   fetch({mode, type, id}) {
+    print('........................fetching')
     var modify = this.modify
     type = this.types[type]  // Use `this.types` for singular to plural conversion for the REST API.
     var obj = {}
@@ -180,6 +181,10 @@ export default class Items extends React.Component {
         return api.set('items', curItem.id, curItem)
       else
         return api.add('items', null, curItem)
+    })
+    .then(([data, resp]) => {
+      curItem.id = data.id
+      return [data, resp]
     })
   }
 
