@@ -203,9 +203,12 @@ class App extends React.Component {
           <div style={layoutStack}>
             <Switch>
               <Route exact path="/" component={Home}/>
-              <Route path='/:mode(view)/all' exact render={({match:{params}}) => <Items {...{...params, type: 'item', id: null}} />}/>
-              <Route path='/:mode(edit)/:type/' exact render={({match:{params}}) => <Items {...{...params, id: null}} />}/>
-              <Route path='/:mode(edit|view)/:type/:id' exact render={({match:{params}}) => <Items {...params} />}/>
+              <Route path='/:mode(view)/all' exact
+                render={({match:{params}, location, history}) => <Items {...{...params, type: 'item', id: null, location, history}} />}/>
+              <Route path='/:mode(edit)/:type/' exact
+                render={({match:{params}, location, history}) => <Items {...{...params, id: null, location, history}} />}/>
+              <Route path='/:mode(edit|view)/:type/:id' exact
+                render={({match:{params}, location, history}) => <Items {...{...params, location, history}} />}/>
               <Route render={() => <h2 style={{textAlign: 'center'}}>Not found</h2>}/>
             </Switch>
           </div>
