@@ -163,6 +163,7 @@ export default class Items extends React.Component {
   // Saves the current state of an item, category or image to the server.
   save({curCategory, curItem, curImage}) {
     var modify = this.modify
+    var {location, history} = this.props
 
     return Promise.resolve(curImage.blob ? api.add('files', null, curImage, 'form') : [{id: curImage.id}])
     .catch(([data, resp]) => {
@@ -185,6 +186,9 @@ export default class Items extends React.Component {
     .catch(([err, resp]) => print(err))
     .then(([data, resp]) => {
       curItem.id = data.id
+      var path = location.pathname.split('/')
+      path = (path.splice(-1, 1, data.id), path.join('/'))
+      history.replace(path)
       return [data, resp]
     })
   }
@@ -195,8 +199,8 @@ export default class Items extends React.Component {
 
     if (curItem.id) {
       return api.rem('items', curItem.id)
-      .then([data, resp] => print(data))
-      .catch([err, resp] => print(err))
+      .then(([data, resp]) => print(data))
+      .catch(([err, resp]) => print(err))
     }
     else
       return Promise.reject('Object must exist (needs an id).')
