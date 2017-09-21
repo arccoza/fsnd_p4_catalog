@@ -121,21 +121,24 @@ export default class Items extends React.Component {
   fetch({mode, type, id}) {
     var modify = this.modify
     type = this.types[type]  // Use `this.types` for singular to plural conversion for the REST API.
+    var obj = {}
 
     if (type == undefined) return  // If the type couldn't be found return.
 
     var p = api.get(type, id)
-    .then(([data, resp]) => (modify(data, type), [data, resp]))
+    // .then(([data, resp]) => (modify(data, type), [data, resp]))
+    .then(([data, resp]) => (obj[type] = data, [data, resp]))
 
     // Branch the promise here to fetch the attached image
     // if the first element is an `item` with an `image` prop.
-    p.then(([data]) => {
+    var p2 = p.then(([data]) => {
       if (data[0] && data[0].image)
         return api.get('files', data[0].image)
       else
         return []
     })
-    .then(([data]) => modify(data, 'files'))
+    // .then(([data]) => modify(data, 'files'))
+    .then(([data]) => (obj['files'] = data, [data]))
 
     // Continue the original branch fetching the alternate data:
     // `items` if `categories` or `categories` if `items`.
@@ -147,9 +150,13 @@ export default class Items extends React.Component {
       else
         return [[], resp]
     })
-    .then(([data, resp]) => (modify(data, this.typesInv[type]), [data, resp]))
+    // .then(([data, resp]) => (modify(data, this.typesInv[type]), [data, resp]))
+    .then(([data, resp]) => (obj[this.typesInv[type]] = data, [data, resp]))
 
-    return p
+    var p3 = Promise.all([p, p2])
+    .then(([data, resp]) => (this.setState(obj), [obj]))
+
+    return p3
   }
 
   // Saves the current state of an item, category or image to the server.
@@ -189,22 +196,56 @@ export default class Items extends React.Component {
       return Promise.reject('Object must exist (needs an id).')
   }
 
+  setCurObjs(id, data) {
+    var state = this.state
+    var obj = {}
+
+    print('setCurObjs ------------------ ', data)
+    if (id != null) {
+      print('setCurObjs ------------------ ', 'inside')
+      obj.curItem = data.items.length > 0 ? {...data.items[0]} : state.curItem
+      obj.curImage = data.files.length > 0 ? {...data.files[0]} : state.curImage
+      obj.curCategory = data.categories.length > 0 ? {...data.categories[0]} : state.curCategory
+      this.setState(obj)
+    }
+    else {
+      print('setCurObjs ------------------ ', 'inside blank')
+      obj.curItem = this.blank.item()
+      obj.curImage = this.blank.image()
+      obj.curCategory = this.blank.category()
+      this.setState(obj)
+    }
+  }
+
   // Tries to fetch data with the initial props.
   componentDidMount() {
+    var state = this.state
+    print('......................mounted')
     this.fetch(this.props)
+    .then(([data]) => this.setCurObjs(this.props.id, data))
   }
 
   // Fetches data whenver the view changes and there are new props.
   componentWillReceiveProps(nextProps) {
+    print('......................props')
+    var state = this.state
     var {mode, type, id} = this.props
 
-    if (nextProps.type === type && nextProps.id === id)
+    // if (state.items.length == 1 && state.items[0].id != state.curItem.id)
+    //   modify(state.items[0], 'curItem')
+
+    if (nextProps.type == type && nextProps.id == id)
       return
 
+    print('......................loading')
+
+
     this.fetch(nextProps)
+    .then(([data]) => this.setCurObjs(nextProps.id, data))
   }
 
   componentDidUpdate(prevProps, prevState) {
+    print('......................updated')
     var modify = this.modify
     var state = this.state
 
@@ -235,11 +276,12 @@ export default class Items extends React.Component {
 
   render() {
     // print(this.state.items)
-    var content
+    print('......................rendering')
+    var content = []
     var setField = (...args) => ev => this.modify(ev.target.value, ...args)
     var modify = this.modify
     var {mode, type, id} = this.props
-    // print(mode, type, id)
+    print(mode, type, id)
 
     var testCats = [{
       id: 12,
@@ -250,31 +292,66 @@ export default class Items extends React.Component {
       title: 'oi',
     }]
 
-    if (id == null) {
-      var curCategory = this.state.curCategory = this.blank.category()
-      var curItem = this.state.curItem = this.blank.item()
-      var curImage = this.state.curImage = this.blank.image()
-    }
-    else {
-      var curCategory = this.state.curCategory = this.state.categories[0] || this.state.curCategory
-      var curItem = this.state.curItem = this.state.items[0] || this.state.curItem
-      var curImage = this.state.curImage = this.state.files[0] || this.state.curImage
-    }
+    // if (id == null) {
+    //   var curCategory = this.state.curCategory = this.blank.category()
+    //   var curItem = this.state.curItem = this.blank.item()
+    //   var curImage = this.state.curImage = this.blank.image()
+    // }
+    // else {
+    //   var curCategory = this.state.curCategory = this.state.categories[0] || this.state.curCategory
+    //   var curItem = this.state.curItem = this.state.items[0] || this.state.curItem
+    //   var curImage = this.state.curImage = this.state.files[0] || this.state.curImage
+    // }
 
+      // var curCategory = this.state.curCategory
+      // var curItem = this.state.curItem
+      // var curImage = this.state.curImage
+
+    // print(type, ' ', id !== null && this.state.items[0] && this.state.items[0].id == id)
+
+    // if (type == 'item') {
+
+    //   if ((id != null && this.state.items[0] && this.state.items[0].id == id) || (id == null && mode == 'edit')) {
+    //     var singleItem = true
+    //     // var curItem = this.state.curItem = this.state.items[0]
+    //     // var curImage = this.state.curImage = this.state.files[0]
+    //   }
+    //   // else if (id === null && mode == 'edit') {
+    //   //   var singleItem = true
+    //   //   // var curItem = this.state.curItem = this.blank.item()
+    //   //   // var curImage = this.state.curImage = this.blank.image()
+    //   // }
+    // }
+    // else if (type == 'category') {
+    //   if ((id != null && this.state.categories[0] && this.state.categories[0].id == id) || (id == null && mode == 'edit'))
+    //     var singleCategory = true
+    // }
+    var singleItem = false
+    var singleCategory = false
 
     if (type == 'item') {
-      if ((id !== null && this.state.items[0] && this.state.items[0].id == id) || (id === null && mode == 'edit'))
-        var singleItem = true
+      if (this.state.items.length == 1 && id != null) {
+        // print('---> set items')
+        // this.state.curItem = {...this.state.items[0]}
+        // this.state.curImage = {...this.state.files[0]}
+        singleItem = true
+      }
+      else if (mode == 'edit' && id == null)
+        singleItem = true
     }
     else if (type == 'category') {
-      if ((id !== null && this.state.categories[0] && this.state.categories[0].id == id) || (id === null && mode == 'edit'))
-        var singleCategory = true
+      if (this.state.categories.length == 1 && id != null)
+        singleCategory = true
+      else if (mode == 'edit' && id == null)
+        singleCategory = true
     }
 
+
     if (singleItem) {
+      print('singleItem', mode, type, id, this.state.items[0])
       content = [Item({...this.state, setField, modify, mode})]
     }
-    if (singleCategory) {
+    else if (singleCategory) {
       print('singleCategory')
     }
     else if (mode == 'view' && id === null) {
@@ -297,6 +374,7 @@ export default class Items extends React.Component {
       ]
     }
     else {
+      print('Not found', mode, type, id, this.state.items[0])
       content = [h('h2', {style: {textAlign: 'center'}}, 'Not found')]
     }
 
