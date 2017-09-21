@@ -200,16 +200,13 @@ export default class Items extends React.Component {
     var state = this.state
     var obj = {}
 
-    print('setCurObjs ------------------ ', data)
     if (id != null) {
-      print('setCurObjs ------------------ ', 'inside')
       obj.curItem = data.items.length > 0 ? {...data.items[0]} : state.curItem
       obj.curImage = data.files.length > 0 ? {...data.files[0]} : state.curImage
       obj.curCategory = data.categories.length > 0 ? {...data.categories[0]} : state.curCategory
       this.setState(obj)
     }
     else {
-      print('setCurObjs ------------------ ', 'inside blank')
       obj.curItem = this.blank.item()
       obj.curImage = this.blank.image()
       obj.curCategory = this.blank.category()
@@ -275,11 +272,12 @@ export default class Items extends React.Component {
   }
 
   render() {
-    // print(this.state.items)
     print('......................rendering')
     var content = []
     var setField = (...args) => ev => this.modify(ev.target.value, ...args)
     var modify = this.modify
+    var singleItem = false
+    var singleCategory = false
     var {mode, type, id} = this.props
     print(mode, type, id)
 
@@ -292,50 +290,9 @@ export default class Items extends React.Component {
       title: 'oi',
     }]
 
-    // if (id == null) {
-    //   var curCategory = this.state.curCategory = this.blank.category()
-    //   var curItem = this.state.curItem = this.blank.item()
-    //   var curImage = this.state.curImage = this.blank.image()
-    // }
-    // else {
-    //   var curCategory = this.state.curCategory = this.state.categories[0] || this.state.curCategory
-    //   var curItem = this.state.curItem = this.state.items[0] || this.state.curItem
-    //   var curImage = this.state.curImage = this.state.files[0] || this.state.curImage
-    // }
-
-      // var curCategory = this.state.curCategory
-      // var curItem = this.state.curItem
-      // var curImage = this.state.curImage
-
-    // print(type, ' ', id !== null && this.state.items[0] && this.state.items[0].id == id)
-
-    // if (type == 'item') {
-
-    //   if ((id != null && this.state.items[0] && this.state.items[0].id == id) || (id == null && mode == 'edit')) {
-    //     var singleItem = true
-    //     // var curItem = this.state.curItem = this.state.items[0]
-    //     // var curImage = this.state.curImage = this.state.files[0]
-    //   }
-    //   // else if (id === null && mode == 'edit') {
-    //   //   var singleItem = true
-    //   //   // var curItem = this.state.curItem = this.blank.item()
-    //   //   // var curImage = this.state.curImage = this.blank.image()
-    //   // }
-    // }
-    // else if (type == 'category') {
-    //   if ((id != null && this.state.categories[0] && this.state.categories[0].id == id) || (id == null && mode == 'edit'))
-    //     var singleCategory = true
-    // }
-    var singleItem = false
-    var singleCategory = false
-
     if (type == 'item') {
-      if (this.state.items.length == 1 && id != null) {
-        // print('---> set items')
-        // this.state.curItem = {...this.state.items[0]}
-        // this.state.curImage = {...this.state.files[0]}
+      if (this.state.items.length == 1 && id != null)
         singleItem = true
-      }
       else if (mode == 'edit' && id == null)
         singleItem = true
     }
