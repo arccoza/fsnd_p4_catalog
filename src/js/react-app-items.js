@@ -182,6 +182,7 @@ export default class Items extends React.Component {
       else
         return api.add('items', null, curItem)
     })
+    .catch(([err, resp]) => print(err))
     .then(([data, resp]) => {
       curItem.id = data.id
       return [data, resp]
@@ -194,8 +195,8 @@ export default class Items extends React.Component {
 
     if (curItem.id) {
       return api.rem('items', curItem.id)
-      .then(resp => print(resp))
-      .catch(err => print(err))
+      .then([data, resp] => print(data))
+      .catch([err, resp] => print(err))
     }
     else
       return Promise.reject('Object must exist (needs an id).')
