@@ -12,7 +12,9 @@ import requests
 import oauth
 
 
-client_secrets = json.load(open('./client_secrets.json'))
+# client_secrets = json.load(open('./client_secrets.json'))
+with open('./client_secrets.json') as f:
+    client_secrets = json.load(f)
 
 
 def authorize(upgrade=True):
