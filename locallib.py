@@ -1,4 +1,4 @@
 import site
 
 
-site.addsitedir('lib')
+site.addsitedir('./lib')
