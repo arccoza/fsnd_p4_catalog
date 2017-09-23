@@ -10,10 +10,12 @@ import string
 from datetime import datetime
 import requests
 import oauth
+import os
 
 
+here = os.path.dirname(__file__)
 # client_secrets = json.load(open('./client_secrets.json'))
-with open('./client_secrets.json') as f:
+with open(os.path.join(here, 'client_secrets.json')) as f:
     client_secrets = json.load(f)
 
 
