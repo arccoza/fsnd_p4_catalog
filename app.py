@@ -32,7 +32,7 @@ app.register_blueprint(api_bp, url_prefix='/api')
 # except:
 #     pass
 
-db.bind(provider='postgres', database='catalog', create_db=True)
+db.bind('postgres', database='catalog', create_db=True)
 db.generate_mapping(create_tables=True)
 
 
