@@ -32,7 +32,10 @@ try:
 except:
     pass
 
-db.bind('postgres', database='catalog')
+try:
+    db.bind(provider='postgres', database='catalog')
+except TypeError:
+    pass
 db.generate_mapping(create_tables=True)
 
 
