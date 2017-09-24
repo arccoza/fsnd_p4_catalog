@@ -23,7 +23,7 @@ app.register_blueprint(api_bp, url_prefix='/api')
 
 # Ref: http://stackoverflow.com/questions/34484066/create-a-postgres-database-using-python
 # Create the required database if it doesn't exist.
-con = psql.connect(dbname='postgres', user='postgres')
+con = psql.connect(dbname='postgres')
 con.autocommit = True
 cur = con.cursor()
 try:
