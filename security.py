@@ -13,6 +13,7 @@ import oauth
 import os
 
 
+# REF: https://stackoverflow.com/questions/12081789/pythons-working-directory-when-running-with-wsgi-and-apache
 here = os.path.dirname(__file__)
 # client_secrets = json.load(open('./client_secrets.json'))
 with open(os.path.join(here, 'client_secrets.json')) as f:
