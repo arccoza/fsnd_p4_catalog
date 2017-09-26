@@ -19,7 +19,8 @@ function Text({value, children=[]}) {
   )
 }
 
-export function Item({categories, curItem, curImage, isBusy, setField, modify, mode}) {
+export function Item({allCategories, curItem, curImage, isBusy, setField, modify, mode}) {
+  // print(curItem, curImage)
   var fileInput
   var modeInv = {
     'edit': 'view',
@@ -29,7 +30,7 @@ export function Item({categories, curItem, curImage, isBusy, setField, modify, m
   var cats = curItem.categories.map((v, i) => h(Chip, {key: v,
     onRequestDelete: ev => modify(null, 'curItem', 'categories', i),
     style: {margin: '0.25em'},
-  }, (categories.find(e => e.id === v) || {}).title ))
+  }, (allCategories.find(e => e.id === v) || {}).title ))
 
   var col1 =
   h('div', {style: layout({dr: 'v', 'jc': '<'})},
@@ -105,7 +106,7 @@ export function Item({categories, curItem, curImage, isBusy, setField, modify, m
       multiple: true,
       onChange: (ev, k, v) => modify(v, 'curItem', 'categories'),
     },
-      categories.map(cat => (
+      allCategories.map(cat => (
           h(MenuItem, {key: cat.id, value: cat.id, primaryText: cat.title})
         )
       )
