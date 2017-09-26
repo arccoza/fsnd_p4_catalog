@@ -1,6 +1,6 @@
 import React from 'react'
 import {List, ListItem, Divider, Drawer} from './widgets'
-import {NavigationClose, NavigationChevronRight} from './icons'
+import {NavigationClose, NavigationChevronRight, EditorModeEdit} from './icons'
 import {Link} from 'react-router-dom'
 import api from './api'
 
@@ -22,6 +22,7 @@ export default class AppNav extends React.Component {
         <Link to={`/view/category/${cat.id}`} key={cat.id}>
           <ListItem
             primaryText={cat.title}
+            leftIcon={<Link to={`/edit/category/${cat.id}`}><EditorModeEdit/></Link>}
             rightIcon={<NavigationChevronRight />}
             onTouchTap={ev => this.props.pub('nav', {isOpen: false})}
           />
