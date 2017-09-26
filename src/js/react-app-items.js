@@ -166,45 +166,69 @@ export default class Items extends React.Component {
     var modify = this.modify
     var {location, history} = this.props
 
-    return Promise.resolve(curImage.blob ? api.add('files', null, curImage, 'form') : [{id: curImage.id}])
-    .catch(([data, resp]) => {
-      if ('id' in data)
-        return [data, resp]
-      else
-        throw [data, resp]
-    })
-    .then(([data]) => {
-      modify(data.id, 'curItem', 'image')
-      modify(data.id, 'curImage', 'id')
-      curItem.image = data.id
-      curImage.id = data.id
+    print(curCategory, curItem, curImage)
 
-      if (curItem.id != null)
-        return api.set('items', curItem.id, curItem)
+    if (curItem) {
+      return Promise.resolve(curImage.blob ? api.add('files', null, curImage, 'form') : [{id: curImage.id}])
+      .catch(([data, resp]) => {
+        if ('id' in data)
+          return [data, resp]
+        else
+          throw [data, resp]
+      })
+      .then(([data]) => {
+        modify(data.id, 'curItem', 'image')
+        modify(data.id, 'curImage', 'id')
+        curItem.image = data.id
+        curImage.id = data.id
+
+        if (curItem.id != null)
+          return api.set('items', curItem.id, curItem)
+        else
+          return api.add('items', null, curItem)
+      })
+      // .catch(([err, resp]) => print(err))
+      .then(([data, resp]) => {
+        curItem.id = data.id
+        var path = location.pathname.split('/')
+        path = (path.splice(-1, 1, data.id), path.join('/'))
+        history.replace(path)
+        return [data, resp]
+      })
+    }
+
+    if (curCategory) {
+      if (curCategory.id != null)
+        var p = api.set('categories', curCategory.id, curCategory)
       else
-        return api.add('items', null, curItem)
-    })
-    .catch(([err, resp]) => print(err))
-    .then(([data, resp]) => {
-      curItem.id = data.id
-      var path = location.pathname.split('/')
-      path = (path.splice(-1, 1, data.id), path.join('/'))
-      history.replace(path)
-      return [data, resp]
-    })
+        var p = api.add('categories', null, curCategory)
+
+      return p.then(([data, resp]) => {
+        var path = location.pathname.split('/')
+        path = (path.splice(-1, 1, data.id), path.join('/'))
+        history.replace(path)
+        return [data, resp]
+      })
+    }
+
+    return Promise.reject('Object must exist.')
   }
 
   // Deletes an item or category from the server.
   remove({curCategory, curItem}) {
     var modify = this.modify
 
-    if (curItem.id) {
+    if (curItem && curItem.id) {
       return api.rem('items', curItem.id)
-      .then(([data, resp]) => print(data))
-      .catch(([err, resp]) => print(err))
+      // .then(([data, resp]) => print(data))
+      // .catch(([err, resp]) => print(err))
     }
-    else
-      return Promise.reject('Object must exist (needs an id).')
+
+    if (curCategory && curCategory.id) {
+      return api.rem('categories', curCategory.id)
+    }
+
+    return Promise.reject('Object must exist.')
   }
 
   setCurObjs(id, data) {
@@ -259,23 +283,24 @@ export default class Items extends React.Component {
     var {history, pub} = prevProps
 
     if (state.action) {
-      // if (state.curCategory !== prevState.curCategory)
+      if (state.action.on == 'categories')
         var curCategory = state.curCategory
 
-      // if (state.curItem !== prevState.curItem)
+      if (state.action.on == 'items') {
         var curItem = state.curItem
-
-      // if (state.curImage !== prevState.curImage)
         var curImage = state.curImage
+      }
     }
+    else
+      return
 
-    if (state.action == 'save' && (curCategory || curItem || curImage)) {
+    if (state.action.do == 'save') {
       modify(true, 'isBusy')
       this.save({curCategory, curItem, curImage})
       .catch(err => pub('message', {content: 'Save error.', action: null}))
       .finally(() => (state.action = null, modify(false, 'isBusy')))
     }
-    else if (state.action == 'remove') {
+    else if (state.action.do == 'remove') {
       modify(true, 'isBusy')
       this.remove({curCategory, curItem})
       .catch(err => pub('message', {content: 'Remove error.', action: null}))
@@ -291,7 +316,7 @@ export default class Items extends React.Component {
     var setField = (...args) => ev => this.modify(ev.target.value, ...args)
     var modify = this.modify
     var singleItem = false
-    var singleCategory = false
+    var editCategory = false
     var {mode, type, id} = this.props
     print(mode, type, id)
 
@@ -310,23 +335,23 @@ export default class Items extends React.Component {
       else if (mode == 'edit' && id == null)
         singleItem = true
     }
-    else if (type == 'category') {
+    else if (type == 'category' && mode == 'edit') {
       if (this.state.categories.length == 1 && id != null)
-        singleCategory = true
+        editCategory = true
       else if (mode == 'edit' && id == null)
-        singleCategory = true
+        editCategory = true
     }
 
 
     if (singleItem) {
       print('singleItem', mode, type, id, this.state.items[0])
-      content = [Item({...this.state, setField, modify, mode})]
+      content = [Item({...this.state, allCategories: this.props.categories, setField, modify, mode})]
     }
-    else if (singleCategory) {
-      print('singleCategory')
+    else if (editCategory) {
+      print('editCategory')
       content = [Category({...this.state, setField, modify, mode})]
     }
-    else if (mode == 'view' && id === null) {
+    else if (mode == 'view') {
       content = [
         h('h2', null, 'View Items'),
         h(GridList, {cellHeight: 180, cols: 4},
