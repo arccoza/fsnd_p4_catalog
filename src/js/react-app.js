@@ -204,11 +204,17 @@ class App extends React.Component {
             <Switch>
               <Route exact path="/" component={Home}/>
               <Route path='/:mode(view)/all' exact
-                render={({match:{params}, location, history}) => <Items {...{...params, type: 'item', id: null, location, history}} />}/>
+                render={({match:{params}, location, history}) => (
+                  <Items {...{...params, type: 'item', id: null, location, history, pub: this.pub}} />
+                )}/>
               <Route path='/:mode(edit)/:type/' exact
-                render={({match:{params}, location, history}) => <Items {...{...params, id: null, location, history}} />}/>
+                render={({match:{params}, location, history}) => (
+                  <Items {...{...params, id: null, location, history, pub: this.pub}} />
+                )}/>
               <Route path='/:mode(edit|view)/:type/:id' exact
-                render={({match:{params}, location, history}) => <Items {...{...params, location, history}} />}/>
+                render={({match:{params}, location, history}) => (
+                  <Items {...{...params, location, history, pub: this.pub}} />
+                )}/>
               <Route render={() => <h2 style={{textAlign: 'center'}}>Not found</h2>}/>
             </Switch>
           </div>
