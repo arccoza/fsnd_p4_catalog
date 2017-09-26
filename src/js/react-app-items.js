@@ -255,6 +255,7 @@ export default class Items extends React.Component {
     print('......................updated')
     var modify = this.modify
     var state = this.state
+    var {history, pub} = prevProps
 
     if (state.action) {
       // if (state.curCategory !== prevState.curCategory)
@@ -270,12 +271,14 @@ export default class Items extends React.Component {
     if (state.action == 'save' && (curCategory || curItem || curImage)) {
       modify(true, 'isBusy')
       this.save({curCategory, curItem, curImage})
+      .catch(err => pub('message', {content: 'Save error.', action: null}))
       .finally(() => (state.action = null, modify(false, 'isBusy')))
     }
     else if (state.action == 'remove') {
       modify(true, 'isBusy')
       this.remove({curCategory, curItem})
-      .finally(() => (state.action = null, prevProps.history.replace('/view/all'), modify(false, 'isBusy')))
+      .catch(err => pub('message', {content: 'Remove error.', action: null}))
+      .finally(() => (state.action = null, history.replace('/view/all'), modify(false, 'isBusy')))
     }
 
     state.action = null
