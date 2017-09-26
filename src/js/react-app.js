@@ -172,24 +172,9 @@ class App extends React.Component {
     this.fetch()
   }
 
-  fetch = () => {
-    var cats = api.get('categories')
-    .then(([data, resp]) => {
-      this.setState({categories: data})
-    })
-    .catch(err => {
-      this.props.pub('message', {isOpen:true, content: 'Couldn\'t load categories.'})
-    })
-
-    // var items = api.get('items')
-    // .then(resp => {
-    //   this.setState({items: resp})
-    // })
-    // .catch(err => {
-    //   this.props.pub('message', {isOpen:true, content: 'Couldn\'t load items.'})
-    // })
-
-    // return Promise.all([cats, items])
+  componentWillReceiveProps(nextProps) {
+    print('app...............................................props')
+    this.fetch()
   }
 
   render() {
