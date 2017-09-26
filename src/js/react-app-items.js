@@ -145,7 +145,7 @@ export default class Items extends React.Component {
     // Continue the original branch fetching the alternate data:
     // `items` if `categories` or `categories` if `items`.
     p = p.then(([data, resp]) => {
-      var ids = data.reduce((acc, val) => acc.concat(val[type]), []).filter(e => e !== undefined)
+      var ids = data.reduce((acc, val) => acc.concat(val[this.typesInv[type]]), []).filter(e => e !== undefined)
 
       if (ids.length)
         return api.get(this.typesInv[type], ids)
