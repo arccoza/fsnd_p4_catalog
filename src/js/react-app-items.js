@@ -5,6 +5,7 @@ import {GridList, GridTile, Subheader, TextField, SelectField,
 import {EditorModeEdit} from './icons'
 import {Link} from 'react-router-dom'
 import {Item} from './react-app-items-item'
+import {Category} from './react-app-items-category'
 import {layout, modify} from './utils'
 import api from './api.js'
 var h = React.createElement
@@ -211,9 +212,9 @@ export default class Items extends React.Component {
     var obj = {}
 
     if (id != null) {
-      obj.curItem = data.items.length > 0 ? {...data.items[0]} : state.curItem
-      obj.curImage = data.files.length > 0 ? {...data.files[0]} : state.curImage
-      obj.curCategory = data.categories.length > 0 ? {...data.categories[0]} : state.curCategory
+      obj.curItem = data.items && data.items.length > 0 ? {...data.items[0]} : state.curItem
+      obj.curImage = data.files && data.files.length > 0 ? {...data.files[0]} : state.curImage
+      obj.curCategory = data.categories && data.categories.length > 0 ? {...data.categories[0]} : state.curCategory
       this.setState(obj)
     }
     else {
@@ -323,6 +324,7 @@ export default class Items extends React.Component {
     }
     else if (singleCategory) {
       print('singleCategory')
+      content = [Category({...this.state, setField, modify, mode})]
     }
     else if (mode == 'view' && id === null) {
       content = [
