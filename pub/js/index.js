@@ -49077,6 +49077,11 @@ var AppNav = function (_React$Component) {
           { to: '/view/category/' + cat.id, key: cat.id },
           react.createElement(List_2, {
             primaryText: cat.title,
+            leftIcon: react.createElement(
+              Link,
+              { to: '/edit/category/' + cat.id },
+              react.createElement(EditorModeEdit, null)
+            ),
             rightIcon: react.createElement(NavigationChevronRight, null),
             onTouchTap: function onTouchTap(ev) {
               return _this2.props.pub('nav', { isOpen: false });
@@ -49276,7 +49281,7 @@ function Category$1(_ref2) {
   var itemRows = items.filter(function (v) {
     return curCategory.items.indexOf(v.id) != -1;
   }).map(function (v, i) {
-    return h$2(Table_2, { key: v }, h$2(Table_1, null, h$2('img', { src: '/api/files/' + v.image + '/blob' })), h$2(Table_1, null, v.title), h$2(Table_1, null, v.description));
+    return h$2(Table_2, { key: v }, h$2(Table_1, null, h$2('img', { src: '/api/files/' + v.image + '/blob', style: { height: '100%' } })), h$2(Table_1, null, v.title), h$2(Table_1, null, v.description));
   });
 
   var col1 = h$2('div', { style: layout({ dr: 'v', 'jc': '<' }) }, h$2('h2', null, mode == 'edit' ? 'Edit Category' : 'View Category'), mode != 'edit' ? null : h$2(RaisedButton$1, {
