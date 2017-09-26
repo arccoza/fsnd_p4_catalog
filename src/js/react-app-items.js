@@ -275,7 +275,7 @@ export default class Items extends React.Component {
     else if (state.action == 'remove') {
       modify(true, 'isBusy')
       this.remove({curCategory, curItem})
-      .finally(() => (state.action = null, modify(false, 'isBusy')))
+      .finally(() => (state.action = null, prevProps.history.replace('/view/all'), modify(false, 'isBusy')))
     }
 
     state.action = null
