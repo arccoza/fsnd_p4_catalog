@@ -22,6 +22,15 @@ import FloatingActionButton from 'material-ui/FloatingActionButton'
 import FontIcon from 'material-ui/FontIcon'
 import CircularProgress from 'material-ui/CircularProgress'
 import Avatar from 'material-ui/Avatar'
+import {
+  Table,
+  TableBody,
+  TableHeader,
+  TableHeaderColumn,
+  TableRow,
+  TableRowColumn,
+} from 'material-ui/Table'
+
 
 export {
   AppBar,
@@ -50,4 +59,10 @@ export {
   FontIcon,
   CircularProgress,
   Avatar,
+  Table,
+  TableBody,
+  TableHeader,
+  TableHeaderColumn,
+  TableRow,
+  TableRowColumn,
 }
