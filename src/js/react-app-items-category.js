@@ -32,7 +32,7 @@ export function Category({items, curCategory, isBusy, setField, modify, mode}) {
   .map((v, i) => {
     return h(TableRow, {key: v},
       h(TableRowColumn, null,
-        h('img', {src: `/api/files/${v.image}/blob`})
+        h('img', {src: `/api/files/${v.image}/blob`, style: {height: '100%'}})
       ),
       h(TableRowColumn, null, v.title),
       h(TableRowColumn, null, v.description),
