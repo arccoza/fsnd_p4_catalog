@@ -41,30 +41,7 @@ export function Item({categories, curItem, curImage, isBusy, setField, modify, m
       style: {margin: '1em 0 0 0'},
       onTouchTap: ev => {
         if (isBusy) return
-        modify('save', 'action')
-
-        // modify(true, 'isBusy')
-        // // Promise.resolve(curImage.blob ? api.add('files', null, curImage, 'form') : null)
-        // api.add('files', null, curImage, 'form')
-        // .catch(([data, resp]) => {
-        //   print('resp set img: ', data, resp)
-        //   if ('id' in data)
-        //     return [data, resp]
-        //   else
-        //     throw [data, resp]
-        // })
-        // .then(([data]) => {
-        //   print('set item: ', data)
-        //   modify(data.id, 'curItem', 'image')
-        //   modify(data.id, 'curImage', 'id')
-
-        //   if (curItem.id != null)
-        //     return api.set('items', curItem.id, curItem)
-        //   else
-        //     return api.add('items', null, curItem)
-        // })
-        // .then(([data]) => modify(data.id, 'curItem', 'id'))
-        // .finally(() => modify(false, 'isBusy'))
+        modify({do: 'save', on: 'items'}, 'action')
       }
     }, !isBusy ? null : h(CircularProgress, {size: 15, thickness: 1, className: 'CircularProgress'})),
     mode != 'edit' ? null : h(FlatButton, {
@@ -73,14 +50,7 @@ export function Item({categories, curItem, curImage, isBusy, setField, modify, m
       style: {margin: '1em 0 0 0'},
       onTouchTap: ev => {
         if (isBusy || !curItem.id) return
-
-        if (curItem.id) {
-          modify(true, 'isBusy')
-          api.rem('items', curItem.id)
-          .then(resp => print(resp))
-          .catch(err => print(err))
-          .finally(() => modify(false, 'isBusy'))
-        }
+        modify({do: 'remove', on: 'items'}, 'action')
       }
     }, !isBusy ? null : h(CircularProgress, {size: 15, thickness: 1, className: 'CircularProgress'})),
     !curItem.id ? null : h(Link, {to: `/${modeInv[mode]}/item/${curItem.id}`},
