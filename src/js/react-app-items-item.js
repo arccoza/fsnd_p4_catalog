@@ -9,10 +9,6 @@ var h = React.createElement
 var print = console.log.bind(console)
 
 
-Promise.prototype.finally = function(cb) {
-  return this.then(cb, cb)
-}
-
 function Text({value, children=[]}) {
   return h('div', {style: {
     width: '256px',

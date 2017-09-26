@@ -99,3 +99,7 @@ export function modify(fnOrVal, ...path) {
     return s[k]
   }
 }
+
+Promise.prototype.finally = function(cb) {
+  return this.then(cb, cb)
+}
