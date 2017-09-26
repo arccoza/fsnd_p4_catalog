@@ -142,6 +142,16 @@ class App extends React.Component {
     }
   }
 
+  fetch = () => {
+    var cats = api.get('categories')
+    .then(([data, resp]) => {
+      this.setState({categories: data})
+    })
+    .catch(err => {
+      this.props.pub('message', {isOpen:true, content: 'Couldn\'t load categories.'})
+    })
+  }
+
   componentDidMount = () => {
     this.sub('nav', data => {
       this.setState({nav: data})
