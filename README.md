@@ -2,6 +2,8 @@
 
 ## Install & Run
 
+You can skip this and view an online version, linked in the View section.
+
 * Make sure [vagrant](https://www.vagrantup.com/) is installed.
 
 * Clone this repo with `git clone git@github.com:arccoza/fsnd_p4_catalog.git catalog` into your FSND VM.
@@ -19,6 +21,8 @@
 ## View
 
 * On your host machine open: [http://localhost:5000/](http://localhost:5000/)
+
+* Or you can view an online version [here](http://188.166.100.114/).
 
 ## Use
 
