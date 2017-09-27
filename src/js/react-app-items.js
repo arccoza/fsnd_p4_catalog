@@ -233,6 +233,7 @@ export default class Items extends React.Component {
     return Promise.reject('Object must exist.')
   }
 
+  // Sets or resets the value of the curCategory, curItem and curImage.
   setCurObjs(id, data) {
     var state = this.state
     var obj = {}
@@ -265,19 +266,16 @@ export default class Items extends React.Component {
     var state = this.state
     var {mode, type, id} = this.props
 
-    // if (state.items.length == 1 && state.items[0].id != state.curItem.id)
-    //   modify(state.items[0], 'curItem')
-
     if (nextProps.type == type && nextProps.id == id)
       return
 
     print('......................loading')
 
-
     this.fetch(nextProps)
     .then(([data]) => this.setCurObjs(nextProps.id, data))
   }
 
+  // Check for and do actions, such as save and remove.
   componentDidUpdate(prevProps, prevState) {
     print('......................updated')
     var modify = this.modify
@@ -322,15 +320,6 @@ export default class Items extends React.Component {
     var editCategory = false
     var {mode, type, id} = this.props
     print(mode, type, id)
-
-    var testCats = [{
-      id: 12,
-      title: 'hello',
-    },
-    {
-      id: 34,
-      title: 'oi',
-    }]
 
     if (type == 'item') {
       if (this.state.items.length == 1 && id != null)
