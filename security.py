@@ -20,6 +20,9 @@ with open(os.path.join(here, 'client_secrets.json')) as f:
 
 
 def authorize(upgrade=True):
+    '''
+    Authorize a user with oauth or a custom user & pw scheme.
+    '''
     def deco(fn):
         @wraps(fn)
         def wrap(*args, **kwargs):
@@ -109,6 +112,10 @@ def authorize(upgrade=True):
 
 
 def sessionize(**kwargs):
+    '''
+    Set the session with the provided keyword values,
+    and some unique, generated values.
+    '''
     pop = string.ascii_uppercase + string.digits
     session['state'] = ''.join(random.choice(pop) for _ in range(32))
     session['timestamp'] = datetime.now().timestamp()
