@@ -74,7 +74,7 @@ export function Category({items, curCategory, errCategory, isBusy, setField, upd
       hintText: 'ex: Posters',
       errorText: errCategory && errCategory.title ? 'This field is required.' : null,
       value: curCategory.title,
-      onChange: updField(v => ({curCategory: {...curCategory, title: v}, errCategory: {...errCategory, title: v == ''}})),
+      onChange: updField(({value: v}) => ({curCategory: {...curCategory, title: v}, errCategory: {...errCategory, title: v == ''}})),
     }),
     h(mode != 'edit' ? Text : TextField, {
       floatingLabelText: 'Category description',
