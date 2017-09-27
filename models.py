@@ -48,19 +48,6 @@ class Mixin(object):
                 kwargs[key] = None if attr.nullable else ''
         return cls(**kwargs)
 
-    # def to_dict(self):
-    #     return {key: attr.__get__(self) for key, attr in self._adict_.items()}
-    #     # ret = {}
-    #     # for key, attr in self._adict_.items():
-    #     #     try:
-    #     #         attr = attr.to_dict()
-    #     #     except AttributeError:
-    #     #         attr = attr.__get__(self)
-    #     #         if attr isinstance(SetInstance):
-    #     #             attr = (i.to_dict() for i in attr)
-    #     #     ret[key] = attr
-    #     # return ret
-
     def to_dict(self, exclude=()):
         return {key: attr.__get__(self) for key, attr in self._adict_.items()
                 if key not in exclude}
@@ -86,9 +73,6 @@ class Base(db.Entity):
 class Password(Optional):
     def __init__(self, *args, **kwargs):
         super().__init__(str, *args, **kwargs)
-
-    # def __set__(attr, obj, new_val, undo_funcs=None):
-    #     super().__set__(attr, obj, new_val, undo_funcs)
 
     def validate(self, val, obj=None, entity=None, from_db=False):
         val = super().validate(val, obj, entity, from_db)
@@ -137,11 +121,6 @@ class OAuth(Mixin, db.Entity):
     access_token = Optional(str)
     refresh_token = Optional(str)
     user = Required(User)
-
-
-# class FileAlias(Mixin, db.Entity):
-#     name = Required(str, index=True)
-#     files = Set(File)
 
 
 class File(Mixin, db.Entity):
