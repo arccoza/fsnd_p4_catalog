@@ -49145,8 +49145,10 @@ function Item$1(_ref2) {
   var allCategories = _ref2.allCategories,
       curItem = _ref2.curItem,
       curImage = _ref2.curImage,
+      errItem = _ref2.errItem,
       isBusy = _ref2.isBusy,
       setField = _ref2.setField,
+      updField = _ref2.updField,
       modify$$1 = _ref2.modify,
       mode = _ref2.mode;
 
@@ -49156,6 +49158,7 @@ function Item$1(_ref2) {
     'edit': 'view',
     'view': 'edit'
   };
+  var isValid = curItem.title != null && curItem.title != '';
 
   var cats = curItem.categories.map(function (v, i) {
     return h$1(Chip$1, { key: v,
@@ -49170,11 +49173,11 @@ function Item$1(_ref2) {
 
   var col1 = h$1('div', { style: layout({ dr: 'v', 'jc': '<' }) }, h$1('h2', null, mode == 'edit' ? 'Edit Item' : 'View Item'), mode != 'edit' ? null : h$1(RaisedButton$1, {
     label: isBusy ? null : 'Save',
-    disabled: isBusy,
+    disabled: isBusy || !isValid,
     primary: true,
     style: { margin: '1em 0 0 0' },
     onTouchTap: function onTouchTap(ev) {
-      if (isBusy) return;
+      if (isBusy || !isValid) return;
       modify$$1({ do: 'save', on: 'items' }, 'action');
     }
   }, !isBusy ? null : h$1(CircularProgress$1, { size: 15, thickness: 1, className: 'CircularProgress' })), mode != 'edit' ? null : h$1(FlatButton$1, {
@@ -49192,8 +49195,11 @@ function Item$1(_ref2) {
   }, !isBusy ? null : h$1(CircularProgress$1, { size: 15, thickness: 1, className: 'CircularProgress' }))), h$1(mode != 'edit' ? Text : TextField$1, {
     floatingLabelText: 'Item name',
     hintText: 'ex: Snowboard',
+    errorText: errItem && errItem.title ? 'This field is required.' : null,
     value: curItem.title,
-    onChange: setField('curItem', 'title')
+    onChange: updField(function (v) {
+      return { curItem: _extends$12({}, curItem, { title: v }), errItem: _extends$12({}, errItem, { title: v == '' }) };
+    })
   }), h$1(mode != 'edit' ? Text : TextField$1, {
     floatingLabelText: 'Item description',
     hintText: 'ex: An awesome snowboard',
@@ -49267,8 +49273,10 @@ function Text$1(_ref) {
 function Category$1(_ref2) {
   var items = _ref2.items,
       curCategory = _ref2.curCategory,
+      errCategory = _ref2.errCategory,
       isBusy = _ref2.isBusy,
       setField = _ref2.setField,
+      updField = _ref2.updField,
       modify$$1 = _ref2.modify,
       mode = _ref2.mode;
 
@@ -49277,6 +49285,7 @@ function Category$1(_ref2) {
     'edit': 'view',
     'view': 'edit'
   };
+  var isValid = curCategory.title != null && curCategory.title != '';
 
   var itemRows = items.filter(function (v) {
     return curCategory.items.indexOf(v.id) != -1;
@@ -49286,11 +49295,11 @@ function Category$1(_ref2) {
 
   var col1 = h$2('div', { style: layout({ dr: 'v', 'jc': '<' }) }, h$2('h2', null, mode == 'edit' ? 'Edit Category' : 'View Category'), mode != 'edit' ? null : h$2(RaisedButton$1, {
     label: isBusy ? null : 'Save',
-    disabled: isBusy,
+    disabled: isBusy || !isValid,
     primary: true,
     style: { margin: '1em 0 0 0' },
     onTouchTap: function onTouchTap(ev) {
-      if (isBusy) return;
+      if (isBusy || !isValid) return;
       modify$$1({ do: 'save', on: 'categories' }, 'action');
     }
   }, !isBusy ? null : h$2(CircularProgress$1, { size: 15, thickness: 1, className: 'CircularProgress' })), mode != 'edit' ? null : h$2(FlatButton$1, {
@@ -49308,8 +49317,11 @@ function Category$1(_ref2) {
   }, !isBusy ? null : h$2(CircularProgress$1, { size: 15, thickness: 1, className: 'CircularProgress' }))), h$2(mode != 'edit' ? Text$1 : TextField$1, {
     floatingLabelText: 'Category name',
     hintText: 'ex: Posters',
+    errorText: errCategory && errCategory.title ? 'This field is required.' : null,
     value: curCategory.title,
-    onChange: setField('curCategory', 'title')
+    onChange: updField(function (v) {
+      return { curCategory: _extends$12({}, curCategory, { title: v }), errCategory: _extends$12({}, errCategory, { title: v == '' }) };
+    })
   }), h$2(mode != 'edit' ? Text$1 : TextField$1, {
     floatingLabelText: 'Category description',
     hintText: 'ex: All the movie posters',
@@ -49396,6 +49408,8 @@ var Items = function (_React$Component) {
       curCategory: _this.blank.category(),
       curItem: _this.blank.item(),
       curImage: _this.blank.image(),
+      errCategory: null,
+      errItem: null,
       isBusy: false
     };
     return _this;
@@ -49644,13 +49658,11 @@ var Items = function (_React$Component) {
           pub = prevProps.pub;
 
 
-      if (state.action) {
-        if (state.action.on == 'categories') var curCategory = state.curCategory;
-
-        if (state.action.on == 'items') {
-          var curItem = state.curItem;
-          var curImage = state.curImage;
-        }
+      if (state.action && state.action.on == 'categories' && (state.errCategory == null || !state.errCategory.title)) {
+        var curCategory = state.curCategory;
+      } else if (state.action && state.action.on == 'items' && (state.errItem == null || !state.errItem.title)) {
+        var curItem = state.curItem;
+        var curImage = state.curImage;
       } else return;
 
       if (state.action.do == 'save') {
@@ -49687,6 +49699,12 @@ var Items = function (_React$Component) {
           return _this5.modify.apply(_this5, [ev.target.value].concat(args));
         };
       };
+      var updField = function updField(fn) {
+        return function (_ref28) {
+          var value = _ref28.target.value;
+          return _this5.setState(fn(value));
+        };
+      };
       var modify$$1 = this.modify;
       var singleItem = false;
       var editCategory = false;
@@ -49713,10 +49731,10 @@ var Items = function (_React$Component) {
 
       if (singleItem) {
         print$4('singleItem', mode, type, id, this.state.items[0]);
-        content = [Item$1(_extends$12({}, this.state, { allCategories: this.props.categories, setField: setField, modify: modify$$1, mode: mode }))];
+        content = [Item$1(_extends$12({}, this.state, { allCategories: this.props.categories, setField: setField, updField: updField, modify: modify$$1, mode: mode }))];
       } else if (editCategory) {
         print$4('editCategory');
-        content = [Category$1(_extends$12({}, this.state, { setField: setField, modify: modify$$1, mode: mode }))];
+        content = [Category$1(_extends$12({}, this.state, { setField: setField, updField: updField, modify: modify$$1, mode: mode }))];
       } else if (mode == 'view') {
         content = [h('h2', null, 'View Items'), h(GridList_2, { cellHeight: 180, cols: 4 }, this.state.items.map(function (item) {
           return h(GridList_1, {
