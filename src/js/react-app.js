@@ -18,6 +18,7 @@ import {
   withRouter
 } from 'react-router-dom'
 import Items from './react-app-items'
+import {Promise} from './utils'  // Simply imported to trigger the prototype update.
 import api from './api'
 var print = console.log.bind(console)
 
