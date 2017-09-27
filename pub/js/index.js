@@ -49292,7 +49292,9 @@ function Category$1(_ref2) {
       setField = _ref2.setField,
       updField = _ref2.updField,
       modify$$1 = _ref2.modify,
-      mode = _ref2.mode;
+      mode = _ref2.mode,
+      history = _ref2.history,
+      user = _ref2.user;
 
   // print(curItem, curImage)
   var modeInv = {
@@ -49304,7 +49306,9 @@ function Category$1(_ref2) {
   var itemRows = items.filter(function (v) {
     return curCategory.items.indexOf(v.id) != -1;
   }).map(function (v, i) {
-    return h$2(Table_2, { key: v }, h$2(Table_1, null, h$2('img', { src: '/api/files/' + v.image + '/blob', style: { height: '100%' } })), h$2(Table_1, null, v.title), h$2(Table_1, null, v.description));
+    return h$2(Table_2, { key: v, onTouchTap: function onTouchTap(ev) {
+        return history.push('/view/items/' + v.id);
+      } }, h$2(Table_1, null, h$2('img', { src: '/api/files/' + v.image + '/blob', style: { height: '100%' } })), h$2(Table_1, null, v.title), h$2(Table_1, null, v.description));
   });
 
   var col1 = h$2('div', { style: layout({ dr: 'v', 'jc': '<' }) }, h$2('h2', null, mode == 'edit' ? 'Edit Category' : 'View Category'), mode != 'edit' ? null : h$2(RaisedButton$1, {
@@ -49733,9 +49737,10 @@ var Items = function (_React$Component) {
           mode = _props3.mode,
           type = _props3.type,
           id = _props3.id,
+          history = _props3.history,
           user = _props3.user;
 
-      print$4(mode, type, id, user);
+      print$4(mode, type, id, history, user);
 
       if (type == 'item') {
         if (this.state.items.length == 1 && id != null) singleItem = true;else if (mode == 'edit' && id == null) singleItem = true;
@@ -49749,9 +49754,9 @@ var Items = function (_React$Component) {
           updField: updField, modify: modify$$1, mode: mode, user: user }))];
       } else if (editCategory) {
         print$4('editCategory');
-        content = [Category$1(_extends$12({}, this.state, { setField: setField, updField: updField, modify: modify$$1, mode: mode, user: user }))];
+        content = [Category$1(_extends$12({}, this.state, { setField: setField, updField: updField, modify: modify$$1, mode: mode, history: history, user: user }))];
       } else if (mode == 'view') {
-        content = [h('h2', null, 'View Items'), h(GridList_2, { cellHeight: 180, cols: 4 }, this.state.items.map(function (item) {
+        content = [h('h2', null, 'View Items ' + (this.state.curCategory.title ? 'in ' + this.state.curCategory.title : '')), h(GridList_2, { cellHeight: 180, cols: 4 }, this.state.items.map(function (item) {
           return h(GridList_1, {
             key: item.id,
             containerElement: h(Link, { to: '/view/item/' + item.id }),
