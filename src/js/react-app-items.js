@@ -139,7 +139,7 @@ export default class Items extends React.Component {
       if (data[0] && data[0].image)
         return api.get('files', data[0].image)
       else
-        return []
+        return [[]]
     })
     // .then(([data]) => modify(data, 'files'))
     .then(([data]) => (obj['files'] = data, [data]))
