@@ -1,8 +1,9 @@
 from flask import Blueprint, Response, request, url_for, session, current_app,\
     make_response
 from flask_restful import Resource, Api, reqparse, abort
-from models import User, File, Item, Category, select, db_session, commit, rollback,\
-    Set, SetInstance, ObjectNotFound, DataError, Password, OAuth, TransactionIntegrityError
+from models import User, File, Item, Category, select, db_session, commit,\
+    rollback, Set, SetInstance, ObjectNotFound, DataError, Password,\
+    OAuth, TransactionIntegrityError
 import json
 import re
 from security import authorize
@@ -28,11 +29,14 @@ def to_json(obj, exclude=()):
         obj = obj.to_dict(exclude)
     except AttributeError:
         pass
-    return json.dumps(obj, indent=4, sort_keys=True, default=lambda obj: _to_json_default(obj, exclude))
+    return json.dumps(obj, indent=4, sort_keys=True,
+                      default=lambda obj: _to_json_default(obj, exclude))
 
 
 def json_response(obj, exclude=()):
-    return Response(bytes(to_json(obj, exclude=exclude), 'utf8'), mimetype='application/json')
+    return Response(bytes(to_json(obj, exclude=exclude), 'utf8'),
+                    mimetype='application/json')
+
 
 def bin_response(bin, mimetype='application/octet-stream'):
     return Response(bin, mimetype=mimetype)
