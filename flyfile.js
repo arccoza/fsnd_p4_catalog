@@ -4,7 +4,6 @@ const nodeResolve = require('rollup-plugin-node-resolve')
 const commonjs = require('rollup-plugin-commonjs')
 const json = require('rollup-plugin-json')
 const replace = require('rollup-plugin-replace')
-// const svelte = require('rollup-plugin-svelte')
 const print = console.log.bind(console)
 
 
@@ -37,22 +36,6 @@ exports.js = function*(fly) {
             '*.json'
           ],
         })
-        // svelte({
-        //   // By default, all .html and .svelte files are compiled
-        //   // extensions: [ '.my-custom-extension' ],
-
-        //   // You can restrict which files are compiled
-        //   // using `include` and `exclude`
-        //   include: 'src/components/**/*.html',
-
-        //   // By default, the client-side compiler is used. You
-        //   // can also use the server-side rendering compiler
-        //   generate: 'ssr',
-
-        //   // If you're doing server-side rendering, you may want
-        //   // to prevent the client-side compiler from duplicating CSS
-        //   css: false
-        // }),
       ]
     },
     bundle: {
@@ -75,11 +58,6 @@ exports.default = function*(fly) {
   yield fly.serial(['js', 'css', 'img'])
 }
 
-// const fly = new Fly(module.exports)
-
-// fly.start('js')
-// .then(print)
-// .catch(print)
 
 if (require && require.main === module) {
   print('oi')
