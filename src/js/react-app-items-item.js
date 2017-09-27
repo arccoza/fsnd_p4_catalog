@@ -9,6 +9,9 @@ var h = React.createElement
 var print = console.log.bind(console)
 
 
+// A component with an interface and structure similar
+// to TextField, so that the two can be interchanged.
+// It only provides output for the viewing mode.
 function Text({value, children=[]}) {
   return h('div', {style: {
     width: '256px',
@@ -19,9 +22,9 @@ function Text({value, children=[]}) {
   )
 }
 
+// Provides the item rource view for both editing and viewing.
 export function Item({allCategories, curItem, curImage, errItem, isBusy,
   setField, updField, modify, mode, user}) {
-  // print(curItem, curImage)
   var fileInput
   var modeInv = {
     'edit': 'view',
