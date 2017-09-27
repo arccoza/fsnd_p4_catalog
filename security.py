@@ -11,6 +11,7 @@ from datetime import datetime
 import requests
 import oauth
 import os
+import logging
 
 
 # REF: https://stackoverflow.com/questions/12081789/pythons-working-directory-when-running-with-wsgi-and-apache
@@ -30,9 +31,14 @@ def authorize(upgrade=True):
             # Grab the session cookie if it exists.
             cookie = request.cookies.get(current_app.session_cookie_name, None)
 
+            logging.warn('****************************')
+            logging.warn(cookie)
+
             # Try get the Auth header data.
             try:
+                logging.warn('trying')
                 auth = request.headers['Authorization']
+                logging.warn(auth)
                 kind, _, value = auth.partition(' ')
                 if kind == 'Basic':
                     value = base64.standard_b64decode(bytes(value, 'utf8'))
