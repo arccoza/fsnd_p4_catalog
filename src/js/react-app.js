@@ -179,6 +179,45 @@ class App extends React.Component {
   }
 
   render() {
+    var user = this.state.user
+    var fab = !user ? null : (
+      <FloatingActionButton
+        onTouchTap={ev => this.setState({fab: {
+          isOpen: !this.state.fab.isOpen,
+          anchor: ev.currentTarget.parentElement.parentElement
+        }})}
+      >
+        <ContentAdd />
+        <Theme theme={lightTheme}>
+          <Popover
+            open={this.state.fab.isOpen}
+            anchorEl={this.state.fab.anchor}
+            anchorOrigin={{horizontal: 'middle', vertical: 'top'}}
+            targetOrigin={{horizontal: 'middle', vertical: 'bottom'}}
+            onRequestClose={ev => this.setState({fab: {isOpen: !this.state.fab.isOpen, anchor: null}})}
+            style={{overflowY: 'visible'}}
+          >
+            <Menu autoWidth={false}>
+              <Link to={'/edit/item/'}>
+                <MenuItem>
+                  <span title='Add Item'>
+                    <ContentAddBox />
+                  </span>
+                </MenuItem>
+              </Link>
+              <Link to={'/edit/category/'}>
+                <MenuItem>
+                  <span title='Add Category'>
+                    <AvLibraryAdd />
+                  </span>
+                </MenuItem>
+              </Link>
+            </Menu>
+          </Popover>
+        </Theme>
+      </FloatingActionButton>
+    )
+
     return (
       <div style={{...layoutStack, ...{marginBottom: '120px'}}}>
         <Theme theme={lightTheme}>
@@ -227,41 +266,7 @@ class App extends React.Component {
           <div
             style={{position: 'fixed', bottom: '80px', right: '80px', paddingTop: '1em'}}
           >
-            <FloatingActionButton
-              onTouchTap={ev => this.setState({fab: {
-                isOpen: !this.state.fab.isOpen,
-                anchor: ev.currentTarget.parentElement.parentElement
-              }})}
-            >
-              <ContentAdd />
-              <Theme theme={lightTheme}>
-                <Popover
-                  open={this.state.fab.isOpen}
-                  anchorEl={this.state.fab.anchor}
-                  anchorOrigin={{horizontal: 'middle', vertical: 'top'}}
-                  targetOrigin={{horizontal: 'middle', vertical: 'bottom'}}
-                  onRequestClose={ev => this.setState({fab: {isOpen: !this.state.fab.isOpen, anchor: null}})}
-                  style={{overflowY: 'visible'}}
-                >
-                  <Menu autoWidth={false}>
-                    <Link to={'/edit/item/'}>
-                      <MenuItem>
-                        <span title='Add Item'>
-                          <ContentAddBox />
-                        </span>
-                      </MenuItem>
-                    </Link>
-                    <Link to={'/edit/category/'}>
-                      <MenuItem>
-                        <span title='Add Category'>
-                          <AvLibraryAdd />
-                        </span>
-                      </MenuItem>
-                    </Link>
-                  </Menu>
-                </Popover>
-              </Theme>
-            </FloatingActionButton>
+            {fab}
           </div>
         </Theme>
         <Theme theme={darkTheme}>
