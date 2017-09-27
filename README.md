@@ -2,6 +2,8 @@
 
 ## Install & Run
 
+* Make sure [vagrant](https://www.vagrantup.com/) is installed.
+
 * Clone this repo with `git clone git@github.com:arccoza/fsnd_p4_catalog.git catalog` into your FSND VM.
 
 * Or clone my FSND VM with this project included: `git clone git@github.com:arccoza/fsnd_p3_vm.git`.
