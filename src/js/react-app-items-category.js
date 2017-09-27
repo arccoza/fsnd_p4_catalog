@@ -59,7 +59,7 @@ export function Category({items, curCategory, errCategory, isBusy, setField, upd
       style: {margin: '1em 0 0 0'},
       onTouchTap: ev => {
         if (isBusy || !curCategory.id) return
-        modify({do: 'remove', on: 'items'}, 'action')
+        modify({do: 'remove', on: 'categories'}, 'action')
       }
     }, !isBusy ? null : h(CircularProgress, {size: 15, thickness: 1, className: 'CircularProgress'})),
     !curCategory.id ? null : h(Link, {to: `/${modeInv[mode]}/category/${curCategory.id}`},
