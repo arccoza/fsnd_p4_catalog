@@ -189,6 +189,7 @@ class App extends React.Component {
             <AppNav
               pub={this.pub}
               sub={this.sub}
+              user={this.state.user}
               nav={this.state.nav}
               categories={this.state.categories}
               items={this.state.items} />
