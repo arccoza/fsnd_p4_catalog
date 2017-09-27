@@ -146,7 +146,7 @@ class File(Mixin, db.Entity):
 class Category(Mixin, db.Entity):
     created = Required(datetime, sql_default='CURRENT_TIMESTAMP')
     author = Optional(int, nullable=True)
-    title = Required(str)
+    title = Required(str, unique=True)
     description = Optional(str, nullable=True)
     items = Set('Item', reverse='categories')
 
