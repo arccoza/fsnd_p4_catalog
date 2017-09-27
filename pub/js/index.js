@@ -48645,6 +48645,7 @@ var Auth = function () {
         self.ga = gapi.auth2.getAuthInstance();
         return self.ga.grantOfflineAccess();
       }).then(function (resp) {
+        print$2('**************auth ', resp);
         return fetch('/api/auth/', {
           method: 'get',
           credentials: 'include',
