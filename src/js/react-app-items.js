@@ -346,7 +346,9 @@ export default class Items extends React.Component {
     }
     else if (mode == 'view') {
       content = [
-        h('h2', null, 'View Items'),
+        h('h2', null,
+          `View Items ${this.state.curCategory.title ? 'in ' + this.state.curCategory.title : ''}`
+        ),
         h(GridList, {cellHeight: 180, cols: 4},
           this.state.items.map((item) => (
             h(GridTile, {
