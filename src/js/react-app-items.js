@@ -314,7 +314,7 @@ export default class Items extends React.Component {
     print('......................rendering')
     var content = []
     var setField = (...args) => ev => this.modify(ev.target.value, ...args)
-    var updField = (fn) => ({target: {value}}) => this.setState(fn(value))
+    var updField = (fn) => ({target: {value, files}}) => this.setState(fn({value, files}))
     var modify = this.modify
     var singleItem = false
     var editCategory = false
