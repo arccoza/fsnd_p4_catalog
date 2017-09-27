@@ -8,7 +8,6 @@ import psycopg2 as psql
 
 secret_key = 'taU>5&(Z*+r2d5ULR|i2z$bt@+ 9|i,;u!N_2);v@i/@y;gUf/&0WXC?}g6<aK$H'
 app = Flask(__name__, static_folder='pub', static_url_path='/static')
-# app.session_interface = CookieSessionInterface()
 app.secret_key = secret_key
 app.register_blueprint(api_bp, url_prefix='/api')
 
