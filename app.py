@@ -23,14 +23,14 @@ app.register_blueprint(api_bp, url_prefix='/api')
 
 # Ref: http://stackoverflow.com/questions/34484066/create-a-postgres-database-using-python
 # Create the required database if it doesn't exist.
-# con = psql.connect(dbname='postgres')
-# con.autocommit = True
-# cur = con.cursor()
-# try:
-#     # cur.execute('DROP DATABASE catalog;')
-#     cur.execute('CREATE DATABASE catalog;')
-# except:
-#     pass
+con = psql.connect(dbname='postgres')
+con.autocommit = True
+cur = con.cursor()
+try:
+    # cur.execute('DROP DATABASE catalog;')
+    cur.execute('CREATE DATABASE catalog;')
+except:
+    pass
 
 db.bind('postgres', database='catalog')
 db.generate_mapping(create_tables=True)
@@ -45,6 +45,7 @@ db.generate_mapping(create_tables=True)
 # @app.route('/edit/<cat>/')
 # @app.route('/view/<cat>/<id>')
 # @app.route('/edit/<cat>/<id>')
+@app.route('/')
 @app.route('/<path:path>')
 def root(cat=None, id=None, path=None):
     return render_template('index.html')
