@@ -199,7 +199,11 @@ class App extends React.Component {
         <Theme theme={lightTheme}>
           <div style={layoutStack}>
             <Switch>
-              <Route exact path="/" component={Home}/>
+              <Route path="/" exact
+                render={({match:{params}, location, history}) => (
+                  <Items {...{...params, mode: 'view', type: 'item', id: null, location, history,
+                    categories: this.state.categories, pub: this.pub, user: this.state.user}} />
+                )}/>
               <Route path='/:mode(view)/all' exact
                 render={({match:{params}, location, history}) => (
                   <Items {...{...params, type: 'item', id: null, location, history,
