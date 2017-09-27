@@ -51,14 +51,12 @@ export default class AppHeader extends React.Component {
     authProviders[provider]
       .signin()
       .then(resp => {
-        console.log('88888888888888888888888888888888888', resp)
         this._closeDialog()
         this.setState({isBusy: false})
         this.props.pub('message', {content: 'Welcome...', action: null})
         this.props.pub('user', resp.user)
       })
       .catch(err => {
-        console.log('77777777777777777777777777777777777', err)
         this._closeDialog()
         this.setState({isBusy: false})
         this.props.pub('message', {content: 'Signin failed.', action: null})
