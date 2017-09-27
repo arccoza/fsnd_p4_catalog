@@ -56,6 +56,22 @@ class AuthRes(Resource):
         return json_response(dict(session.items()))
 
 
+class CatalogRes(Resource):
+    '''
+    API catalog resource, get all catalog data.
+    '''
+    decorators = [db_session, authorize()]
+
+    def get(self):
+        obj = {
+            'categories': Category.select()[:],
+            'items': Item.select()[:],
+            'files': File.select()[:]
+        }
+
+        return json_response(obj, exclude=('blob'))
+
+
 class GenericRes(Resource):
     '''
     Generic API resource class, representing the most common use.
@@ -240,6 +256,7 @@ class CategoryRes(GenericRes):
 
 # The API endpoints.
 api.add_resource(AuthRes, '/auth/')
+api.add_resource(CatalogRes, '/catalog/')
 api.add_resource(UserRes, '/users/', '/users/<id>')
 api.add_resource(FileRes, '/files/', '/files/<id>', '/files/<id>/<blob>')
 api.add_resource(ItemRes, '/items/', '/items/<id>')
