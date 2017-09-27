@@ -225,6 +225,7 @@ class App extends React.Component {
             <AppHeader
               pub={this.pub}
               sub={this.sub}
+              authProviders={authProviders}
               user={this.state.user} />
             <AppNav
               pub={this.pub}

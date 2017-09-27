@@ -44,6 +44,8 @@ export default class AppHeader extends React.Component {
   }
 
   _signin = (provider) => {
+    var authProviders = this.props.authProviders
+
     this.setState({isBusy: true, provider: authProviders[provider]})
 
     authProviders[provider]
