@@ -19,7 +19,8 @@ function Text({value, children=[]}) {
   )
 }
 
-export function Item({allCategories, curItem, curImage, errItem, isBusy, setField, updField, modify, mode}) {
+export function Item({allCategories, curItem, curImage, errItem, isBusy,
+  setField, updField, modify, mode, user}) {
   // print(curItem, curImage)
   var fileInput
   var modeInv = {
@@ -67,7 +68,7 @@ export function Item({allCategories, curItem, curImage, errItem, isBusy, setFiel
       hintText: 'ex: Snowboard',
       errorText: errItem && errItem.title ? 'This field is required.' : null,
       value: curItem.title,
-      onChange: updField(v => ({curItem: {...curItem, title: v}, errItem: {...errItem, title: v == ''}}))
+      onChange: updField(({value: v}) => ({curItem: {...curItem, title: v}, errItem: {...errItem, title: v == ''}}))
     }),
     h(mode != 'edit' ? Text : TextField, {
       floatingLabelText: 'Item description',
@@ -75,11 +76,11 @@ export function Item({allCategories, curItem, curImage, errItem, isBusy, setFiel
       value: curItem.description,
       onChange: setField('curItem', 'description'),
     }),
-    h(mode != 'edit' ? Text : TextField, {
+    mode != 'edit' ? null : h(mode != 'edit' ? Text : TextField, {
       disabled: true,
       floatingLabelText: 'Item author',
       hintText: 'ex: Hank Venture',
-      value: curItem.author || '',
+      value: curItem.author || (user ? user.id : ''),
       style: {cursor: 'default'}
     }),
     mode != 'edit' ? null : h(TextField, {
@@ -93,12 +94,7 @@ export function Item({allCategories, curItem, curImage, errItem, isBusy, setFiel
       type: 'file',
       accept: 'image/*',
       style: {display: 'none'},
-      onChange: ({target:{files:[file]}}) => {
-        if (file) {
-          modify({name: file.name, type: file.type, blob: file}, 'files', 0)
-          modify({name: file.name, type: file.type, blob: file}, 'curImage')
-        }
-      },
+      onChange: updField(({files: [f]}) => ({curImage: {...curImage, name: f.name, type: f.type, blob: f}})),
     }),
     mode != 'edit' ? null : h(SelectField, {
       floatingLabelText: 'Select category',
