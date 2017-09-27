@@ -107,7 +107,7 @@ class GenericRes(Resource):
             cls[id].delete()
         except ObjectNotFound:
             abort(404)
-        return {'id': id}, 204
+        return {'id': id}
 
 
 class UserRes(GenericRes):
