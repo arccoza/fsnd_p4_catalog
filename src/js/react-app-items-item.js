@@ -27,6 +27,7 @@ export function Item({allCategories, curItem, curImage, errItem, isBusy,
     'edit': 'view',
     'view': 'edit',
   }
+  var isAuthorized = false
   var isValid = curItem.title != null && curItem.title != ''
 
   // Set the `curItem.author` if it is null and `mode` is `edit`.
@@ -37,6 +38,8 @@ export function Item({allCategories, curItem, curImage, errItem, isBusy,
   // if not switch the mode to `view`.
   if (!(user && user.id && (curItem.author == user.id || curItem.author == null)))
     mode = 'view'
+  else
+    isAuthorized = true
 
   var cats = curItem.categories.map((v, i) => h(Chip, {key: v,
     onRequestDelete: ev => modify(null, 'curItem', 'categories', i),
@@ -65,7 +68,7 @@ export function Item({allCategories, curItem, curImage, errItem, isBusy,
         modify({do: 'remove', on: 'items'}, 'action')
       }
     }, !isBusy ? null : h(CircularProgress, {size: 15, thickness: 1, className: 'CircularProgress'})),
-    !curItem.id ? null : h(Link, {to: `/${modeInv[mode]}/item/${curItem.id}`},
+    !curItem.id || !isAuthorized ? null : h(Link, {to: `/${modeInv[mode]}/item/${curItem.id}`},
       h(FlatButton, {
         label: isBusy ? null : mode == 'edit' ? 'view' : 'edit',
         disabled: isBusy || !curItem.id,
