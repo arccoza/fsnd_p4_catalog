@@ -29,6 +29,15 @@ export function Item({allCategories, curItem, curImage, errItem, isBusy,
   }
   var isValid = curItem.title != null && curItem.title != ''
 
+  // Set the `curItem.author` if it is null and `mode` is `edit`.
+  if (mode == 'edit' && user && user.id && curItem.author == null)
+    curItem.author = user.id
+
+  // Check if the user is authorized to edit this item,
+  // if not switch the mode to `view`.
+  if (!(user && user.id && (curItem.author == user.id || curItem.author == null)))
+    mode = 'view'
+
   var cats = curItem.categories.map((v, i) => h(Chip, {key: v,
     onRequestDelete: ev => modify(null, 'curItem', 'categories', i),
     style: {margin: '0.25em'},
@@ -80,7 +89,7 @@ export function Item({allCategories, curItem, curImage, errItem, isBusy,
       disabled: true,
       floatingLabelText: 'Item author',
       hintText: 'ex: Hank Venture',
-      value: curItem.author || (user ? user.id : ''),
+      value: curItem.author || (user ? user.id : null),
       style: {cursor: 'default'}
     }),
     mode != 'edit' ? null : h(TextField, {
