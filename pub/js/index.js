@@ -49071,13 +49071,17 @@ var AppNav = function (_React$Component) {
     value: function render() {
       var _this2 = this;
 
+      var user = this.props.user;
+
+      console.log(user);
+
       var categoryList = this.props.categories.map(function (cat) {
         return react.createElement(
           Link,
           { to: '/view/category/' + cat.id, key: cat.id },
           react.createElement(List_2, {
             primaryText: cat.title,
-            leftIcon: react.createElement(
+            leftIcon: !user ? null : react.createElement(
               Link,
               { to: '/edit/category/' + cat.id },
               react.createElement(EditorModeEdit, null)
@@ -49150,7 +49154,8 @@ function Item$1(_ref2) {
       setField = _ref2.setField,
       updField = _ref2.updField,
       modify$$1 = _ref2.modify,
-      mode = _ref2.mode;
+      mode = _ref2.mode,
+      user = _ref2.user;
 
   // print(curItem, curImage)
   var fileInput;
@@ -49159,6 +49164,13 @@ function Item$1(_ref2) {
     'view': 'edit'
   };
   var isValid = curItem.title != null && curItem.title != '';
+
+  // Set the `curItem.author` if it is null and `mode` is `edit`.
+  if (mode == 'edit' && user && user.id && curItem.author == null) curItem.author = user.id;
+
+  // Check if the user is authorized to edit this item,
+  // if not switch the mode to `view`.
+  if (!(user && user.id && (curItem.author == user.id || curItem.author == null))) mode = 'view';
 
   var cats = curItem.categories.map(function (v, i) {
     return h$1(Chip$1, { key: v,
@@ -49197,7 +49209,8 @@ function Item$1(_ref2) {
     hintText: 'ex: Snowboard',
     errorText: errItem && errItem.title ? 'This field is required.' : null,
     value: curItem.title,
-    onChange: updField(function (v) {
+    onChange: updField(function (_ref3) {
+      var v = _ref3.value;
       return { curItem: _extends$12({}, curItem, { title: v }), errItem: _extends$12({}, errItem, { title: v == '' }) };
     })
   }), h$1(mode != 'edit' ? Text : TextField$1, {
@@ -49205,11 +49218,11 @@ function Item$1(_ref2) {
     hintText: 'ex: An awesome snowboard',
     value: curItem.description,
     onChange: setField('curItem', 'description')
-  }), h$1(mode != 'edit' ? Text : TextField$1, {
+  }), mode != 'edit' ? null : h$1(mode != 'edit' ? Text : TextField$1, {
     disabled: true,
     floatingLabelText: 'Item author',
     hintText: 'ex: Hank Venture',
-    value: curItem.author || '',
+    value: curItem.author || (user ? user.id : null),
     style: { cursor: 'default' }
   }), mode != 'edit' ? null : h$1(TextField$1, {
     floatingLabelText: 'Item image',
@@ -49225,15 +49238,12 @@ function Item$1(_ref2) {
     type: 'file',
     accept: 'image/*',
     style: { display: 'none' },
-    onChange: function onChange(_ref3) {
-      var _ref3$target$files = slicedToArray(_ref3.target.files, 1),
-          file = _ref3$target$files[0];
+    onChange: updField(function (_ref4) {
+      var _ref4$files = slicedToArray(_ref4.files, 1),
+          f = _ref4$files[0];
 
-      if (file) {
-        modify$$1({ name: file.name, type: file.type, blob: file }, 'files', 0);
-        modify$$1({ name: file.name, type: file.type, blob: file }, 'curImage');
-      }
-    }
+      return { curImage: _extends$12({}, curImage, { name: f.name, type: f.type, blob: f }) };
+    })
   }), mode != 'edit' ? null : h$1(SelectField$1, {
     floatingLabelText: 'Select category',
     value: curItem.categories,
@@ -49308,7 +49318,7 @@ function Category$1(_ref2) {
     style: { margin: '1em 0 0 0' },
     onTouchTap: function onTouchTap(ev) {
       if (isBusy || !curCategory.id) return;
-      modify$$1({ do: 'remove', on: 'items' }, 'action');
+      modify$$1({ do: 'remove', on: 'categories' }, 'action');
     }
   }, !isBusy ? null : h$2(CircularProgress$1, { size: 15, thickness: 1, className: 'CircularProgress' })), !curCategory.id ? null : h$2(Link, { to: '/' + modeInv[mode] + '/category/' + curCategory.id }, h$2(FlatButton$1, {
     label: isBusy ? null : mode == 'edit' ? 'view' : 'edit',
@@ -49319,7 +49329,8 @@ function Category$1(_ref2) {
     hintText: 'ex: Posters',
     errorText: errCategory && errCategory.title ? 'This field is required.' : null,
     value: curCategory.title,
-    onChange: updField(function (v) {
+    onChange: updField(function (_ref3) {
+      var v = _ref3.value;
       return { curCategory: _extends$12({}, curCategory, { title: v }), errCategory: _extends$12({}, errCategory, { title: v == '' }) };
     })
   }), h$2(mode != 'edit' ? Text$1 : TextField$1, {
@@ -49371,7 +49382,7 @@ var Items = function (_React$Component) {
           title: '',
           description: '',
           items: [],
-          author: ''
+          author: null
         };
       },
       item: function item() {
@@ -49381,7 +49392,7 @@ var Items = function (_React$Component) {
           title: '',
           description: '',
           categories: [],
-          author: 'Brock Samson'
+          author: null
         };
       },
       image: function image() {
@@ -49450,7 +49461,7 @@ var Items = function (_React$Component) {
         var _ref5 = slicedToArray(_ref4, 1),
             data = _ref5[0];
 
-        if (data[0] && data[0].image) return api.get('files', data[0].image);else return [];
+        if (data[0] && data[0].image) return api.get('files', data[0].image);else return [[]];
       })
       // .then(([data]) => modify(data, 'files'))
       .then(function (_ref6) {
@@ -49584,6 +49595,9 @@ var Items = function (_React$Component) {
 
       return Promise.reject('Object must exist.');
     }
+
+    // Sets or resets the value of the curCategory, curItem and curImage.
+
   }, {
     key: 'setCurObjs',
     value: function setCurObjs(id, data) {
@@ -49634,8 +49648,6 @@ var Items = function (_React$Component) {
           type = _props2.type,
           id = _props2.id;
 
-      // if (state.items.length == 1 && state.items[0].id != state.curItem.id)
-      //   modify(state.items[0], 'curItem')
 
       if (nextProps.type == type && nextProps.id == id) return;
 
@@ -49648,6 +49660,9 @@ var Items = function (_React$Component) {
         return _this4.setCurObjs(nextProps.id, data);
       });
     }
+
+    // Check for and do actions, such as save and remove.
+
   }, {
     key: 'componentDidUpdate',
     value: function componentDidUpdate(prevProps, prevState) {
@@ -49701,8 +49716,10 @@ var Items = function (_React$Component) {
       };
       var updField = function updField(fn) {
         return function (_ref28) {
-          var value = _ref28.target.value;
-          return _this5.setState(fn(value));
+          var _ref28$target = _ref28.target,
+              value = _ref28$target.value,
+              files = _ref28$target.files;
+          return _this5.setState(fn({ value: value, files: files }));
         };
       };
       var modify$$1 = this.modify;
@@ -49711,17 +49728,10 @@ var Items = function (_React$Component) {
       var _props3 = this.props,
           mode = _props3.mode,
           type = _props3.type,
-          id = _props3.id;
+          id = _props3.id,
+          user = _props3.user;
 
-      print$4(mode, type, id);
-
-      var testCats = [{
-        id: 12,
-        title: 'hello'
-      }, {
-        id: 34,
-        title: 'oi'
-      }];
+      print$4(mode, type, id, user);
 
       if (type == 'item') {
         if (this.state.items.length == 1 && id != null) singleItem = true;else if (mode == 'edit' && id == null) singleItem = true;
@@ -49731,18 +49741,18 @@ var Items = function (_React$Component) {
 
       if (singleItem) {
         print$4('singleItem', mode, type, id, this.state.items[0]);
-        content = [Item$1(_extends$12({}, this.state, { allCategories: this.props.categories, setField: setField, updField: updField, modify: modify$$1, mode: mode }))];
+        content = [Item$1(_extends$12({}, this.state, { allCategories: this.props.categories, setField: setField,
+          updField: updField, modify: modify$$1, mode: mode, user: user }))];
       } else if (editCategory) {
         print$4('editCategory');
-        content = [Category$1(_extends$12({}, this.state, { setField: setField, updField: updField, modify: modify$$1, mode: mode }))];
+        content = [Category$1(_extends$12({}, this.state, { setField: setField, updField: updField, modify: modify$$1, mode: mode, user: user }))];
       } else if (mode == 'view') {
         content = [h('h2', null, 'View Items'), h(GridList_2, { cellHeight: 180, cols: 4 }, this.state.items.map(function (item) {
           return h(GridList_1, {
             key: item.id,
             containerElement: h(Link, { to: '/view/item/' + item.id }),
             title: item.title,
-            subtitle: item.author,
-            actionIcon: h(Link, { to: '/edit/item/' + item.id }, h(IconButton$1, null, h(EditorModeEdit))),
+            actionIcon: !(user && user.id == item.author) ? null : h(Link, { to: '/edit/item/' + item.id }, h(IconButton$1, null, h(EditorModeEdit))),
             style: { borderRadius: '4px' }
           }, h('img', { src: '/api/files/' + item.image + '/blob' }));
         }))];
@@ -49925,6 +49935,7 @@ var App = function (_React$Component) {
             react.createElement(AppNav, {
               pub: this.pub,
               sub: this.sub,
+              user: this.state.user,
               nav: this.state.nav,
               categories: this.state.categories,
               items: this.state.items })
@@ -49946,7 +49957,7 @@ var App = function (_React$Component) {
                       location = _ref7.location,
                       history = _ref7.history;
                   return react.createElement(Items, _extends$12({}, params, { type: 'item', id: null, location: location, history: history,
-                    categories: _this2.state.categories, pub: _this2.pub }));
+                    categories: _this2.state.categories, pub: _this2.pub, user: _this2.state.user }));
                 } }),
               react.createElement(Route$1, { path: '/:mode(edit)/:type/', exact: true,
                 render: function render(_ref8) {
@@ -49954,7 +49965,7 @@ var App = function (_React$Component) {
                       location = _ref8.location,
                       history = _ref8.history;
                   return react.createElement(Items, _extends$12({}, params, { id: null, location: location, history: history,
-                    categories: _this2.state.categories, pub: _this2.pub }));
+                    categories: _this2.state.categories, pub: _this2.pub, user: _this2.state.user }));
                 } }),
               react.createElement(Route$1, { path: '/:mode(edit|view)/:type/:id', exact: true,
                 render: function render(_ref9) {
@@ -49962,7 +49973,7 @@ var App = function (_React$Component) {
                       location = _ref9.location,
                       history = _ref9.history;
                   return react.createElement(Items, _extends$12({}, params, { location: location, history: history,
-                    categories: _this2.state.categories, pub: _this2.pub }));
+                    categories: _this2.state.categories, pub: _this2.pub, user: _this2.state.user }));
                 } }),
               react.createElement(Route$1, { render: function render() {
                   return react.createElement(
