@@ -48433,6 +48433,7 @@ function modify(fnOrVal) {
   }
 }
 
+// Extends Promise with a finally method.
 Promise.prototype.finally = function (cb) {
   return this.then(cb, cb);
 };
@@ -49073,7 +49074,6 @@ var AppNav = function (_React$Component) {
 
       var user = this.props.user;
 
-      console.log(user);
 
       var categoryList = this.props.categories.map(function (cat) {
         return react.createElement(
@@ -49133,6 +49133,9 @@ var AppNav = function (_React$Component) {
 var h$1 = react.createElement;
 var print$5 = console.log.bind(console);
 
+// A component with an interface and structure similar
+// to TextField, so that the two can be interchanged.
+// It only provides output for the viewing mode.
 function Text(_ref) {
   var value = _ref.value,
       _ref$children = _ref.children,
@@ -49140,11 +49143,12 @@ function Text(_ref) {
 
   return h$1('div', { style: _extends$12({
       width: '256px',
-      height: '72px',
+      minHeight: '72px',
       lineHeight: '30px'
     }, layout({ dr: 'v', jc: '+' })) }, h$1.apply(undefined, ['span', null, value].concat(toConsumableArray$2(children))));
 }
 
+// Provides the item rource view for both editing and viewing.
 function Item$1(_ref2) {
   var allCategories = _ref2.allCategories,
       curItem = _ref2.curItem,
@@ -49157,12 +49161,12 @@ function Item$1(_ref2) {
       mode = _ref2.mode,
       user = _ref2.user;
 
-  // print(curItem, curImage)
   var fileInput;
   var modeInv = {
     'edit': 'view',
     'view': 'edit'
   };
+  var isAuthorized = false;
   var isValid = curItem.title != null && curItem.title != '';
 
   // Set the `curItem.author` if it is null and `mode` is `edit`.
@@ -49170,7 +49174,7 @@ function Item$1(_ref2) {
 
   // Check if the user is authorized to edit this item,
   // if not switch the mode to `view`.
-  if (!(user && user.id && (curItem.author == user.id || curItem.author == null))) mode = 'view';
+  if (!(user && user.id && (curItem.author == user.id || curItem.author == null))) mode = 'view';else isAuthorized = true;
 
   var cats = curItem.categories.map(function (v, i) {
     return h$1(Chip$1, { key: v,
@@ -49200,7 +49204,7 @@ function Item$1(_ref2) {
       if (isBusy || !curItem.id) return;
       modify$$1({ do: 'remove', on: 'items' }, 'action');
     }
-  }, !isBusy ? null : h$1(CircularProgress$1, { size: 15, thickness: 1, className: 'CircularProgress' })), !curItem.id ? null : h$1(Link, { to: '/' + modeInv[mode] + '/item/' + curItem.id }, h$1(FlatButton$1, {
+  }, !isBusy ? null : h$1(CircularProgress$1, { size: 15, thickness: 1, className: 'CircularProgress' })), !curItem.id || !isAuthorized ? null : h$1(Link, { to: '/' + modeInv[mode] + '/item/' + curItem.id }, h$1(FlatButton$1, {
     label: isBusy ? null : mode == 'edit' ? 'view' : 'edit',
     disabled: isBusy || !curItem.id,
     style: { margin: '1em 0 0 0', width: '100%' }
@@ -49799,18 +49803,6 @@ var layoutStack = {
   alignItems: 'stretch'
 };
 
-var Home = function Home() {
-  return react.createElement(
-    'div',
-    null,
-    react.createElement(
-      'h2',
-      null,
-      'Home'
-    )
-  );
-};
-
 var App = function (_React$Component) {
   inherits$2(App, _React$Component);
 
@@ -49919,6 +49911,67 @@ var App = function (_React$Component) {
     value: function render() {
       var _this2 = this;
 
+      var user = this.state.user;
+      var fab = !user ? null : react.createElement(
+        FloatingActionButton$1,
+        {
+          onTouchTap: function onTouchTap(ev) {
+            return _this2.setState({ fab: {
+                isOpen: !_this2.state.fab.isOpen,
+                anchor: ev.currentTarget.parentElement.parentElement
+              } });
+          }
+        },
+        react.createElement(ContentAdd, null),
+        react.createElement(
+          Theme,
+          { theme: lightTheme },
+          react.createElement(
+            Popover$2,
+            {
+              open: this.state.fab.isOpen,
+              anchorEl: this.state.fab.anchor,
+              anchorOrigin: { horizontal: 'middle', vertical: 'top' },
+              targetOrigin: { horizontal: 'middle', vertical: 'bottom' },
+              onRequestClose: function onRequestClose(ev) {
+                return _this2.setState({ fab: { isOpen: !_this2.state.fab.isOpen, anchor: null } });
+              },
+              style: { overflowY: 'visible' }
+            },
+            react.createElement(
+              Menu$2,
+              { autoWidth: false },
+              react.createElement(
+                Link,
+                { to: '/edit/item/' },
+                react.createElement(
+                  MenuItem$2,
+                  null,
+                  react.createElement(
+                    'span',
+                    { title: 'Add Item' },
+                    react.createElement(ContentAddBox, null)
+                  )
+                )
+              ),
+              react.createElement(
+                Link,
+                { to: '/edit/category/' },
+                react.createElement(
+                  MenuItem$2,
+                  null,
+                  react.createElement(
+                    'span',
+                    { title: 'Add Category' },
+                    react.createElement(AvLibraryAdd, null)
+                  )
+                )
+              )
+            )
+          )
+        )
+      );
+
       return react.createElement(
         'div',
         { style: _extends$12({}, layoutStack, { marginBottom: '120px' }) },
@@ -49950,28 +50003,35 @@ var App = function (_React$Component) {
             react.createElement(
               Switch$1,
               null,
-              react.createElement(Route$1, { exact: true, path: '/', component: Home }),
-              react.createElement(Route$1, { path: '/:mode(view)/all', exact: true,
+              react.createElement(Route$1, { path: '/', exact: true,
                 render: function render(_ref7) {
                   var params = _ref7.match.params,
                       location = _ref7.location,
                       history = _ref7.history;
-                  return react.createElement(Items, _extends$12({}, params, { type: 'item', id: null, location: location, history: history,
+                  return react.createElement(Items, _extends$12({}, params, { mode: 'view', type: 'item', id: null, location: location, history: history,
                     categories: _this2.state.categories, pub: _this2.pub, user: _this2.state.user }));
                 } }),
-              react.createElement(Route$1, { path: '/:mode(edit)/:type/', exact: true,
+              react.createElement(Route$1, { path: '/:mode(view)/all', exact: true,
                 render: function render(_ref8) {
                   var params = _ref8.match.params,
                       location = _ref8.location,
                       history = _ref8.history;
-                  return react.createElement(Items, _extends$12({}, params, { id: null, location: location, history: history,
+                  return react.createElement(Items, _extends$12({}, params, { type: 'item', id: null, location: location, history: history,
                     categories: _this2.state.categories, pub: _this2.pub, user: _this2.state.user }));
                 } }),
-              react.createElement(Route$1, { path: '/:mode(edit|view)/:type/:id', exact: true,
+              react.createElement(Route$1, { path: '/:mode(edit)/:type/', exact: true,
                 render: function render(_ref9) {
                   var params = _ref9.match.params,
                       location = _ref9.location,
                       history = _ref9.history;
+                  return react.createElement(Items, _extends$12({}, params, { id: null, location: location, history: history,
+                    categories: _this2.state.categories, pub: _this2.pub, user: _this2.state.user }));
+                } }),
+              react.createElement(Route$1, { path: '/:mode(edit|view)/:type/:id', exact: true,
+                render: function render(_ref10) {
+                  var params = _ref10.match.params,
+                      location = _ref10.location,
+                      history = _ref10.history;
                   return react.createElement(Items, _extends$12({}, params, { location: location, history: history,
                     categories: _this2.state.categories, pub: _this2.pub, user: _this2.state.user }));
                 } }),
@@ -49993,65 +50053,7 @@ var App = function (_React$Component) {
             {
               style: { position: 'fixed', bottom: '80px', right: '80px', paddingTop: '1em' }
             },
-            react.createElement(
-              FloatingActionButton$1,
-              {
-                onTouchTap: function onTouchTap(ev) {
-                  return _this2.setState({ fab: {
-                      isOpen: !_this2.state.fab.isOpen,
-                      anchor: ev.currentTarget.parentElement.parentElement
-                    } });
-                }
-              },
-              react.createElement(ContentAdd, null),
-              react.createElement(
-                Theme,
-                { theme: lightTheme },
-                react.createElement(
-                  Popover$2,
-                  {
-                    open: this.state.fab.isOpen,
-                    anchorEl: this.state.fab.anchor,
-                    anchorOrigin: { horizontal: 'middle', vertical: 'top' },
-                    targetOrigin: { horizontal: 'middle', vertical: 'bottom' },
-                    onRequestClose: function onRequestClose(ev) {
-                      return _this2.setState({ fab: { isOpen: !_this2.state.fab.isOpen, anchor: null } });
-                    },
-                    style: { overflowY: 'visible' }
-                  },
-                  react.createElement(
-                    Menu$2,
-                    { autoWidth: false },
-                    react.createElement(
-                      Link,
-                      { to: '/edit/item/' },
-                      react.createElement(
-                        MenuItem$2,
-                        null,
-                        react.createElement(
-                          'span',
-                          { title: 'Add Item' },
-                          react.createElement(ContentAddBox, null)
-                        )
-                      )
-                    ),
-                    react.createElement(
-                      Link,
-                      { to: '/edit/category/' },
-                      react.createElement(
-                        MenuItem$2,
-                        null,
-                        react.createElement(
-                          'span',
-                          { title: 'Add Category' },
-                          react.createElement(AvLibraryAdd, null)
-                        )
-                      )
-                    )
-                  )
-                )
-              )
-            )
+            fab
           )
         ),
         react.createElement(
