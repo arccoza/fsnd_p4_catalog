@@ -15,6 +15,7 @@ api_bp = Blueprint('api', __name__)
 api = Api(api_bp)
 
 
+# Handles custom serialization of Model structures.
 def _to_json_default(obj, exclude=()):
     if isinstance(obj, SetInstance):
         return [i.id for i in obj]
@@ -24,6 +25,7 @@ def _to_json_default(obj, exclude=()):
         return str(obj)
 
 
+# JSON serialization fn with customizations.
 def to_json(obj, exclude=()):
     try:
         obj = obj.to_dict(exclude)
@@ -33,16 +35,21 @@ def to_json(obj, exclude=()):
                       default=lambda obj: _to_json_default(obj, exclude))
 
 
+# Custom JSON response object factory, used by most API resources.
 def json_response(obj, exclude=()):
     return Response(bytes(to_json(obj, exclude=exclude), 'utf8'),
                     mimetype='application/json')
 
 
+# Custom binary response object factory, used by the files API resource.
 def bin_response(bin, mimetype='application/octet-stream'):
     return Response(bin, mimetype=mimetype)
 
 
 class AuthRes(Resource):
+    '''
+    API auth resource, only provides GET access to the current auth state.
+    '''
     decorators = [authorize()]
 
     def get(self):
@@ -50,6 +57,9 @@ class AuthRes(Resource):
 
 
 class GenericRes(Resource):
+    '''
+    Generic API resource class, representing the most common use.
+    '''
     decorators = [db_session, authorize()]
 
     def _relation_handler(self, t, v):
@@ -115,12 +125,19 @@ class GenericRes(Resource):
 
 
 class UserRes(GenericRes):
+    '''
+    API resource for user data, extends GenericRes.
+    '''
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.model_class = User
 
 
 class FileRes(GenericRes):
+    '''
+    API resource for file data, extends GenericRes,
+    adds lots of customizations.
+    '''
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.model_class = File
@@ -204,17 +221,24 @@ class FileRes(GenericRes):
 
 
 class ItemRes(GenericRes):
+    '''
+    API resource for item data, extends GenericRes.
+    '''
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.model_class = Item
 
 
 class CategoryRes(GenericRes):
+    '''
+    API resource for catalog data, extends GenericRes.
+    '''
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.model_class = Category
 
 
+# The API endpoints.
 api.add_resource(AuthRes, '/auth/')
 api.add_resource(UserRes, '/users/', '/users/<id>')
 api.add_resource(FileRes, '/files/', '/files/<id>', '/files/<id>/<blob>')
