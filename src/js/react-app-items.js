@@ -318,8 +318,8 @@ export default class Items extends React.Component {
     var modify = this.modify
     var singleItem = false
     var editCategory = false
-    var {mode, type, id} = this.props
-    print(mode, type, id)
+    var {mode, type, id, user} = this.props
+    print(mode, type, id, user)
 
     if (type == 'item') {
       if (this.state.items.length == 1 && id != null)
@@ -337,11 +337,12 @@ export default class Items extends React.Component {
 
     if (singleItem) {
       print('singleItem', mode, type, id, this.state.items[0])
-      content = [Item({...this.state, allCategories: this.props.categories, setField, updField, modify, mode})]
+      content = [Item({...this.state, allCategories: this.props.categories, setField,
+        updField, modify, mode, user})]
     }
     else if (editCategory) {
       print('editCategory')
-      content = [Category({...this.state, setField, updField, modify, mode})]
+      content = [Category({...this.state, setField, updField, modify, mode, user})]
     }
     else if (mode == 'view') {
       content = [
@@ -352,8 +353,7 @@ export default class Items extends React.Component {
               key: item.id,
               containerElement: h(Link, {to: `/view/item/${item.id}`}),
               title: item.title,
-              subtitle: item.author,
-              actionIcon: h(Link, {to: `/edit/item/${item.id}`}, h(IconButton, null, h(EditorModeEdit))),
+              actionIcon: !(user && user.id == item.author) ? null : h(Link, {to: `/edit/item/${item.id}`}, h(IconButton, null, h(EditorModeEdit))),
               style: {borderRadius: '4px'},
             },
               h('img', {src: `/api/files/${item.image}/blob`})
