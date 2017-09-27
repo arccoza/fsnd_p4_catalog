@@ -15,7 +15,7 @@ var print = console.log.bind(console)
 function Text({value, children=[]}) {
   return h('div', {style: {
     width: '256px',
-    height: '72px',
+    minHeight: '72px',
     lineHeight: '30px',
     ...layout({dr: 'v', jc: '+'})}},
     h('span', null, value, ...children),
