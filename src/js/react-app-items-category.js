@@ -21,7 +21,8 @@ function Text({value, children=[]}) {
   )
 }
 
-export function Category({items, curCategory, errCategory, isBusy, setField, updField, modify, mode}) {
+export function Category({items, curCategory, errCategory, isBusy,
+  setField, updField, modify, mode, history, user}) {
   // print(curItem, curImage)
   var modeInv = {
     'edit': 'view',
@@ -31,7 +32,7 @@ export function Category({items, curCategory, errCategory, isBusy, setField, upd
 
   var itemRows = items.filter(v => curCategory.items.indexOf(v.id) != -1)
   .map((v, i) => {
-    return h(TableRow, {key: v},
+    return h(TableRow, {key: v, onTouchTap: ev => history.push('/view/items/' + v.id)},
       h(TableRowColumn, null,
         h('img', {src: `/api/files/${v.image}/blob`, style: {height: '100%'}})
       ),
