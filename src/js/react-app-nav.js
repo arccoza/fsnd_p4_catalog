@@ -17,12 +17,14 @@ export default class AppNav extends React.Component {
   }
 
   render() {
+    var {user} = this.props
+
     var categoryList = this.props.categories.map(cat => {
       return (
         <Link to={`/view/category/${cat.id}`} key={cat.id}>
           <ListItem
             primaryText={cat.title}
-            leftIcon={<Link to={`/edit/category/${cat.id}`}><EditorModeEdit/></Link>}
+            leftIcon={!user ? null : <Link to={`/edit/category/${cat.id}`}><EditorModeEdit/></Link>}
             rightIcon={<NavigationChevronRight />}
             onTouchTap={ev => this.props.pub('nav', {isOpen: false})}
           />
