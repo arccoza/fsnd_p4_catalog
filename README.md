@@ -16,6 +16,8 @@ You can skip this and view an online version, linked in the View section.
 
 * Move into the project directory in the VM: `cd /vagrant/catalog`.
 
+* Run `pip3 install -r requirements.txt -t lib` to install dependencies.
+
 * Run the dev server with `python3 app.py`.
 
 ## View
