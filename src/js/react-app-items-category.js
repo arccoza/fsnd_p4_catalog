@@ -21,12 +21,13 @@ function Text({value, children=[]}) {
   )
 }
 
-export function Category({items, curCategory, isBusy, setField, modify, mode}) {
+export function Category({items, curCategory, errCategory, isBusy, setField, updField, modify, mode}) {
   // print(curItem, curImage)
   var modeInv = {
     'edit': 'view',
     'view': 'edit',
   }
+  var isValid = curCategory.title != null && curCategory.title != ''
 
   var itemRows = items.filter(v => curCategory.items.indexOf(v.id) != -1)
   .map((v, i) => {
@@ -44,11 +45,11 @@ export function Category({items, curCategory, isBusy, setField, modify, mode}) {
     h('h2', null, mode == 'edit' ? 'Edit Category' : 'View Category'),
     mode != 'edit' ? null : h(RaisedButton, {
       label: isBusy ? null : 'Save',
-      disabled: isBusy,
+      disabled: isBusy || !isValid,
       primary: true,
       style: {margin: '1em 0 0 0'},
       onTouchTap: ev => {
-        if (isBusy) return
+        if (isBusy || !isValid) return
         modify({do: 'save', on: 'categories'}, 'action')
       }
     }, !isBusy ? null : h(CircularProgress, {size: 15, thickness: 1, className: 'CircularProgress'})),
@@ -71,8 +72,9 @@ export function Category({items, curCategory, isBusy, setField, modify, mode}) {
     h(mode != 'edit' ? Text : TextField, {
       floatingLabelText: 'Category name',
       hintText: 'ex: Posters',
+      errorText: errCategory && errCategory.title ? 'This field is required.' : null,
       value: curCategory.title,
-      onChange: setField('curCategory', 'title'),
+      onChange: updField(v => ({curCategory: {...curCategory, title: v}, errCategory: {...errCategory, title: v == ''}})),
     }),
     h(mode != 'edit' ? Text : TextField, {
       floatingLabelText: 'Category description',

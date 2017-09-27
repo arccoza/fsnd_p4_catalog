@@ -19,13 +19,14 @@ function Text({value, children=[]}) {
   )
 }
 
-export function Item({allCategories, curItem, curImage, isBusy, setField, modify, mode}) {
+export function Item({allCategories, curItem, curImage, errItem, isBusy, setField, updField, modify, mode}) {
   // print(curItem, curImage)
   var fileInput
   var modeInv = {
     'edit': 'view',
     'view': 'edit',
   }
+  var isValid = curItem.title != null && curItem.title != ''
 
   var cats = curItem.categories.map((v, i) => h(Chip, {key: v,
     onRequestDelete: ev => modify(null, 'curItem', 'categories', i),
@@ -37,11 +38,11 @@ export function Item({allCategories, curItem, curImage, isBusy, setField, modify
     h('h2', null, mode == 'edit' ? 'Edit Item' : 'View Item'),
     mode != 'edit' ? null : h(RaisedButton, {
       label: isBusy ? null : 'Save',
-      disabled: isBusy,
+      disabled: isBusy || !isValid,
       primary: true,
       style: {margin: '1em 0 0 0'},
       onTouchTap: ev => {
-        if (isBusy) return
+        if (isBusy || !isValid) return
         modify({do: 'save', on: 'items'}, 'action')
       }
     }, !isBusy ? null : h(CircularProgress, {size: 15, thickness: 1, className: 'CircularProgress'})),
@@ -64,8 +65,9 @@ export function Item({allCategories, curItem, curImage, isBusy, setField, modify
     h(mode != 'edit' ? Text : TextField, {
       floatingLabelText: 'Item name',
       hintText: 'ex: Snowboard',
+      errorText: errItem && errItem.title ? 'This field is required.' : null,
       value: curItem.title,
-      onChange: setField('curItem', 'title'),
+      onChange: updField(v => ({curItem: {...curItem, title: v}, errItem: {...errItem, title: v == ''}}))
     }),
     h(mode != 'edit' ? Text : TextField, {
       floatingLabelText: 'Item description',

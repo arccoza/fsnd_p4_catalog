@@ -114,6 +114,8 @@ export default class Items extends React.Component {
       curCategory: this.blank.category(),
       curItem: this.blank.item(),
       curImage: this.blank.image(),
+      errCategory: null,
+      errItem: null,
       isBusy: false,
     }
   }
@@ -282,14 +284,14 @@ export default class Items extends React.Component {
     var state = this.state
     var {history, pub} = prevProps
 
-    if (state.action) {
-      if (state.action.on == 'categories')
+    if (state.action && state.action.on == 'categories'
+      && (state.errCategory == null || !state.errCategory.title)) {
         var curCategory = state.curCategory
-
-      if (state.action.on == 'items') {
-        var curItem = state.curItem
-        var curImage = state.curImage
-      }
+    }
+    else if (state.action && state.action.on == 'items'
+      && (state.errItem == null || !state.errItem.title)) {
+      var curItem = state.curItem
+      var curImage = state.curImage
     }
     else
       return
@@ -314,6 +316,7 @@ export default class Items extends React.Component {
     print('......................rendering')
     var content = []
     var setField = (...args) => ev => this.modify(ev.target.value, ...args)
+    var updField = (fn) => ({target: {value}}) => this.setState(fn(value))
     var modify = this.modify
     var singleItem = false
     var editCategory = false
@@ -345,11 +348,11 @@ export default class Items extends React.Component {
 
     if (singleItem) {
       print('singleItem', mode, type, id, this.state.items[0])
-      content = [Item({...this.state, allCategories: this.props.categories, setField, modify, mode})]
+      content = [Item({...this.state, allCategories: this.props.categories, setField, updField, modify, mode})]
     }
     else if (editCategory) {
       print('editCategory')
-      content = [Category({...this.state, setField, modify, mode})]
+      content = [Category({...this.state, setField, updField, modify, mode})]
     }
     else if (mode == 'view') {
       content = [
