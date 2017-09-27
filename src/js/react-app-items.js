@@ -81,7 +81,7 @@ export default class Items extends React.Component {
         title: '',
         description: '',
         items: [],
-        author: '',
+        author: null,
       }),
       item: () => ({
         id: null,
