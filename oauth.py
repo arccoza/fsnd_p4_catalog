@@ -4,6 +4,9 @@ from requests import HTTPError
 
 def upgrade_token(**kwargs):
     '''
+    Upgrade a client side token, from the browser,
+    to one that can be used on the server.
+
     Required kwargs:
         provider
         token
@@ -41,6 +44,8 @@ def upgrade_token(**kwargs):
 
 def get_user(**kwargs):
     '''
+    Get the user from the oauth provider.
+
     Required kwargs:
         provider
         access_token
