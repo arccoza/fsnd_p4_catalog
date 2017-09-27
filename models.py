@@ -66,7 +66,8 @@ class Mixin(object):
                 if key not in exclude}
 
     def to_json(self):
-        return json.dumps(self.to_dict(), indent=4, sort_keys=True, default=str)
+        return json.dumps(self.to_dict(), indent=4,
+                          sort_keys=True, default=str)
 
 
 class Base(db.Entity):
