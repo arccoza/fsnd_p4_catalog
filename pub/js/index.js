@@ -48645,7 +48645,6 @@ var Auth = function () {
         self.ga = gapi.auth2.getAuthInstance();
         return self.ga.grantOfflineAccess();
       }).then(function (resp) {
-        print$2('**************auth ', resp);
         return fetch('/api/auth/', {
           method: 'get',
           credentials: 'include',
@@ -48805,13 +48804,11 @@ var AppHeader = function (_React$Component) {
       _this.setState({ isBusy: true, provider: authProviders[provider] });
 
       authProviders[provider].signin().then(function (resp) {
-        console.log('88888888888888888888888888888888888', resp);
         _this._closeDialog();
         _this.setState({ isBusy: false });
         _this.props.pub('message', { content: 'Welcome...', action: null });
         _this.props.pub('user', resp.user);
       }).catch(function (err) {
-        console.log('77777777777777777777777777777777777', err);
         _this._closeDialog();
         _this.setState({ isBusy: false });
         _this.props.pub('message', { content: 'Signin failed.', action: null });
