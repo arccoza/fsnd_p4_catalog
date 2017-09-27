@@ -24,7 +24,7 @@ You can skip this and view an online version, linked in the View section.
 
 * On your host machine open: [http://localhost:5000/](http://localhost:5000/)
 
-* Or you can view an online version [here](http://188.166.100.114/).
+* Or you can view an online version [here](http://188.166.100.114.xip.io/).
 
 ## Use
 
