@@ -37,6 +37,7 @@ def authorize(upgrade=True):
             # Try get the Auth header data.
             try:
                 logging.warn('trying')
+                logging.warn(request.headers)
                 auth = request.headers['Authorization']
                 logging.warn(auth)
                 kind, _, value = auth.partition(' ')
