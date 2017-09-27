@@ -48799,14 +48799,18 @@ var AppHeader = function (_React$Component) {
     var _this = possibleConstructorReturn$2(this, (AppHeader.__proto__ || Object.getPrototypeOf(AppHeader)).call(this, props));
 
     _this._signin = function (provider) {
+      var authProviders = _this.props.authProviders;
+
       _this.setState({ isBusy: true, provider: authProviders[provider] });
 
       authProviders[provider].signin().then(function (resp) {
+        console.log('88888888888888888888888888888888888', resp);
         _this._closeDialog();
         _this.setState({ isBusy: false });
         _this.props.pub('message', { content: 'Welcome...', action: null });
         _this.props.pub('user', resp.user);
       }).catch(function (err) {
+        console.log('77777777777777777777777777777777777', err);
         _this._closeDialog();
         _this.setState({ isBusy: false });
         _this.props.pub('message', { content: 'Signin failed.', action: null });
@@ -49779,16 +49783,16 @@ var Items = function (_React$Component) {
 // import Kitchen from './kitchen'
 var print$1 = console.log.bind(console);
 
-var googleScriptSrc$1 = '//apis.google.com/js/platform.js';
-var facebookScriptSrc$1 = '//connect.facebook.net/en_US/sdk.js';
-var authProviders$1 = {};
+var googleScriptSrc = '//apis.google.com/js/platform.js';
+var facebookScriptSrc = '//connect.facebook.net/en_US/sdk.js';
+var authProviders = {};
 
-authProviders$1['google'] = new Auth({ provider: 'google', scriptSrc: googleScriptSrc$1, cred: {
+authProviders['google'] = new Auth({ provider: 'google', scriptSrc: googleScriptSrc, cred: {
     'clientId': '32902065428-sbal87ccp0eedjoo2opcq0tr22ha3884.apps.googleusercontent.com',
     'scope': 'profile email'
   } });
 
-authProviders$1['facebook'] = new Auth({ provider: 'facebook', scriptSrc: facebookScriptSrc$1, cred: {
+authProviders['facebook'] = new Auth({ provider: 'facebook', scriptSrc: facebookScriptSrc, cred: {
     'appId': '126309204593715',
     'cookie': true,
     'xfbml': true,
@@ -49796,7 +49800,7 @@ authProviders$1['facebook'] = new Auth({ provider: 'facebook', scriptSrc: facebo
     'scope': 'email'
   } });
 
-window.authProviders = authProviders$1;
+window.authProviders = authProviders;
 
 var layoutStack = {
   position: 'relative',
@@ -49989,6 +49993,7 @@ var App = function (_React$Component) {
             react.createElement(AppHeader, {
               pub: this.pub,
               sub: this.sub,
+              authProviders: authProviders,
               user: this.state.user }),
             react.createElement(AppNav, {
               pub: this.pub,
@@ -50083,170 +50088,8 @@ var App = function (_React$Component) {
 var print = console.log.bind(console);
 
 injectTapEventPlugin();
-var googleScriptSrc = '//apis.google.com/js/platform.js';
-var facebookScriptSrc = '//connect.facebook.net/en_US/sdk.js';
-
-var gg = new Auth({ provider: 'google', scriptSrc: googleScriptSrc, cred: {
-    'clientId': '32902065428-sbal87ccp0eedjoo2opcq0tr22ha3884.apps.googleusercontent.com',
-    'scope': 'profile email'
-  } });
-
-var fb = new Auth({ provider: 'facebook', scriptSrc: facebookScriptSrc, cred: {
-    'appId': '126309204593715',
-    'cookie': true,
-    'xfbml': true,
-    'version': 'v2.9',
-    'scope': 'email'
-  } });
-
-window.gg = gg;
-window.fb = fb;
 
 window.addEventListener('load', function (ev) {
-
-  // function App() {
-  //   return (
-  //     <MuiThemeProvider>
-  //       <RaisedButton label="Route A" />
-  //       <RaisedButton label="Route B" />
-  //     </MuiThemeProvider>
-  //   )
-  // }
-
-  var Home = function Home() {
-    return react.createElement(
-      'div',
-      null,
-      react.createElement(
-        'h2',
-        null,
-        'Home'
-      )
-    );
-  };
-
-  var About = function About() {
-    return react.createElement(
-      'div',
-      null,
-      react.createElement(
-        'h2',
-        null,
-        'About'
-      )
-    );
-  };
-
-  var Topic = function Topic(_ref) {
-    var match = _ref.match;
-    return react.createElement(
-      'div',
-      null,
-      react.createElement(
-        'h3',
-        null,
-        match.params.topicId
-      )
-    );
-  };
-
-  var Topics = function Topics(_ref2) {
-    var match = _ref2.match;
-    return react.createElement(
-      'div',
-      null,
-      react.createElement(
-        'h2',
-        null,
-        'Topics'
-      ),
-      react.createElement(
-        'ul',
-        null,
-        react.createElement(
-          'li',
-          null,
-          react.createElement(
-            Link,
-            { to: match.url + '/rendering' },
-            'Rendering with React'
-          )
-        ),
-        react.createElement(
-          'li',
-          null,
-          react.createElement(
-            Link,
-            { to: match.url + '/components' },
-            'Components'
-          )
-        ),
-        react.createElement(
-          'li',
-          null,
-          react.createElement(
-            Link,
-            { to: match.url + '/props-v-state' },
-            'Props v. State'
-          )
-        )
-      ),
-      react.createElement(Route$1, { path: match.url + '/:topicId', component: Topic }),
-      react.createElement(Route$1, { exact: true, path: match.url, render: function render() {
-          return react.createElement(
-            'h3',
-            null,
-            'Please select a topic.'
-          );
-        } })
-    );
-  };
-
-  var BasicExample = function BasicExample() {
-    return react.createElement(
-      BrowserRouter,
-      null,
-      react.createElement(
-        'div',
-        null,
-        react.createElement(
-          'ul',
-          null,
-          react.createElement(
-            'li',
-            null,
-            react.createElement(
-              Link,
-              { to: '/' },
-              'Home'
-            )
-          ),
-          react.createElement(
-            'li',
-            null,
-            react.createElement(
-              Link,
-              { to: '/about' },
-              'About'
-            )
-          ),
-          react.createElement(
-            'li',
-            null,
-            react.createElement(
-              Link,
-              { to: '/topics' },
-              'Topics'
-            )
-          )
-        ),
-        react.createElement('hr', null),
-        react.createElement(Route$1, { exact: true, path: '/', component: Home }),
-        react.createElement(Route$1, { path: '/about', component: About }),
-        react.createElement(Route$1, { path: '/topics', component: Topics })
-      )
-    );
-  };
 
   reactDom.render(react.createElement(
     BrowserRouter,
