@@ -26,6 +26,7 @@ db.bind('postgres', database='catalog')
 db.generate_mapping(create_tables=True)
 
 
+# Only one catchall route required because this is a single page React app.
 @app.route('/')
 @app.route('/<path:path>')
 def root(cat=None, id=None, path=None):
