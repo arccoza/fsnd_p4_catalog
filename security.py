@@ -47,6 +47,7 @@ def authorize(upgrade=True):
                     xtra = request.headers['X-Requested-With']
                 # elif kind == 'Token':
             except (KeyError, base64.binascii.Error) as ex:
+                logging.warn('failed')
                 # print(type(ex))
                 return fn(*args, **kwargs)
 
