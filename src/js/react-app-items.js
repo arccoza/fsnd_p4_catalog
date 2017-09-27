@@ -275,8 +275,8 @@ export default class Items extends React.Component {
     var modify = this.modify
     var singleItem = false
     var editCategory = false
-    var {mode, type, id, user} = this.props
-    print(mode, type, id, user)
+    var {mode, type, id, history, user} = this.props
+    print(mode, type, id, history, user)
 
     if (type == 'item') {
       if (this.state.items.length == 1 && id != null)
@@ -299,7 +299,7 @@ export default class Items extends React.Component {
     }
     else if (editCategory) {
       print('editCategory')
-      content = [Category({...this.state, setField, updField, modify, mode, user})]
+      content = [Category({...this.state, setField, updField, modify, mode, history, user})]
     }
     else if (mode == 'view') {
       content = [
