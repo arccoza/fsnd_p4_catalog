@@ -2,7 +2,7 @@ var print = console.log.bind(console)
 
 // Base64 encoder that can handle unicode characters.
 // REF: https://developer.mozilla.org/en/docs/Web/API/WindowBase64/Base64_encoding_and_decoding
-export function b64EncodeUnicode(str) {
+function b64EncodeUnicode(str) {
   return btoa(encodeURIComponent(str).replace(/%([0-9A-F]{2})/g,
     function toSolidBytes(match, p1) {
       return String.fromCharCode('0x' + p1);
@@ -10,7 +10,7 @@ export function b64EncodeUnicode(str) {
 }
 
 // Loads scripts from the server.
-export function loadScript(url) {
+function loadScript(url) {
   var id = b64EncodeUnicode(url)
   var script = document.getElementById(id)
   if(script)
@@ -46,7 +46,7 @@ const ja = {
 }
 
 // A funtion providing a shorthand way to build FlexBox CSS layouts.
-export function layout({dr='v', jc='b', ac='+', ai='~', fx=null, mg=null, pd=null}) {
+function layout({dr='v', jc='b', ac='+', ai='~', fx=null, mg=null, pd=null}) {
   var style = {
     display: 'flex',
     flexFlow: dr.indexOf('v') != -1 ? 'column' : 'row' +
@@ -69,7 +69,7 @@ export function layout({dr='v', jc='b', ac='+', ai='~', fx=null, mg=null, pd=nul
 
 // This fn is a mixin that is added to React Components to provide
 // an easy state modifier.
-export function modify(fnOrVal, ...path) {
+function modify(fnOrVal, ...path) {
   var s = this.state
 
   for (var i = 0, k; k = path[i], i < path.length - 1; i++) {
@@ -100,6 +100,9 @@ export function modify(fnOrVal, ...path) {
   }
 }
 
+// Extends Promise with a finally method.
 Promise.prototype.finally = function(cb) {
   return this.then(cb, cb)
 }
+
+export {b64EncodeUnicode, loadScript, layout, modify, Promise}
